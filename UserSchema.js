@@ -2,7 +2,7 @@
 
 module.exports = (mongoose) => {
    var UserSchema = new mongoose.Schema({ // creates a new mongoose schema called UserSchema
-      name: String,
+      name: String, // user name must be unique
       email: String,
       password: String,
 	  score: Number,
@@ -10,6 +10,7 @@ module.exports = (mongoose) => {
 	  inGame: Boolean, // if true, current game has been launched
 	  gameAdmin: Boolean,  //true if admin of current game
 	  gameHistory: [String],
+	  currentTarget: String, // username of current target
 	  lastLocation: String,
    });
 

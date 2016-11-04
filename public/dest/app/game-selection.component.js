@@ -18,7 +18,7 @@ var GameSelectionComponent = (function () {
     GameSelectionComponent.prototype.createGame = function () {
         var _this = this;
         // todo add code to post to /newGame on the server
-        this.apiService.postObs("/newGame", { message: "newgame" }).subscribe(function (response) {
+        this.apiService.postObs("/api/newGame", { message: "newgame" }).subscribe(function (response) {
             if (response.gameId) {
                 _this.gameCreated = true;
                 _this.gameId = response.gameId;
@@ -28,6 +28,7 @@ var GameSelectionComponent = (function () {
     GameSelectionComponent.prototype.joinGame = function () {
         this.apiService.postObs("/joinGame", { message: "joingame" }).subscribe(function (response) {
             console.log(response);
+            // todo write this function
         });
     };
     return GameSelectionComponent;

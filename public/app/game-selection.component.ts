@@ -81,7 +81,7 @@ export class GameSelectionComponent {
 
 	createGame() {
 		// todo add code to post to /newGame on the server
-		this.apiService.postObs("/newGame", {message: "newgame"}).subscribe((response) => {
+		this.apiService.postObs("/api/newGame", {message: "newgame"}).subscribe((response) => {
 			if (response.gameId) {
 				this.gameCreated = true;
 				this.gameId = response.gameId;
@@ -93,6 +93,7 @@ export class GameSelectionComponent {
 	joinGame() {
 		this.apiService.postObs("/joinGame", {message: "joingame"}).subscribe((response) => {
 			console.log(response);
+			// todo write this function
 		});
 	}
 

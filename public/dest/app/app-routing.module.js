@@ -1,3 +1,4 @@
+// app-routing.module.ts
 "use strict";
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -9,41 +10,31 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
-var platform_browser_1 = require("@angular/platform-browser");
-var http_1 = require("@angular/http");
-var forms_1 = require("@angular/forms");
-var app_routing_module_1 = require("./app-routing.module");
-var api_service_1 = require("./api.service");
+var router_1 = require("@angular/router");
 var auth_service_1 = require("./auth.service");
-var app_component_1 = require("./app.component");
 var login_component_1 = require("./login.component");
 var game_selection_component_1 = require("./game-selection.component");
 var enter_game_component_1 = require("./enter-game.component");
 var in_game_component_1 = require("./in-game.component");
-var AppModule = (function () {
-    function AppModule() {
+var routes = [
+    { path: "", component: login_component_1.LoginComponent },
+    { path: "login", component: login_component_1.LoginComponent },
+    { path: "game-selection", component: game_selection_component_1.GameSelectionComponent },
+    { path: "enter-game", component: enter_game_component_1.EnterGameComponent },
+    { path: "in-game", component: in_game_component_1.InGameComponent }
+];
+var AppRoutingModule = (function () {
+    function AppRoutingModule(authService) {
+        this.authService = authService;
     }
-    return AppModule;
+    return AppRoutingModule;
 }());
-AppModule = __decorate([
+AppRoutingModule = __decorate([
     core_1.NgModule({
-        imports: [
-            platform_browser_1.BrowserModule,
-            http_1.HttpModule,
-            forms_1.FormsModule,
-            app_routing_module_1.AppRoutingModule
-        ],
-        providers: [api_service_1.ApiService, auth_service_1.AuthService],
-        declarations: [
-            app_component_1.AppComponent,
-            login_component_1.LoginComponent,
-            game_selection_component_1.GameSelectionComponent,
-            enter_game_component_1.EnterGameComponent,
-            in_game_component_1.InGameComponent
-        ],
-        bootstrap: [app_component_1.AppComponent]
+        imports: [router_1.RouterModule.forRoot(routes)],
+        exports: [router_1.RouterModule]
     }),
-    __metadata("design:paramtypes", [])
-], AppModule);
-exports.AppModule = AppModule;
-//# sourceMappingURL=app.module.js.map
+    __metadata("design:paramtypes", [auth_service_1.AuthService])
+], AppRoutingModule);
+exports.AppRoutingModule = AppRoutingModule;
+//# sourceMappingURL=app-routing.module.js.map

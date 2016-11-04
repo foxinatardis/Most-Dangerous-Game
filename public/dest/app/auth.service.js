@@ -8,18 +8,30 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('@angular/core');
-var AppComponent = (function () {
-    function AppComponent() {
+var core_1 = require("@angular/core");
+var router_1 = require("@angular/router");
+var AuthService = (function () {
+    function AuthService(router) {
+        this.router = router;
+        // public user = undefined;
+        this.user = {
+            score: 0,
+            currentGame: "",
+            inProgress: ""
+        };
     }
-    AppComponent = __decorate([
-        core_1.Component({
-            selector: 'assassin',
-            template: "\n\t\t<nav>\n\t\t\t<a href=\"/\">\n\t\t\t\t<div class=\"for-nav\">\n\t\t\t\t\t<p class=\"p-nav\">Home</p>\n\t\t\t\t</div>\n\t\t\t</a>\n\t\t\t<a href=\"/game-selection\">\n\t\t\t\t<div class=\"for-nav\">\n\t\t\t\t\t<p class=\"p-nav\">Create or Join</p>\n\t\t\t\t</div>\n\t\t\t</a>\n\t\t</nav>\n\t\t<router-outlet></router-outlet>\n\t",
-        }), 
-        __metadata('design:paramtypes', [])
-    ], AppComponent);
-    return AppComponent;
+    AuthService.prototype.canActivate = function (route, state) {
+        if (this.user === undefined) {
+            this.router.navigate(["login"]);
+            return false;
+        }
+        return true;
+    };
+    return AuthService;
 }());
-exports.AppComponent = AppComponent;
-//# sourceMappingURL=app.component.js.map
+AuthService = __decorate([
+    core_1.Injectable(),
+    __metadata("design:paramtypes", [router_1.Router])
+], AuthService);
+exports.AuthService = AuthService;
+//# sourceMappingURL=auth.service.js.map

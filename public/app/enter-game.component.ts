@@ -1,12 +1,16 @@
 import { Component, OnInit } from "@angular/core";
 import { ApiService } from "./api.service";
+import { Router } from "@angular/router";
+import { AuthService } from "./auth.service";
 
 @Component({
 
 	template: `
 		<div *ngIf="gameAdmin">
 			New players can not join once game has been launched.
-			<button>Launch Game</button>
+			<div class="button" (click)="launchGame()">
+				<p class="inside-button">Launch Game</p>
+			</div>
 		</div>
 		<div>
 			<h2>Players: </h2>
@@ -17,10 +21,27 @@ import { ApiService } from "./api.service";
 	`,
 })
 export class EnterGameComponent implements OnInit {
-	constructor(private apiService: ApiService) {}
+	constructor(
+		private apiService: ApiService,
+		private router: Router,
+		private authService: AuthService
+	) {}
 
 	gameAdmin: boolean;
 	players: Array<string>;
+
+	launchGame() {
+		this.apiService.postObs("/api/launch",
+			{
+				message: "launch game",
+				gameId: this.authService.user.currentGame
+			},
+		).subscribe((res) => {
+			if (res.success) {
+				this.router.navigate(["/in-game"]);
+			} // todo handle launch failure
+		});
+	};
 
 	ngOnInit() {
 		this.apiService.getObs("/api/game").subscribe((response) => {

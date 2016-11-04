@@ -9,17 +9,25 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
-var AppComponent = (function () {
-    function AppComponent() {
+var auth_service_1 = require("./auth.service");
+var InGameComponent = (function () {
+    function InGameComponent(authService) {
+        this.authService = authService;
     }
-    return AppComponent;
+    InGameComponent.prototype.getLocation = function () {
+        var _this = this;
+        // stub
+        navigator.geolocation.getCurrentPosition(function (res) {
+            _this.position = res;
+        });
+    };
+    return InGameComponent;
 }());
-AppComponent = __decorate([
+InGameComponent = __decorate([
     core_1.Component({
-        selector: 'assassin',
-        template: "\n\t\t<nav>\n\t\t\t<a href=\"/\">\n\t\t\t\t<div class=\"for-nav\">\n\t\t\t\t\t<p class=\"p-nav\">Home</p>\n\t\t\t\t</div>\n\t\t\t</a>\n\t\t\t<a href=\"/game-selection\">\n\t\t\t\t<div class=\"for-nav\">\n\t\t\t\t\t<p class=\"p-nav\">Create or Join</p>\n\t\t\t\t</div>\n\t\t\t</a>\n\t\t</nav>\n\t\t<router-outlet></router-outlet>\n\t",
+        template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<button (click)=\"getLocation()\">Get Location</button>\n\t\t<h2>{{position}}</h2>\n\t",
     }),
-    __metadata("design:paramtypes", [])
-], AppComponent);
-exports.AppComponent = AppComponent;
-//# sourceMappingURL=app.component.js.map
+    __metadata("design:paramtypes", [auth_service_1.AuthService])
+], InGameComponent);
+exports.InGameComponent = InGameComponent;
+//# sourceMappingURL=in-game.component.js.map

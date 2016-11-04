@@ -26,25 +26,29 @@ app.use(session({
 }));
 
 app.get("/", (req, res) => {
+	// todo this will change once app is completed and ready to serve
 	res.sendFile(__dirname + "/public/index.html");
 });
 
-app.post("/signup", (req, res) => {
+
+app.post("/api/signup", (req, res) => {
 	console.log("hit signup api", req.body);
 	if(!req.body.email || !req.body.password) {
 		res.send({message: "error, invalid email or password"});
 	}
-	User.find({email: req.body.email}, (err, user) => {
+	User.find({$or:[{email: req.body.email}, {name: req.body.username}]}, (err, user) => {
 		if (user.length === 0) {
 			var newUser = new User({
 				email: req.body.email,
-				password: req.body.password
+				name: req.body.username,
+				password: req.body.password,
+				score: 0
 			});
 			newUser.save((err)=> {
 				if(err) {
 					console.log(err);
 					res.status(500);
-					res.send({message: "error registering new user"});
+					res.send({error: "error registering new user"});
 					return;
 				}
 				res.send({message: "successfully added new user"});
@@ -52,15 +56,16 @@ app.post("/signup", (req, res) => {
 		} else if (err) {
 			console.log(err);
 			res.status(500);
-			res.send({message: "internal server error"});
+			res.send({error: "internal server error"});
 			return;
 		} else {
-			res.send({status: "error", message: "User already exists"});
+			res.send({error: "User already exists"});
 		}
 	});
 });
 
-app.post("/login", (req, res) => {
+app.post("/api/login", (req, res) => {
+	console.log(req.body);
 	if(!req.body.email || !req.body.password){
 		res.send({message: "error, please provide valid login"});
 		return;
@@ -71,8 +76,9 @@ app.post("/login", (req, res) => {
 			return;
 		}
 		if(user[0].password === req.body.password) {
-			req.session.email = user[0].email;
-			res.send({message: "successfully logged in!", loggedIn: true});
+			user[0].password = "";
+			req.session.user = user[0];
+			res.send({message: "successfully logged in!", loggedIn: true, userData: user});
 		} else {
 			res.status(401);
 			res.send({message: "invalid login", loggedIn: false});
@@ -80,10 +86,9 @@ app.post("/login", (req, res) => {
 	});
 });
 
-app.post("/newGame", (req, res) => {
+app.post("/api/newGame", (req, res) => {
 //todo: add verification
-	console.log("hit /newGame api");
-	var email = req.session.email || "me@me.me";
+	var email = req.session.user.email;
 	var newGame = new Game({
 		players: [email]
 	});
@@ -100,7 +105,9 @@ app.post("/newGame", (req, res) => {
 
 		User.findOneAndUpdate(
 			{email: email},
-			{currentGame: gameId},
+			{currentGame: gameId,
+			gameAdmin: true},
+			{new: true},
 			(err, data) => {
 				if(err) {
 					console.log(err);
@@ -108,6 +115,7 @@ app.post("/newGame", (req, res) => {
 					res.send({message: "error updating user"});
 					return;
 				}
+				console.log("updated user", data);
 				res.send({gameId: gameId});
 			}
 		);
@@ -129,7 +137,13 @@ app.get("/api/game", (req, res) => {
 			});
 		});
 	});
+});
 
+app.post("/api/launch", (req, res) => {
+	// todo add verification
+	// todo write method for launching the game
+	console.log(req.body);
+	res.send({success: "success"});
 });
 
 app.use(express.static(__dirname + '/public'));
