@@ -10,7 +10,7 @@ import { ApiService } from "./api.service";
 			<h2 *ngIf="register">Username: </h2>
 			<input type="text" [(ngModel)]="loginUser.username" placeholder="Username" *ngIf="register">
 
-			<h2>Email: </h2>
+			<h2>Email: {{test}}</h2>
 			<input type="text" [(ngModel)]="loginUser.email" placeholder="Email">
 
 			<h2>Password: </h2>
@@ -54,7 +54,7 @@ export class LoginComponent {
 	) { }
 
 	register: boolean = false;
-
+	test: string = "";
 	private loginUser = {
 		username: "",
 		email: "",
@@ -64,6 +64,7 @@ export class LoginComponent {
 	private error: string = "";
 
 	private newUser() {
+		this.test = "register clicked";
 		this.register = !this.register;
 	};
 
@@ -81,6 +82,7 @@ export class LoginComponent {
 
 	private sendLogin() {
 		this.apiService.postObs("/api/login", this.loginUser).subscribe((res) => {
+			this.test = "login clicked";
 			if (res.loggedIn) {
 				this.authService.user = res.userData[0];
 				if (this.authService.user.currentGame) {

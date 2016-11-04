@@ -18,6 +18,7 @@ var LoginComponent = (function () {
         this.router = router;
         this.apiService = apiService;
         this.register = false;
+        this.test = "";
         this.loginUser = {
             username: "",
             email: "",
@@ -26,6 +27,7 @@ var LoginComponent = (function () {
         this.error = "";
     }
     LoginComponent.prototype.newUser = function () {
+        this.test = "register clicked";
         this.register = !this.register;
     };
     ;
@@ -43,6 +45,7 @@ var LoginComponent = (function () {
     LoginComponent.prototype.sendLogin = function () {
         var _this = this;
         this.apiService.postObs("/api/login", this.loginUser).subscribe(function (res) {
+            _this.test = "login clicked";
             if (res.loggedIn) {
                 _this.authService.user = res.userData[0];
                 if (_this.authService.user.currentGame) {
@@ -68,7 +71,7 @@ var LoginComponent = (function () {
     };
     LoginComponent = __decorate([
         core_1.Component({
-            template: "\n\t\t<div>\n\t\t\t<h2 *ngIf=\"register\">Username: </h2>\n\t\t\t<input type=\"text\" [(ngModel)]=\"loginUser.username\" placeholder=\"Username\" *ngIf=\"register\">\n\n\t\t\t<h2>Email: </h2>\n\t\t\t<input type=\"text\" [(ngModel)]=\"loginUser.email\" placeholder=\"Email\">\n\n\t\t\t<h2>Password: </h2>\n\t\t\t<input type=\"password\" [(ngModel)]=\"loginUser.password\" placeholder=\"Password\">\n\n\t\t\t<div>\n\t\t\t\t<div class=\"button\" (click)=\"sendLogin()\" *ngIf=\"!register\">\n\t\t\t\t\t<p class=\"inside-button\">Login</p>\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"button\" (click)=\"sendRegistration()\" *ngIf=\"register\">\n\t\t\t\t\t<p class=\"inside-button\">Register</p>\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"button\" (click)=\"newUser()\" *ngIf=\"register\">\n\t\t\t\t\t<p class=\"inside-button\">Login</p>\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"button\" (click)=\"newUser()\" *ngIf=\"!register\">\n\t\t\t\t\t<p class=\"inside-button\">Create New User</p>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<p *ngIf=\"error\">{{error}}</p>\n\t\t</div>\n\t",
+            template: "\n\t\t<div>\n\t\t\t<h2 *ngIf=\"register\">Username: </h2>\n\t\t\t<input type=\"text\" [(ngModel)]=\"loginUser.username\" placeholder=\"Username\" *ngIf=\"register\">\n\n\t\t\t<h2>Email: {{test}}</h2>\n\t\t\t<input type=\"text\" [(ngModel)]=\"loginUser.email\" placeholder=\"Email\">\n\n\t\t\t<h2>Password: </h2>\n\t\t\t<input type=\"password\" [(ngModel)]=\"loginUser.password\" placeholder=\"Password\">\n\n\t\t\t<div>\n\t\t\t\t<div class=\"button\" (click)=\"sendLogin()\" *ngIf=\"!register\">\n\t\t\t\t\t<p class=\"inside-button\">Login</p>\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"button\" (click)=\"sendRegistration()\" *ngIf=\"register\">\n\t\t\t\t\t<p class=\"inside-button\">Register</p>\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"button\" (click)=\"newUser()\" *ngIf=\"register\">\n\t\t\t\t\t<p class=\"inside-button\">Login</p>\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"button\" (click)=\"newUser()\" *ngIf=\"!register\">\n\t\t\t\t\t<p class=\"inside-button\">Create New User</p>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<p *ngIf=\"error\">{{error}}</p>\n\t\t</div>\n\t",
             styles: ["\n\t\tdiv.button: {\n\t\t\twidth: 49%;\n\t\t\tbackground-color: #505BFF;\n\t\t\tborder: none;\n\t\t\tbox-sizing: border-box;\n\t\t\tfloat: left;\n\t\t}\n\t"]
         }), 
         __metadata('design:paramtypes', [auth_service_1.AuthService, router_1.Router, api_service_1.ApiService])

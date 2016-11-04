@@ -34,7 +34,7 @@ var ApiService = (function () {
         });
         // This is the url of our server. We'll need to update this if our server
         // moves
-        this.url = "http://localhost:8000";
+        this.url = document.location.origin;
     }
     // A helper function which returns an object version of the response JSON
     ApiService.prototype.getJSON = function (response) {

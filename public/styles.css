@@ -57,6 +57,18 @@ div.button {
 	-moz-box-shadow: 0px 0px 20px rgb(73, 125, 232);
 	-webkit-box-shadow: 0px 0px 20px rgb(73, 125, 232);
 	box-shadow: 0px 0px 20px rgb(73, 125, 232);
+	cursor: pointer;
+}
+
+button.button {
+	width: 90%;
+	height: 50px;
+	margin: 15px 15px 0px 15px;
+	border-radius: 5px;
+	background-color: #505BFF;
+	-moz-box-shadow: 0px 0px 20px rgb(73, 125, 232);
+	-webkit-box-shadow: 0px 0px 20px rgb(73, 125, 232);
+	box-shadow: 0px 0px 20px rgb(73, 125, 232);
 }
 
 input {

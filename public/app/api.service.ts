@@ -28,7 +28,7 @@ export class ApiService {
 
 	// This is the url of our server. We'll need to update this if our server
 	// moves
-	private url: string = "http://localhost:8000";
+	private url: string = document.location.origin;
 
 	// An empty constructor, but we inject the Http provider into our class here
 	constructor(private http: Http) { }
