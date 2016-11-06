@@ -27,6 +27,7 @@ export class InGameComponent {
 
 		this.apiService.getObs("/api/target").subscribe((res) => {
 			this.targetName = res.targetName;
+			console.log(res);
 		});
 	};
 

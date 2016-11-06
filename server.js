@@ -186,14 +186,15 @@ app.post("/api/launch", (req, res) => {
 	console.log("/api/launch req.body: ", req.body, req.session.gameId);
 	Game.findById(
 		req.session.gameId,
-		"player",
+		"players",
 		(err, data) => {
 			if (err) {
 				console.log("Error at /api/launch Game.findById: ", err);
 				res.status(500);
 				res.send({message: "error launching game... Sorry"});
 			}
-			var shuffle = data[0].players;
+			console.log("line 196 data is: ", data);
+			var shuffle = data.players;
 			var j, x, i;
 			for (i = shuffle.length; i; i--) {
 				j = Math.floor(Math.random() * i);
@@ -231,21 +232,41 @@ app.get("/api/target", (req, res) => {
 				res.status(500);
 				res.send({error: true, message: "Error finding target!!!"});
 			}
-			var player = req.session.name;
-			var players = data[0].players;
-			var target;
-			for (var i in players) {
+			var player = req.session.user.name;
+			var players = data.players;
+			var targetPlayer = "";
+			for (var i = 0; i < players.length; i++) {
+				console.log("in for loop");
 				if (players[i] === player && i < (players.length - 1)) {
-					target = players[i + 1];
+					targetPlayer = players[i + 1];
+					console.log("met first if condition");
 					break;
 				} else if (players[i] === player && i === (players.length -1)) {
-					target = players[0];
+					console.log("met second if condition");
+					targetPlayer = players[0];
 					break;
-				} else {
-					res.status(500);
-					res.send({error: true, message: "Error finding target!!!"});
 				}
-				res.send({targetName: target});
+			}
+			// todo update User to contain current target
+			if (!targetPlayer) {
+				res.status(500);
+				res.send({error: true, message: "Failed to aquire target"});
+			} else {
+				User.findOneAndUpdate(
+					{name: req.session.user.name},
+					{currentTarget: targetPlayer},
+					{new: true},
+					(err, data) => {
+						if(err) {
+							console.log("error at /api/target User.findOneAndUpdate: ", err);
+							res.status(500);
+							res.send({error: true, message: "failed to find target"});
+							return;
+						}
+						console.log(data.currentTarget);
+						res.send({targetName: data.currentTarget});
+					}
+				);
 			}
 		}
 	);

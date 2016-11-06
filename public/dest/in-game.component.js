@@ -23,6 +23,7 @@ var InGameComponent = (function () {
         this.geoService.postLocation();
         this.apiService.getObs("/api/target").subscribe(function (res) {
             _this.targetName = res.targetName;
+            console.log(res);
         });
     };
     ;
