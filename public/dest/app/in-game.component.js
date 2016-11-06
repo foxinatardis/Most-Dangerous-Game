@@ -18,14 +18,19 @@ var InGameComponent = (function () {
         this.apiService = apiService;
         this.geoService = geoService;
     }
-    InGameComponent.prototype.getLocation = function () {
+    InGameComponent.prototype.ngOnInit = function () {
+        var _this = this;
         this.geoService.postLocation();
+        this.apiService.getObs("/api/target").subscribe(function (res) {
+            _this.targetName = res.targetName;
+        });
     };
+    ;
     return InGameComponent;
 }());
 InGameComponent = __decorate([
     core_1.Component({
-        template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<button class=\"button\" (click)=\"getLocation()\">Get Location</button>\n\t\t<h2>{{position}}</h2>\n\t",
+        template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<div>\n\t\t\t<h2>Target: {{this.targetName}}</h2>\n\t\t</div>\n\t",
     }),
     __metadata("design:paramtypes", [auth_service_1.AuthService,
         api_service_1.ApiService,

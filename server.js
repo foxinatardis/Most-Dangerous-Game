@@ -74,7 +74,6 @@ app.post("/api/signup", (req, res) => {
 });
 
 app.post("/api/login", (req, res) => {
-	console.log(req.body);
 	if(!req.body.email || !req.body.password){
 		res.send({message: "error, please provide valid login"});
 		return;
@@ -97,9 +96,9 @@ app.post("/api/login", (req, res) => {
 
 app.post("/api/newGame", (req, res) => {
 //todo: add verification
-	var email = req.session.user.email;
+	var name = req.session.user.name;
 	var newGame = new Game({
-		players: [email]
+		players: [name]
 	});
 
 	newGame.save((err) => {
@@ -113,7 +112,7 @@ app.post("/api/newGame", (req, res) => {
 		var gameId = newGame._id;
 
 		User.findOneAndUpdate(
-			{email: email},
+			{name: name},
 			{currentGame: gameId,
 			gameAdmin: true},
 			{new: true},
@@ -129,6 +128,39 @@ app.post("/api/newGame", (req, res) => {
 			}
 		);
 	});
+});
+
+app.post("/api/joinGame", (req, res) => {
+
+	if (!req.session.user.name) {
+		res.status(500);
+		res.send({error: true, message: "no session user name"});
+	}
+	Game.findByIdAndUpdate(
+		req.body.gameId,
+		{$push: {players: req.session.user.name}},
+		{new: true},
+		(err, data) => {
+			if (err) {
+				console.log("error in post /api/joinGame at Game.findByIdAndUpdate: ", err);
+				res.status(500);
+				res.send({error: true, message: "Failed to Join Game"});
+			}
+			User.findOneAndUpdate(
+				{name: req.session.user.name},
+				{currentGame: req.body.gameId},
+				{new: true},
+				(err, data) => {
+					if (err) {
+						console.log("error in post /api/joinGame at User.findOneAndUpdate: ", err);
+						res.status(500);
+						res.send({error: true, message: "Failed to join Game!"});
+					}
+					res.send({success: true, message: "Successfully joined game: " + data.currentGame});
+				}
+			);
+		}
+	);
 });
 
 app.get("/api/game", (req, res) => {
@@ -151,7 +183,6 @@ app.get("/api/game", (req, res) => {
 
 app.post("/api/launch", (req, res) => {
 	// todo add verification
-	// todo write method for launching the game
 	console.log("/api/launch req.body: ", req.body, req.session.gameId);
 	Game.findById(
 		req.session.gameId,
@@ -172,13 +203,16 @@ app.post("/api/launch", (req, res) => {
 			}
 			Game.findByIdAndUpdate(
 				req.session.gameId,
-				{players: shuffle},
+				{
+					players: shuffle,
+					inProgress: true
+				},
 				{new: true},
 				(err, data) => {
 					if (err) {
 						console.log("error at /api/launch Game.findByIdAndUpdate: ", err);
 						res.status(500);
-						res.send({message: "Terribly sorry but I encountered an error whilst attempting to launch yur game."});
+						res.send({error: true, message: "Terribly sorry but I encountered an error whilst attempting to launch yur game."});
 					}
 					res.send({success: true});
 				}
@@ -186,6 +220,35 @@ app.post("/api/launch", (req, res) => {
 		}
 	);
 
+});
+
+app.get("/api/target", (req, res) => {
+	Game.findById(
+		req.session.gameId,
+		(err, data) => {
+			if (err) {
+				console.log("error at get:/api/target Game.findById: ", err);
+				res.status(500);
+				res.send({error: true, message: "Error finding target!!!"});
+			}
+			var player = req.session.name;
+			var players = data[0].players;
+			var target;
+			for (var i in players) {
+				if (players[i] === player && i < (players.length - 1)) {
+					target = players[i + 1];
+					break;
+				} else if (players[i] === player && i === (players.length -1)) {
+					target = players[0];
+					break;
+				} else {
+					res.status(500);
+					res.send({error: true, message: "Error finding target!!!"});
+				}
+				res.send({targetName: target});
+			}
+		}
+	);
 });
 
 app.post("/api/location", (req, res) => {

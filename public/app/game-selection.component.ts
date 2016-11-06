@@ -3,7 +3,7 @@ import { ApiService } from "./api.service";
 
 @Component({
 	template: `
-		<div *ngIf="!gameCreated">
+		<div *ngIf="start">
 			<h2>Create or Join a Game</h2>
 			<input type="text" placeholder="Existing Game ID" [(ngModel)]="gameId">
 			<div (click)="joinGame()" class="button">
@@ -17,6 +17,9 @@ import { ApiService } from "./api.service";
 			<h2>New Game Created</h2>
 			<p class="styled">Your friends can join your game using the id below.</p>
 			<p class="styled">Game: {{gameId}}</p>
+		</div>
+		<div *ngIf="gameJoined">
+			<h2>Game {{gameId}} joined successfully!!!</h2>
 		</div>
 	`,
 	styles: [`
@@ -76,24 +79,34 @@ export class GameSelectionComponent {
 	constructor(private apiService: ApiService) {}
 
 	gameId: string;
+	start: boolean = true;
 	gameCreated: boolean = false;
+	gameJoined: boolean = false;
 
 
 	createGame() {
-		// todo add code to post to /newGame on the server
 		this.apiService.postObs("/api/newGame", {message: "newgame"}).subscribe((response) => {
 			if (response.gameId) {
 				this.gameCreated = true;
+				this.start = false;
 				this.gameId = response.gameId;
-
 			}
+			// todo handle error creating game
 		});
 	}
 
 	joinGame() {
-		this.apiService.postObs("/joinGame", {message: "joingame"}).subscribe((response) => {
-			console.log(response);
-			// todo write this function
+		console.log("a");
+		this.apiService.postObs("/api/joinGame", {message: "joingame", gameId: this.gameId}).subscribe((response) => {
+			if (response.success) {
+				this.start = false;
+				this.gameJoined = true;
+			} else {
+				console.log("didn;t recieve success!");
+				console.log(response.error);
+				// todo handle error joining game
+			}
+			console.log(response.message);
 		});
 	}
 

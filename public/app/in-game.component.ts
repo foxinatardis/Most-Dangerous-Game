@@ -8,8 +8,9 @@ import { GeoService } from "./geo.service";
 		<div>
 			<h2>Score: {{this.authService.user.score}}</h2>
 		</div>
-		<button class="button" (click)="getLocation()">Get Location</button>
-		<h2>{{position}}</h2>
+		<div>
+			<h2>Target: {{this.targetName}}</h2>
+		</div>
 	`,
 })
 export class InGameComponent {
@@ -19,10 +20,16 @@ export class InGameComponent {
 		private geoService: GeoService
 	) {  }
 
-	position: any;
+	targetName: string;
 
-	getLocation() {
+	ngOnInit() {
 		this.geoService.postLocation();
-	}
+
+		this.apiService.getObs("/api/target").subscribe((res) => {
+			this.targetName = res.targetName;
+		});
+	};
+
+
 
 }
