@@ -13,13 +13,13 @@ var router_1 = require("@angular/router");
 var AuthService = (function () {
     function AuthService(router) {
         this.router = router;
-        // public user = undefined;
-        this.user = {
-            score: 0,
-            currentGame: "",
-            inProgress: ""
-        };
+        this.user = undefined;
     }
+    // public user = { // todo take this out for live data
+    // 	score: 0,
+    // 	currentGame: "",
+    // 	inProgress: ""
+    // };
     AuthService.prototype.canActivate = function (route, state) {
         if (this.user === undefined) {
             this.router.navigate(["login"]);

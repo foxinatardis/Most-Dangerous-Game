@@ -65,6 +65,7 @@ button.button {
 	height: 50px;
 	margin: 15px 15px 0px 15px;
 	border-radius: 5px;
+	border: 0;
 	background-color: #505BFF;
 	-moz-box-shadow: 0px 0px 20px rgb(73, 125, 232);
 	-webkit-box-shadow: 0px 0px 20px rgb(73, 125, 232);

@@ -12,11 +12,13 @@ var core_1 = require("@angular/core");
 var api_service_1 = require("./api.service");
 var router_1 = require("@angular/router");
 var auth_service_1 = require("./auth.service");
+var geo_service_1 = require("./geo.service");
 var EnterGameComponent = (function () {
-    function EnterGameComponent(apiService, router, authService) {
+    function EnterGameComponent(apiService, router, authService, geoService) {
         this.apiService = apiService;
         this.router = router;
         this.authService = authService;
+        this.geoService = geoService;
     }
     EnterGameComponent.prototype.launchGame = function () {
         var _this = this;
@@ -38,12 +40,13 @@ var EnterGameComponent = (function () {
             _this.gameAdmin = response.gameAdmin;
             _this.players = response.players;
         });
+        this.geoService.postLocation();
     };
     EnterGameComponent = __decorate([
         core_1.Component({
             template: "\n\t\t<div *ngIf=\"gameAdmin\">\n\t\t\tNew players can not join once game has been launched.\n\t\t\t<div class=\"button\" (click)=\"launchGame()\">\n\t\t\t\t<p class=\"inside-button\">Launch Game</p>\n\t\t\t</div>\n\t\t</div>\n\t\t<div>\n\t\t\t<h2>Players: </h2>\n\t\t\t<ul>\n\t\t\t\t<li *ngFor=\"let player of players\">{{player}}</li>\n\t\t\t</ul>\n\t\t</div>\n\t",
         }), 
-        __metadata('design:paramtypes', [api_service_1.ApiService, router_1.Router, auth_service_1.AuthService])
+        __metadata('design:paramtypes', [api_service_1.ApiService, router_1.Router, auth_service_1.AuthService, geo_service_1.GeoService])
     ], EnterGameComponent);
     return EnterGameComponent;
 }());

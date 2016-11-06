@@ -48,9 +48,10 @@ var LoginComponent = (function () {
             _this.test = "login clicked";
             if (res.loggedIn) {
                 _this.authService.user = res.userData[0];
+                console.log(_this.authService.user);
                 if (_this.authService.user.currentGame) {
-                    if (_this.authService.user.inProgress) {
-                        _this.router.navigate(["/"]); // todo add inProgress component
+                    if (_this.authService.user.inGame) {
+                        _this.router.navigate(["/in-game"]);
                     }
                     else {
                         _this.router.navigate(["/enter-game"]);

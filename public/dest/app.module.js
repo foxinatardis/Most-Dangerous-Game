@@ -15,6 +15,7 @@ var forms_1 = require("@angular/forms");
 var app_routing_module_1 = require("./app-routing.module");
 var api_service_1 = require("./api.service");
 var auth_service_1 = require("./auth.service");
+var geo_service_1 = require("./geo.service");
 var app_component_1 = require('./app.component');
 var login_component_1 = require("./login.component");
 var game_selection_component_1 = require("./game-selection.component");
@@ -31,7 +32,11 @@ var AppModule = (function () {
                 forms_1.FormsModule,
                 app_routing_module_1.AppRoutingModule
             ],
-            providers: [api_service_1.ApiService, auth_service_1.AuthService],
+            providers: [
+                api_service_1.ApiService,
+                auth_service_1.AuthService,
+                geo_service_1.GeoService
+            ],
             declarations: [
                 app_component_1.AppComponent,
                 login_component_1.LoginComponent,

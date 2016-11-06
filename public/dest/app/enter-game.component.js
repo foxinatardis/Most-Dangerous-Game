@@ -12,11 +12,13 @@ var core_1 = require("@angular/core");
 var api_service_1 = require("./api.service");
 var router_1 = require("@angular/router");
 var auth_service_1 = require("./auth.service");
+var geo_service_1 = require("./geo.service");
 var EnterGameComponent = (function () {
-    function EnterGameComponent(apiService, router, authService) {
+    function EnterGameComponent(apiService, router, authService, geoService) {
         this.apiService = apiService;
         this.router = router;
         this.authService = authService;
+        this.geoService = geoService;
     }
     EnterGameComponent.prototype.launchGame = function () {
         var _this = this;
@@ -38,6 +40,7 @@ var EnterGameComponent = (function () {
             _this.gameAdmin = response.gameAdmin;
             _this.players = response.players;
         });
+        this.geoService.postLocation();
     };
     return EnterGameComponent;
 }());
@@ -47,7 +50,8 @@ EnterGameComponent = __decorate([
     }),
     __metadata("design:paramtypes", [api_service_1.ApiService,
         router_1.Router,
-        auth_service_1.AuthService])
+        auth_service_1.AuthService,
+        geo_service_1.GeoService])
 ], EnterGameComponent);
 exports.EnterGameComponent = EnterGameComponent;
 //# sourceMappingURL=enter-game.component.js.map

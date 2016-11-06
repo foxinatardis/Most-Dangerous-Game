@@ -7,6 +7,7 @@ import { FormsModule } from "@angular/forms";
 import { AppRoutingModule } from "./app-routing.module";
 import { ApiService } from "./api.service";
 import { AuthService } from "./auth.service";
+import { GeoService } from "./geo.service";
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from "./login.component";
@@ -21,7 +22,11 @@ import { InGameComponent } from "./in-game.component";
 		FormsModule,
 		AppRoutingModule
 	],
-	providers: [ ApiService, AuthService ],
+	providers: [
+		ApiService,
+		AuthService,
+		GeoService
+	],
 	declarations: [
 		AppComponent,
 		LoginComponent,

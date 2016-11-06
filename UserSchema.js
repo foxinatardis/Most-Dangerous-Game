@@ -11,7 +11,10 @@ module.exports = (mongoose) => {
 	  gameAdmin: Boolean,  //true if admin of current game
 	  gameHistory: [String],
 	  currentTarget: String, // username of current target
-	  lastLocation: String,
+	  lastLongitude: Number,
+	  lastLatitude: Number,
+	  lastAccuracy: Number,
+	  lastTimestamp: Number
    });
 
    var User = mongoose.model('User', UserSchema); // create a new model called 'User' based on 'UserSchema'

@@ -10,22 +10,22 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var auth_service_1 = require("./auth.service");
+var api_service_1 = require("./api.service");
+var geo_service_1 = require("./geo.service");
 var InGameComponent = (function () {
-    function InGameComponent(authService) {
+    function InGameComponent(authService, apiService, geoService) {
         this.authService = authService;
+        this.apiService = apiService;
+        this.geoService = geoService;
     }
     InGameComponent.prototype.getLocation = function () {
-        var _this = this;
-        // stub
-        navigator.geolocation.getCurrentPosition(function (res) {
-            _this.position = res;
-        });
+        this.geoService.postLocation();
     };
     InGameComponent = __decorate([
         core_1.Component({
-            template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<button (click)=\"getLocation()\">Get Location</button>\n\t\t<h2>{{position}}</h2>\n\t",
+            template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<button class=\"button\" (click)=\"getLocation()\">Get Location</button>\n\t\t<h2>{{position}}</h2>\n\t",
         }), 
-        __metadata('design:paramtypes', [auth_service_1.AuthService])
+        __metadata('design:paramtypes', [auth_service_1.AuthService, api_service_1.ApiService, geo_service_1.GeoService])
     ], InGameComponent);
     return InGameComponent;
 }());

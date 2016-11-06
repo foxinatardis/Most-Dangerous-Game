@@ -4,8 +4,17 @@ var express = require("express"),
 	bodyParser = require("body-parser"),
 	session = require("express-session");
 var mongoose = require("mongoose");
+var fs = require("fs");
+var https = require("https");
+var options = {
+	key:fs.readFileSync("./server.key"),
+	cert: fs.readFileSync("./server.crt")
+};
+httpsPort = 8001;
 
 var app = express();
+
+
 const PORT = process.env.PORT || 8000;
 
 mongoose.connect("mongodb://localhost");
@@ -124,12 +133,13 @@ app.post("/api/newGame", (req, res) => {
 
 app.get("/api/game", (req, res) => {
 	// todo add verification
-	var userEmail = req.session.email || "me@me.me";
+	var userEmail = req.session.user.email;
 	User.find({email: userEmail}, (err, data) => {
 		var gameId = data[0].currentGame;
 		var admin = data[0].gameAdmin;
 		Game.find({_id: gameId}, (err, data) => {
 			var players = data[0].players;
+			req.session.gameId = gameId;
 			res.send({
 				gameId: gameId,
 				gameAdmin: admin,
@@ -142,8 +152,60 @@ app.get("/api/game", (req, res) => {
 app.post("/api/launch", (req, res) => {
 	// todo add verification
 	// todo write method for launching the game
-	console.log(req.body);
-	res.send({success: "success"});
+	console.log("/api/launch req.body: ", req.body, req.session.gameId);
+	Game.findById(
+		req.session.gameId,
+		"player",
+		(err, data) => {
+			if (err) {
+				console.log("Error at /api/launch Game.findById: ", err);
+				res.status(500);
+				res.send({message: "error launching game... Sorry"});
+			}
+			var shuffle = data[0].players;
+			var j, x, i;
+			for (i = shuffle.length; i; i--) {
+				j = Math.floor(Math.random() * i);
+				x = shuffle[i - 1];
+				shuffle[i - 1] = shuffle[j];
+				shuffle[j] = x;
+			}
+			Game.findByIdAndUpdate(
+				req.session.gameId,
+				{players: shuffle},
+				{new: true},
+				(err, data) => {
+					if (err) {
+						console.log("error at /api/launch Game.findByIdAndUpdate: ", err);
+						res.status(500);
+						res.send({message: "Terribly sorry but I encountered an error whilst attempting to launch yur game."});
+					}
+					res.send({success: true});
+				}
+			);
+		}
+	);
+
+});
+
+app.post("/api/location", (req, res) => {
+	// todo add verifiaction
+	console.log(req.body.location);
+	User.findOneAndUpdate(
+		{email: req.session.user.email},
+		{lastLatitude: req.body.location.latitude,
+		lastLongitude: req.body.location.longitude,
+		lastAccuracy: req.body.location.accuracy,
+		lastTimestamp: req.body.location.timestamp},
+		{new: true},
+		(err, data) => {
+			if (err) {
+				console.log("location post error from User.findOneAndUpdate: " + err);
+				res.send({error: true, message: "failed to update location"});
+			}
+			res.send({message: "successfully posted location!"});
+		}
+	);
 });
 
 app.use(express.static(__dirname + '/public'));
@@ -163,3 +225,5 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
 	console.log("Server started on Port: " + PORT);
 });
+
+var secureServer = https.createServer(options, app).listen(httpsPort);

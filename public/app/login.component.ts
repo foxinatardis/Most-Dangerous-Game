@@ -69,14 +69,12 @@ export class LoginComponent {
 	};
 
 	private sendRegistration() {
-
 		this.apiService.postObs("/api/signup", this.loginUser).subscribe((res) => {
 			if (res.error) {
 				// todo handle error
 			} else {
 				this.router.navigate(["/login"]);
 			}
-
 		});
 	};
 
@@ -85,9 +83,10 @@ export class LoginComponent {
 			this.test = "login clicked";
 			if (res.loggedIn) {
 				this.authService.user = res.userData[0];
+				console.log(this.authService.user);
 				if (this.authService.user.currentGame) {
-					if (this.authService.user.inProgress) {
-						this.router.navigate(["/"]); // todo add inProgress component
+					if (this.authService.user.inGame) {
+						this.router.navigate(["/in-game"]);
 					} else {
 						this.router.navigate(["/enter-game"]);
 					}

@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ApiService } from "./api.service";
 import { Router } from "@angular/router";
 import { AuthService } from "./auth.service";
+import { GeoService } from "./geo.service";
 
 @Component({
 
@@ -24,7 +25,8 @@ export class EnterGameComponent implements OnInit {
 	constructor(
 		private apiService: ApiService,
 		private router: Router,
-		private authService: AuthService
+		private authService: AuthService,
+		private geoService: GeoService
 	) {}
 
 	gameAdmin: boolean;
@@ -50,6 +52,8 @@ export class EnterGameComponent implements OnInit {
 			this.gameAdmin = response.gameAdmin;
 			this.players = response.players;
 		});
+
+		this.geoService.postLocation();
 	}
 
 }

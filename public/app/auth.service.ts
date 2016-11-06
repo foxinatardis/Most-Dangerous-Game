@@ -5,13 +5,13 @@ import { CanActivate, RouterStateSnapshot, ActivatedRouteSnapshot, Router } from
 export class AuthService implements CanActivate {
 	constructor(private router: Router) { }
 
-	// public user = undefined;
+	public user = undefined;
 
-	public user = { // todo take this out for live data
-		score: 0,
-		currentGame: "",
-		inProgress: ""
-	};
+	// public user = { // todo take this out for live data
+	// 	score: 0,
+	// 	currentGame: "",
+	// 	inProgress: ""
+	// };
 
 	public canActivate(
 		route: ActivatedRouteSnapshot,
