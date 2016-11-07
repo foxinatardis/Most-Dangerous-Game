@@ -12,8 +12,9 @@ import { GeoService } from "./geo.service";
 			<h2>Target: {{targetName}}</h2>
 		</div>
 		<div>
-			<h3>Distance to Target: {{distanceToTarget}}</h3>
-			<h3>Accuracy: {{accuracy}}</h3>
+			<h3>Distance to Target: {{distanceToTarget}} meters</h3>
+			<h3>Direction to Target: {{bearing}} degrees</h3>
+			<h3 [style.color]="resolution()">Accuracy: {{accuracy}} meters</h3>
 		</div>
 		<div *ngIf="error">
 			<h1 class="error">{{errorMessage}}</h1>
@@ -26,21 +27,57 @@ export class InGameComponent {
 		private authService: AuthService,
 		private apiService: ApiService,
 		private geoService: GeoService
-	) {  }
+	) { }
 
 	targetName: string;
 	error: boolean = false;
 	errorMessage: string;
-	myLocation: any;
+	myLong: number;
+	myLat: number;
+	myTime: number;
+	myAcc: number;
+	targetLong: number;
+	targetLat: number;
+	targetTime: number;
+	targetAcc: number;
 	targetLocation: any;
 	distanceToTarget: number;
 	directionToTarget: number;
-	accuracy: number = -1;
-
-	// todo fix so distance gets calculated and displayed to the user
+	accuracy: number;
+	bearing: number;
 
 	ngOnInit() {
-		this.myLocation = this.geoService.getLocation();
+		this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
+	};
+
+	update() {
+		if (this.myLat && this.targetLat) {
+			this.distanceToTarget = this.getDistance(this.myLong, this.myLat, this.targetLong, this.targetLat);
+			this.accuracy = this.myAcc + this.targetAcc;
+			this.bearing = Math.floor(this.getBearing(this.myLong, this.myLat, this.targetLong, this.targetLat));
+			console.log("requirements met");
+		}
+		console.log("update() invoked");
+		console.log("target lat, long, acc", this.targetLat, this.targetLong, this.targetAcc);
+		console.log("my lat, long, acc", this.myLat, this.myLong, this.myAcc);
+	}
+
+	resolution() {
+		if (this.accuracy > 100) {
+			return "red";
+		} else if (this.accuracy > 50) {
+			return "yellow";
+		} else {
+			return "green";
+		}
+	}
+
+	positionSuccess(pos) {
+		let coor = pos.coords;
+		this.myLong = coor.longitude;
+		this.myLat = coor.latitude;
+		this.myTime = pos.timestamp;
+		this.myAcc = coor.accuracy;
 
 		this.apiService.getObs("/api/target").subscribe((res) => {
 			if (res.error) {
@@ -53,44 +90,60 @@ export class InGameComponent {
 						this.error = true;
 						this.errorMessage = res.message;
 					} else {
-						this.targetLocation = {
-							latitude: res.lastLatitude,
-							longitude: res.lastLongitude,
-							accuracy: res.lastAccuracy,
-							timestamp: res.lastTimestamp
-						};
-						this.accuracy = res.accuracy;
+						console.log("res is: ", res);
+						this.targetLat = res.latitude;
+						this.targetLong = res.longitude;
+						this.targetAcc = res.accuracy;
+						this.targetTime = res.timestamp;
+						this.update();
 					}
 				});
+
 			}
 		});
-	};
+	}
 
-	ngOnChanges() {
-		if (this.myLocation && this.targetLocation) {
-			this.distanceToTarget = this.getDistance(this.myLocation, this.targetLocation);
-			this.accuracy = this.myLocation.accuracy + this.targetLocation.accuracy;
-			console.log("requirements met");
-		}
-		console.log("callDistance invoked");
+	positionErr(err) {
+		console.log(err);
 	}
 
 	rad(x) {
 		return x * Math.PI / 180;
 	};
+	deg(x) {
+		return x * (180 / Math.PI);
+	};
 
-	getDistance(p1, p2) {
+	getDistance(mLong, mLat, tLong, tLat) {
 		var R = 6378137; // Earth’s mean radius in meter
-		var dLat = this.rad(p2.latitude - p1.latitude);
-		var dLong = this.rad(p2.longitude - p1.longitude);
+		var dLat = this.rad(tLat - mLat);
+		var dLong = this.rad(tLong - mLong);
 		var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-			Math.cos(this.rad(p1.latitude)) * Math.cos(this.rad(p2.latitude)) *
+			Math.cos(this.rad(mLat)) * Math.cos(this.rad(tLat)) *
 			Math.sin(dLong / 2) * Math.sin(dLong / 2);
 		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 		var d = R * c;
 		return d; // returns the distance in meter
 	};
 
+	getBearing(startLong, startLat, endLong, endLat) {
+		startLat = this.rad(startLat);
+		startLong = this.rad(startLong);
+		endLat = this.rad(endLat);
+		endLong = this.rad(endLong);
 
+		var dLong = endLong - startLong;
+
+		var dPhi = Math.log(Math.tan(endLat / 2.0 + Math.PI / 4.0) / Math.tan(startLat / 2.0 + Math.PI / 4.0));
+		if (Math.abs(dLong) > Math.PI) {
+			if (dLong > 0.0) {
+				dLong = -(2.0 * Math.PI - dLong);
+			} else {
+				dLong = (2.0 * Math.PI + dLong);
+			}
+		}
+
+		return (this.deg(Math.atan2(dLong, dPhi)) + 360.0) % 360.0;
+	}
 
 }

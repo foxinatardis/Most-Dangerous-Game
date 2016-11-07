@@ -18,12 +18,40 @@ var InGameComponent = (function () {
         this.apiService = apiService;
         this.geoService = geoService;
         this.error = false;
-        this.accuracy = -1;
     }
-    // todo fix so distance gets calculated and displayed to the user
     InGameComponent.prototype.ngOnInit = function () {
+        this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
+    };
+    ;
+    InGameComponent.prototype.update = function () {
+        if (this.myLat && this.targetLat) {
+            this.distanceToTarget = this.getDistance(this.myLong, this.myLat, this.targetLong, this.targetLat);
+            this.accuracy = this.myAcc + this.targetAcc;
+            this.bearing = Math.floor(this.getBearing(this.myLong, this.myLat, this.targetLong, this.targetLat));
+            console.log("requirements met");
+        }
+        console.log("update() invoked");
+        console.log("target lat, long, acc", this.targetLat, this.targetLong, this.targetAcc);
+        console.log("my lat, long, acc", this.myLat, this.myLong, this.myAcc);
+    };
+    InGameComponent.prototype.resolution = function () {
+        if (this.accuracy > 100) {
+            return "red";
+        }
+        else if (this.accuracy > 50) {
+            return "yellow";
+        }
+        else {
+            return "green";
+        }
+    };
+    InGameComponent.prototype.positionSuccess = function (pos) {
         var _this = this;
-        this.myLocation = this.geoService.getLocation();
+        var coor = pos.coords;
+        this.myLong = coor.longitude;
+        this.myLat = coor.latitude;
+        this.myTime = pos.timestamp;
+        this.myAcc = coor.accuracy;
         this.apiService.getObs("/api/target").subscribe(function (res) {
             if (res.error) {
                 _this.error = true;
@@ -37,48 +65,62 @@ var InGameComponent = (function () {
                         _this.errorMessage = res.message;
                     }
                     else {
-                        _this.targetLocation = {
-                            latitude: res.lastLatitude,
-                            longitude: res.lastLongitude,
-                            accuracy: res.lastAccuracy,
-                            timestamp: res.lastTimestamp
-                        };
-                        _this.accuracy = res.accuracy;
+                        console.log("res is: ", res);
+                        _this.targetLat = res.latitude;
+                        _this.targetLong = res.longitude;
+                        _this.targetAcc = res.accuracy;
+                        _this.targetTime = res.timestamp;
+                        _this.update();
                     }
                 });
             }
         });
     };
-    ;
-    InGameComponent.prototype.ngOnChanges = function () {
-        if (this.myLocation && this.targetLocation) {
-            this.distanceToTarget = this.getDistance(this.myLocation, this.targetLocation);
-            this.accuracy = this.myLocation.accuracy + this.targetLocation.accuracy;
-            console.log("requirements met");
-        }
-        console.log("callDistance invoked");
+    InGameComponent.prototype.positionErr = function (err) {
+        console.log(err);
     };
     InGameComponent.prototype.rad = function (x) {
         return x * Math.PI / 180;
     };
     ;
-    InGameComponent.prototype.getDistance = function (p1, p2) {
+    InGameComponent.prototype.deg = function (x) {
+        return x * (180 / Math.PI);
+    };
+    ;
+    InGameComponent.prototype.getDistance = function (mLong, mLat, tLong, tLat) {
         var R = 6378137; // Earth’s mean radius in meter
-        var dLat = this.rad(p2.latitude - p1.latitude);
-        var dLong = this.rad(p2.longitude - p1.longitude);
+        var dLat = this.rad(tLat - mLat);
+        var dLong = this.rad(tLong - mLong);
         var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(this.rad(p1.latitude)) * Math.cos(this.rad(p2.latitude)) *
+            Math.cos(this.rad(mLat)) * Math.cos(this.rad(tLat)) *
                 Math.sin(dLong / 2) * Math.sin(dLong / 2);
         var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         var d = R * c;
         return d; // returns the distance in meter
     };
     ;
+    InGameComponent.prototype.getBearing = function (startLong, startLat, endLong, endLat) {
+        startLat = this.rad(startLat);
+        startLong = this.rad(startLong);
+        endLat = this.rad(endLat);
+        endLong = this.rad(endLong);
+        var dLong = endLong - startLong;
+        var dPhi = Math.log(Math.tan(endLat / 2.0 + Math.PI / 4.0) / Math.tan(startLat / 2.0 + Math.PI / 4.0));
+        if (Math.abs(dLong) > Math.PI) {
+            if (dLong > 0.0) {
+                dLong = -(2.0 * Math.PI - dLong);
+            }
+            else {
+                dLong = (2.0 * Math.PI + dLong);
+            }
+        }
+        return (this.deg(Math.atan2(dLong, dPhi)) + 360.0) % 360.0;
+    };
     return InGameComponent;
 }());
 InGameComponent = __decorate([
     core_1.Component({
-        template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2>Target: {{targetName}}</h2>\n\t\t</div>\n\t\t<div>\n\t\t\t<h3>Distance to Target: {{distanceToTarget}}</h3>\n\t\t\t<h3>Accuracy: {{accuracy}}</h3>\n\t\t</div>\n\t\t<div *ngIf=\"error\">\n\t\t\t<h1 class=\"error\">{{errorMessage}}</h1>\n\t\t\t{{targetLocation}}\n\t\t</div>\n\t",
+        template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2>Target: {{targetName}}</h2>\n\t\t</div>\n\t\t<div>\n\t\t\t<h3>Distance to Target: {{distanceToTarget}} meters</h3>\n\t\t\t<h3>Direction to Target: {{bearing}} degrees</h3>\n\t\t\t<h3 [style.color]=\"resolution()\">Accuracy: {{accuracy}} meters</h3>\n\t\t</div>\n\t\t<div *ngIf=\"error\">\n\t\t\t<h1 class=\"error\">{{errorMessage}}</h1>\n\t\t\t{{targetLocation}}\n\t\t</div>\n\t",
     }),
     __metadata("design:paramtypes", [auth_service_1.AuthService,
         api_service_1.ApiService,

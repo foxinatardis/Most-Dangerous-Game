@@ -22,8 +22,8 @@ var GeoService = (function () {
     GeoService.prototype.postLocation = function () {
         navigator.geolocation.getCurrentPosition(this.postPositionSuccess.bind(this), this.handlePositionError.bind(this), this.positionOptions);
     };
-    GeoService.prototype.getLocation = function () {
-        navigator.geolocation.getCurrentPosition(this.getPositionSuccess.bind(this), this.handlePositionError.bind(this), this.positionOptions);
+    GeoService.prototype.getLocation = function (success, failure) {
+        navigator.geolocation.getCurrentPosition(success, failure, this.positionOptions);
     };
     GeoService.prototype.postPositionSuccess = function (pos) {
         var coor = pos.coords;

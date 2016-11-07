@@ -13,10 +13,10 @@ export class GeoService {
 		);
 	}
 
-	getLocation() {
+	getLocation(success, failure) {
 		navigator.geolocation.getCurrentPosition(
-			this.getPositionSuccess.bind(this),
-			this.handlePositionError.bind(this),
+			success,
+			failure,
 			this.positionOptions
 		);
 	}
