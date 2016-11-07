@@ -95,7 +95,7 @@ app.post("/api/login", (req, res) => {
 });
 
 app.post("/api/newGame", (req, res) => {
-//todo: add verification
+	//todo: add verification
 	var name = req.session.user.name;
 	var newGame = new Game({
 		players: [name]
@@ -214,8 +214,23 @@ app.post("/api/launch", (req, res) => {
 						console.log("error at /api/launch Game.findByIdAndUpdate: ", err);
 						res.status(500);
 						res.send({error: true, message: "Terribly sorry but I encountered an error whilst attempting to launch yur game."});
+						return;
 					}
-					res.send({success: true});
+					User.update(
+						{name: {$in: shuffle}},
+						{inGame: true},
+						{multi: true},
+						(err, data) => {
+							if (err) {
+								console.log("error with multiUser update /api/launch: ", err);
+								res.status(500);
+								res.send({error: true, message: "Error launching game"});
+								return;
+							}
+							console.log("Data from multiUser update: ", data);
+							res.send({success: true});
+						}
+					);
 				}
 			);
 		}
@@ -225,7 +240,7 @@ app.post("/api/launch", (req, res) => {
 
 app.get("/api/target", (req, res) => {
 	Game.findById(
-		req.session.gameId,
+		req.session.user.currentGame,
 		(err, data) => {
 			if (err) {
 				console.log("error at get:/api/target Game.findById: ", err);
@@ -272,15 +287,38 @@ app.get("/api/target", (req, res) => {
 	);
 });
 
+app.get("/api/target/location", (req, res) => {
+	User.findOne(
+		{name: req.session.user.currentTarget},
+		"lastLatitude lastLongitude lastAccuracy lastTimestamp",
+		(err, data) => {
+			if (err) {
+				console.log("error in api/target/loction at User.findOne", err);
+				res.status(500);
+				res.send({error: true, message: "failed to find target location"});
+				return;
+			}
+			res.send({
+				latitude: data.lastLatitude,
+				longitude: data.lastLongitude,
+				accuracy: data.lastAccuracy,
+				timestamp: data.lastTimestamp
+			});
+		}
+	);
+});
+
 app.post("/api/location", (req, res) => {
 	// todo add verifiaction
 	console.log(req.body.location);
 	User.findOneAndUpdate(
 		{email: req.session.user.email},
-		{lastLatitude: req.body.location.latitude,
-		lastLongitude: req.body.location.longitude,
-		lastAccuracy: req.body.location.accuracy,
-		lastTimestamp: req.body.location.timestamp},
+		{
+			lastLatitude: req.body.location.latitude,
+			lastLongitude: req.body.location.longitude,
+			lastAccuracy: req.body.location.accuracy,
+			lastTimestamp: req.body.location.timestamp
+		},
 		{new: true},
 		(err, data) => {
 			if (err) {

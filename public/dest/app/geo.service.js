@@ -58,11 +58,11 @@ var GeoService = (function () {
     GeoService.prototype.handlePositionError = function (err) {
         console.warn('ERROR(' + err.code + '): ' + err.message);
     };
-    GeoService = __decorate([
-        core_1.Injectable(), 
-        __metadata('design:paramtypes', [api_service_1.ApiService])
-    ], GeoService);
     return GeoService;
 }());
+GeoService = __decorate([
+    core_1.Injectable(),
+    __metadata("design:paramtypes", [api_service_1.ApiService])
+], GeoService);
 exports.GeoService = GeoService;
 //# sourceMappingURL=geo.service.js.map

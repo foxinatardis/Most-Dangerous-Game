@@ -7,13 +7,21 @@ export class GeoService {
 
 	postLocation() {
 		navigator.geolocation.getCurrentPosition(
-			this.handlePositionSuccess.bind(this),
+			this.postPositionSuccess.bind(this),
 			this.handlePositionError.bind(this),
 			this.positionOptions
 		);
 	}
 
-	handlePositionSuccess(pos) {
+	getLocation() {
+		navigator.geolocation.getCurrentPosition(
+			this.getPositionSuccess.bind(this),
+			this.handlePositionError.bind(this),
+			this.positionOptions
+		);
+	}
+
+	postPositionSuccess(pos) {
 		let coor = pos.coords;
 		let time = pos.timestamp;
 
@@ -33,6 +41,18 @@ export class GeoService {
 			}
 			console.log(res.message);
 		});
+	}
+
+	getPositionSuccess(pos) {
+		let coor = pos.coords;
+		let time = pos.timestamp;
+		console.log(time);
+		return	{
+					longitude: coor.longitude,
+					latitude: coor.latitude,
+					accuracy: coor.accuracy,
+					timestamp: time
+				};
 	}
 
 	handlePositionError(err) {

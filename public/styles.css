@@ -23,6 +23,10 @@ nav {
 
 }
 
+.error {
+	color: red;
+}
+
 .for-nav {
 	width: 50%;
 	box-sizing: border-box;
