@@ -4,18 +4,9 @@ var express = require("express"),
 	bodyParser = require("body-parser"),
 	session = require("express-session");
 var mongoose = require("mongoose");
-var fs = require("fs");
-var https = require("https");
-var options = {
-	key:fs.readFileSync("./server.key"),
-	cert: fs.readFileSync("./server.crt")
-};
-httpsPort = 8001;
 
 var app = express();
 
-
-const PORT = process.env.PORT || 8000;
 
 mongoose.connect("mongodb://localhost");
 
@@ -344,8 +335,10 @@ app.use((err, req, res, next) => {
 	res.send("500 Error: Killed by ninjas");
 });
 
-app.listen(PORT, () => {
-	console.log("Server started on Port: " + PORT);
-});
-
-var secureServer = https.createServer(options, app).listen(httpsPort);
+require('letsencrypt-express').create({
+	server: 'staging',
+	email: 'abellive@me.com',
+	agreeTos: true,
+	approveDomains: [ 'adamb.me' ],
+	app: app
+}).listen(8000, 8443);

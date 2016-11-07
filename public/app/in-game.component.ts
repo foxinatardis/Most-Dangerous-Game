@@ -18,7 +18,6 @@ import { GeoService } from "./geo.service";
 		</div>
 		<div *ngIf="error">
 			<h1 class="error">{{errorMessage}}</h1>
-			{{targetLocation}}
 		</div>
 	`,
 })

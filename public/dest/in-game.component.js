@@ -118,7 +118,7 @@ var InGameComponent = (function () {
     };
     InGameComponent = __decorate([
         core_1.Component({
-            template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2>Target: {{targetName}}</h2>\n\t\t</div>\n\t\t<div>\n\t\t\t<h3>Distance to Target: {{distanceToTarget}} meters</h3>\n\t\t\t<h3>Direction to Target: {{bearing}} degrees</h3>\n\t\t\t<h3 [style.color]=\"resolution()\">Accuracy: {{accuracy}} meters</h3>\n\t\t</div>\n\t\t<div *ngIf=\"error\">\n\t\t\t<h1 class=\"error\">{{errorMessage}}</h1>\n\t\t\t{{targetLocation}}\n\t\t</div>\n\t",
+            template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2>Target: {{targetName}}</h2>\n\t\t</div>\n\t\t<div>\n\t\t\t<h3>Distance to Target: {{distanceToTarget}} meters</h3>\n\t\t\t<h3>Direction to Target: {{bearing}} degrees</h3>\n\t\t\t<h3 [style.color]=\"resolution()\">Accuracy: {{accuracy}} meters</h3>\n\t\t</div>\n\t\t<div *ngIf=\"error\">\n\t\t\t<h1 class=\"error\">{{errorMessage}}</h1>\n\t\t</div>\n\t",
         }), 
         __metadata('design:paramtypes', [auth_service_1.AuthService, api_service_1.ApiService, geo_service_1.GeoService])
     ], InGameComponent);
