@@ -7,6 +7,14 @@ var mongoose = require("mongoose");
 
 var app = express();
 
+var fs = require("fs");
+var https = require("https");
+var options = {
+	key:fs.readFileSync("./server.key"),
+	cert: fs.readFileSync("./server.crt")
+};
+httpsPort = 8001;
+
 
 mongoose.connect("mongodb://localhost");
 
@@ -270,7 +278,30 @@ app.get("/api/target", (req, res) => {
 							return;
 						}
 						console.log(data.currentTarget);
-						res.send({targetName: data.currentTarget});
+						var targetName = data.currentTarget;
+						User.findOne(
+							{name: targetName},
+							"lastLatitude lastLongitude lastAccuracy lastTimestamp",
+							(err, data) => {
+								if (err) {
+									console.log("error in api/target/loction at User.findOne", err);
+									res.status(500);
+									res.send({error: true, message: "failed to find target location", targetName: targetName});
+									return;
+								}
+								if (!data.lastLongitude) {
+									res.send({message: "Target not found.", targetName: targetName});
+									return;
+								}
+								res.send({
+									latitude: data.lastLatitude,
+									longitude: data.lastLongitude,
+									accuracy: data.lastAccuracy,
+									timestamp: data.lastTimestamp,
+									targetName: targetName
+								});
+							}
+						);
 					}
 				);
 			}
@@ -341,10 +372,12 @@ app.use((err, req, res, next) => {
 
 
 
-require('letsencrypt-express').create({
-	server: 'staging',
-	email: 'abellive@me.com',
-	agreeTos: true,
-	approveDomains: [ 'adamb.me' ],
-	app: app
-}).listen(8000, 8443);
+var secureServer = https.createServer(options, app).listen(httpsPort);
+
+// require('letsencrypt-express').create({
+// 	server: 'staging',
+// 	email: 'abellive@me.com',
+// 	agreeTos: true,
+// 	approveDomains: [ 'adamb.me' ],
+// 	app: app
+// }).listen(8000, 8443);

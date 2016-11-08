@@ -56,23 +56,18 @@ var InGameComponent = (function () {
             if (res.error) {
                 _this.error = true;
                 _this.errorMessage = res.message;
+                if (res.targetName) {
+                    _this.targetName = res.targetName;
+                }
             }
             else {
                 _this.targetName = res.targetName;
-                _this.apiService.getObs("/api/target/location").subscribe(function (res) {
-                    if (res.error) {
-                        _this.error = true;
-                        _this.errorMessage = res.message;
-                    }
-                    else {
-                        console.log("res is: ", res);
-                        _this.targetLat = res.latitude;
-                        _this.targetLong = res.longitude;
-                        _this.targetAcc = res.accuracy;
-                        _this.targetTime = res.timestamp;
-                        _this.update();
-                    }
-                });
+                console.log("res is: ", res);
+                _this.targetLat = res.latitude;
+                _this.targetLong = res.longitude;
+                _this.targetAcc = res.accuracy;
+                _this.targetTime = res.timestamp;
+                _this.update();
             }
         });
     };

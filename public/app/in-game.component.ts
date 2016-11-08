@@ -82,24 +82,20 @@ export class InGameComponent {
 			if (res.error) {
 				this.error = true;
 				this.errorMessage = res.message;
+				if (res.targetName) {
+					this.targetName = res.targetName;
+				}
 			} else {
 				this.targetName = res.targetName;
-				this.apiService.getObs("/api/target/location").subscribe((res) => {
-					if (res.error) {
-						this.error = true;
-						this.errorMessage = res.message;
-					} else {
-						console.log("res is: ", res);
-						this.targetLat = res.latitude;
-						this.targetLong = res.longitude;
-						this.targetAcc = res.accuracy;
-						this.targetTime = res.timestamp;
-						this.update();
-					}
-				});
-
+				console.log("res is: ", res);
+				this.targetLat = res.latitude;
+				this.targetLong = res.longitude;
+				this.targetAcc = res.accuracy;
+				this.targetTime = res.timestamp;
+				this.update();
 			}
 		});
+
 	}
 
 	positionErr(err) {
