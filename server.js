@@ -309,7 +309,7 @@ app.get("/api/target", (req, res) => {
 	);
 });
 
-app.get("/api/target/location", (req, res) => {
+app.get("/api/target/location", (req, res) => { // might not need this api
 	User.findOne(
 		{name: req.session.user.currentTarget},
 		"lastLatitude lastLongitude lastAccuracy lastTimestamp",
@@ -352,6 +352,35 @@ app.post("/api/location", (req, res) => {
 				res.send({error: true, message: "failed to update location"});
 			}
 			res.send({message: "successfully posted location!"});
+		}
+	);
+});
+
+app.post("/api/update-location", (req, res) => {
+	console.log("hit /api/update-location");
+	User.findOneAndUpdate(
+		{email: req.session.user.name},
+		{
+			lastLatitude: req.body.latitude,
+			lastLongitude: req.body.longitude,
+			lastAccuracy: req.body.accuracy,
+			lastTimestamp: req.body.time,
+			$inc: {score: 1}
+		},
+		{new: true},
+		(err, data) => {
+			if (err) {
+				console.log("error in /api/update-location at User.findOneAndUpdate: ", err);
+				res.status(500);
+				res.send({error: true, message: "Failed to update score... oops"});
+				return;
+			}
+			if (!data) {
+				console.log("error in api/update-location, no data!");
+				res.status(500);
+				res.send({error: true, message: "Who are you? Who Who? Who Who?"});
+			}
+			res.send({score: data.score});
 		}
 	);
 });

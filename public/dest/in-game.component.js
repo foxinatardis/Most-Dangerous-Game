@@ -21,6 +21,8 @@ var InGameComponent = (function () {
     }
     InGameComponent.prototype.ngOnInit = function () {
         this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
+        this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
+        setInterval(this.sendLocation.bind(this), 5000);
     };
     ;
     InGameComponent.prototype.update = function () {
@@ -44,6 +46,22 @@ var InGameComponent = (function () {
         else {
             return "green";
         }
+    };
+    InGameComponent.prototype.sendLocation = function () {
+        var _this = this;
+        console.log("sendLocation()");
+        var toSend = {
+            latitude: this.myLat,
+            longitude: this.myLong,
+            accuracy: this.myAcc,
+            time: this.myTime
+        };
+        this.apiService.postObs("/api/update-location", toSend).subscribe(function (res) {
+            if (res) {
+                _this.authService.user.score = res.score;
+            }
+            console.log("message from api/update-location: ", res);
+        });
     };
     InGameComponent.prototype.positionSuccess = function (pos) {
         var _this = this;
@@ -73,6 +91,14 @@ var InGameComponent = (function () {
     };
     InGameComponent.prototype.positionErr = function (err) {
         console.log(err);
+    };
+    InGameComponent.prototype.iMovedSuccess = function (pos) {
+        var coor = pos.coords;
+        this.myLong = coor.longitude;
+        this.myLat = coor.latitude;
+        this.myTime = pos.timestamp;
+        this.myAcc = coor.accuracy;
+        this.update();
     };
     InGameComponent.prototype.rad = function (x) {
         return x * Math.PI / 180;
@@ -113,7 +139,7 @@ var InGameComponent = (function () {
     };
     InGameComponent = __decorate([
         core_1.Component({
-            template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2>Target: {{targetName}}</h2>\n\t\t</div>\n\t\t<div>\n\t\t\t<h3>Distance to Target: {{distanceToTarget}} meters</h3>\n\t\t\t<h3>Direction to Target: {{bearing}} degrees</h3>\n\t\t\t<h3 [style.color]=\"resolution()\">Accuracy: {{accuracy}} meters</h3>\n\t\t</div>\n\t\t<div *ngIf=\"error\">\n\t\t\t<h1 class=\"error\">{{errorMessage}}</h1>\n\t\t</div>\n\t",
+            template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2>Target: {{targetName}}</h2>\n\t\t</div>\n\t\t<div>\n\t\t\t<h3>Distance to Target: {{distanceToTarget}} meters</h3>\n\t\t\t<h3>Direction to Target: {{bearing}} degrees</h3>\n\t\t\t<h3 [style.color]=\"resolution()\">Accuracy: {{accuracy}} meters</h3>\n\t\t</div>\n\t\t<div *ngIf=\"error\">\n\t\t\t<h1 class=\"error\">{{errorMessage}}</h1>\n\t\t</div>\n\t\t<button class=\"button bottom\">Attack</button>\n\t",
         }), 
         __metadata('design:paramtypes', [auth_service_1.AuthService, api_service_1.ApiService, geo_service_1.GeoService])
     ], InGameComponent);

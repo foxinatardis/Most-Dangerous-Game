@@ -19,6 +19,7 @@ import { GeoService } from "./geo.service";
 		<div *ngIf="error">
 			<h1 class="error">{{errorMessage}}</h1>
 		</div>
+		<button class="button bottom">Attack</button>
 	`,
 })
 export class InGameComponent {
@@ -44,9 +45,12 @@ export class InGameComponent {
 	directionToTarget: number;
 	accuracy: number;
 	bearing: number;
+	locationWatch: any;
 
 	ngOnInit() {
 		this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
+		this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
+		setInterval(this.sendLocation.bind(this), 5000);
 	};
 
 	update() {
@@ -69,6 +73,22 @@ export class InGameComponent {
 		} else {
 			return "green";
 		}
+	}
+
+	sendLocation() {
+		console.log("sendLocation()");
+		let toSend = {
+			latitude: this.myLat,
+			longitude: this.myLong,
+			accuracy: this.myAcc,
+			time: this.myTime
+		};
+		this.apiService.postObs("/api/update-location", toSend).subscribe((res) => {
+			if (res) {
+				this.authService.user.score = res.score;
+			}
+			console.log("message from api/update-location: ", res);
+		});
 	}
 
 	positionSuccess(pos) {
@@ -100,6 +120,15 @@ export class InGameComponent {
 
 	positionErr(err) {
 		console.log(err);
+	}
+
+	iMovedSuccess(pos) {
+		let coor = pos.coords;
+		this.myLong = coor.longitude;
+		this.myLat = coor.latitude;
+		this.myTime = pos.timestamp;
+		this.myAcc = coor.accuracy;
+		this.update();
 	}
 
 	rad(x) {
