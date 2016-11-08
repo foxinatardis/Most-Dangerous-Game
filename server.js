@@ -289,6 +289,10 @@ app.get("/api/target/location", (req, res) => {
 				res.send({error: true, message: "failed to find target location"});
 				return;
 			}
+			if (!data.lastLongitude) {
+				res.send({message: "Target not found."});
+				return;
+			}
 			res.send({
 				latitude: data.lastLatitude,
 				longitude: data.lastLongitude,
@@ -336,7 +340,7 @@ app.use((err, req, res, next) => {
 });
 
 
-"use strict";
+
 require('letsencrypt-express').create({
 	server: 'staging',
 	email: 'abellive@me.com',
