@@ -12,17 +12,20 @@ var core_1 = require("@angular/core");
 var auth_service_1 = require("./auth.service");
 var api_service_1 = require("./api.service");
 var geo_service_1 = require("./geo.service");
+var io = require("socket.io-client");
 var InGameComponent = (function () {
     function InGameComponent(authService, apiService, geoService) {
         this.authService = authService;
         this.apiService = apiService;
         this.geoService = geoService;
         this.error = false;
+        this.gameId = this.authService.user.currentGame;
     }
     InGameComponent.prototype.ngOnInit = function () {
         this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
         this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
-        setInterval(this.sendLocation.bind(this), 5000);
+        setInterval(this.sendLocation.bind(this), 15000);
+        this.socket = io();
     };
     ;
     InGameComponent.prototype.update = function () {
@@ -48,20 +51,22 @@ var InGameComponent = (function () {
         }
     };
     InGameComponent.prototype.sendLocation = function () {
-        var _this = this;
         console.log("sendLocation()");
         var toSend = {
+            gameId: this.gameId,
             latitude: this.myLat,
             longitude: this.myLong,
             accuracy: this.myAcc,
-            time: this.myTime
+            time: this.myTime,
+            currentTarget: this.targetName
         };
-        this.apiService.postObs("/api/update-location", toSend).subscribe(function (res) {
-            if (res) {
-                _this.authService.user.score = res.score;
-            }
-            console.log("message from api/update-location: ", res);
-        });
+        // this.apiService.postObs("/api/update-location", toSend).subscribe((res) => {
+        // 	if (res) {
+        // 		this.authService.user.score = res.score;
+        // 	}
+        // 	console.log("message from api/update-location: ", res);
+        // });
+        this.socket.emit("update-location", JSON.stringify(toSend));
     };
     InGameComponent.prototype.positionSuccess = function (pos) {
         var _this = this;

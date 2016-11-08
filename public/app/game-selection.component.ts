@@ -5,7 +5,7 @@ import { ApiService } from "./api.service";
 	template: `
 		<div *ngIf="start">
 			<h2>Create or Join a Game</h2>
-			<input type="text" placeholder="Existing Game ID" [(ngModel)]="gameId">
+			<input type="text" placeholder="Username of Game Admin" [(ngModel)]="gameId">
 			<div (click)="joinGame()" class="button">
 				<p class="inside-button">Join Game</p>
 			</div>
@@ -15,11 +15,11 @@ import { ApiService } from "./api.service";
 		</div>
 		<div *ngIf="gameCreated">
 			<h2>New Game Created</h2>
-			<p class="styled">Your friends can join your game using the id below.</p>
-			<p class="styled">Game: {{gameId}}</p>
+			<p class="styled">Your friends can join your game by entering your username in the join game field.</p>
+
 		</div>
 		<div *ngIf="gameJoined">
-			<h2>Game {{gameId}} joined successfully!!!</h2>
+			<h2>{{gameId}}'s game joined successfully!!!</h2>
 		</div>
 	`,
 	styles: [`

@@ -2,6 +2,7 @@ import { Component } from "@angular/core";
 import { AuthService } from "./auth.service";
 import { ApiService } from "./api.service";
 import { GeoService } from "./geo.service";
+import * as io from "socket.io-client";
 
 @Component({
 	template: `
@@ -27,7 +28,7 @@ export class InGameComponent {
 		private authService: AuthService,
 		private apiService: ApiService,
 		private geoService: GeoService
-	) { }
+	) {	}
 
 	targetName: string;
 	error: boolean = false;
@@ -46,11 +47,16 @@ export class InGameComponent {
 	accuracy: number;
 	bearing: number;
 	locationWatch: any;
+	gameId: string = this.authService.user.currentGame;
+
+	socket: any;
+
 
 	ngOnInit() {
 		this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
 		this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
-		setInterval(this.sendLocation.bind(this), 5000);
+		setInterval(this.sendLocation.bind(this), 15000);
+		this.socket = io();
 	};
 
 	update() {
@@ -78,17 +84,20 @@ export class InGameComponent {
 	sendLocation() {
 		console.log("sendLocation()");
 		let toSend = {
+			gameId: this.gameId,
 			latitude: this.myLat,
 			longitude: this.myLong,
 			accuracy: this.myAcc,
-			time: this.myTime
+			time: this.myTime,
+			currentTarget: this.targetName
 		};
-		this.apiService.postObs("/api/update-location", toSend).subscribe((res) => {
-			if (res) {
-				this.authService.user.score = res.score;
-			}
-			console.log("message from api/update-location: ", res);
-		});
+		// this.apiService.postObs("/api/update-location", toSend).subscribe((res) => {
+		// 	if (res) {
+		// 		this.authService.user.score = res.score;
+		// 	}
+		// 	console.log("message from api/update-location: ", res);
+		// });
+		this.socket.emit("update-location", JSON.stringify(toSend));
 	}
 
 	positionSuccess(pos) {
