@@ -335,6 +335,8 @@ app.use((err, req, res, next) => {
 	res.send("500 Error: Killed by ninjas");
 });
 
+
+"use strict";
 require('letsencrypt-express').create({
 	server: 'staging',
 	email: 'abellive@me.com',
