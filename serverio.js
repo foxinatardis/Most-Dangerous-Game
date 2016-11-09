@@ -408,47 +408,47 @@ io.on("connection", (socket) => {
 	socket.on("disconnect", () => {
 		console.log("before delete: ", connectedUsers);
 		delete connectedUsers[socket._name];
-		console.log("after: ", connectedUsers);
+		User.findOneAndUpdate(
+			{name: socket._name},
+			{
+				lastLongitude: socket._long,
+				lastLatitude: socket._lat,
+				lastAccuracy: socket._acc,
+				lastTimestamp: socket._time,
+				score: socket._score
+			},
+			(err) => {
+				if (err) {
+					console.log("Err at disconnect with User.findOneAndUpdate: ", err);
+				}
+			}
+		);
 	});
 
-	socket.on("update-location", (message) => {
-		// console.log("hit update-location socket", message);
-		// if (message.targetName && message.latitude) { // todo this seems like a terrible idea
-		// 	User.findOneAndUpdate(
-		// 		{
-		// 			currentTarget: message.targetName
-		// 		},
-		// 		{
-		// 			lastLatitude: message.latitude,
-		// 			lastLongitude: message.longitude,
-		// 			lastAccuracy: message.accuracy,
-		// 			lastTimestamp: message.time,
-		// 			$inc: {score: 5}
-		// 		},
-		// 		(err, data) => {
-		// 			if (err) {
-		// 				console.log("error in socket update-location at User.findOneAndUpdate: ", err);
-		// 			}
-		// 		}
-		// 	);
-		// }
+	socket.on("update-location", (data) => {
+		console.log("hit update-location socket", data);
+		if (data.latitude) {
+			socket._lat = data.latitude;
+			socket._long = data.longitude;
+			socket._time = data.time;
+			socket._acc = data.accuracy;
+			socket._score += 5;
+		}
+		socket.emit("score", socket._score);
+		socket.emit("target online", connectedUsers[socket._targetName]);
 	});
 
 	socket.on("join", (data) => {
-		// data = JSON.parse(data);
-		var theName = data.name;
 		socket._name = data.name;
 		socket._targetName = data.targetName;
 		socket._lat = data.lat;
 		socket._long = data.long;
 		socket._time = data.time;
 		socket._acc = data.acc;
-		connectedUsers[theName] = socket.id;
+		socket._score = data.score;
+		connectedUsers[data.name] = socket.id;
 		console.log("joined");
-		// console.log(connectedUsers);
-		// console.log(socket);
-		// console.log("socket._name: ", socket._name);
-		// console.log(data);
+		socket.emit("target found", connectedUsers[data.targetName]);
 	});
 
 

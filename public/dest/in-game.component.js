@@ -19,14 +19,28 @@ var InGameComponent = (function () {
         this.apiService = apiService;
         this.geoService = geoService;
         this.error = false;
+        this.targetOnline = false;
         this.gameId = this.authService.user.currentGame;
     }
     InGameComponent.prototype.ngOnInit = function () {
+        var _this = this;
         this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
         this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
         setInterval(this.sendLocation.bind(this), 15000);
         this.socket = io();
-        // this.socket.emit("join", this.authService.user.name);
+        this.socket.on("target online", function (data) {
+            console.log("target online", data);
+            if (data) {
+                _this.targetOnline = true;
+            }
+            else {
+                _this.targetOnline = false;
+            }
+        });
+        this.socket.on("score", function (data) {
+            console.log("recieved from 'score': ", data);
+            _this.dataTest = data;
+        });
     };
     ;
     InGameComponent.prototype.update = function () {
@@ -39,6 +53,12 @@ var InGameComponent = (function () {
         console.log("update() invoked");
         console.log("target lat, long, acc", this.targetLat, this.targetLong, this.targetAcc);
         console.log("my lat, long, acc", this.myLat, this.myLong, this.myAcc);
+    };
+    InGameComponent.prototype.online = function () {
+        if (this.targetOnline) {
+            return "green";
+        }
+        return "cornflowerblue";
     };
     InGameComponent.prototype.resolution = function () {
         if (this.accuracy > 100) {
@@ -61,13 +81,7 @@ var InGameComponent = (function () {
             time: this.myTime,
             currentTarget: this.targetName
         };
-        // this.apiService.postObs("/api/update-location", toSend).subscribe((res) => {
-        // 	if (res) {
-        // 		this.authService.user.score = res.score;
-        // 	}
-        // 	console.log("message from api/update-location: ", res);
-        // });
-        this.socket.emit("update-location", JSON.stringify(toSend));
+        this.socket.emit("update-location", toSend);
     };
     InGameComponent.prototype.positionSuccess = function (pos) {
         var _this = this;
@@ -98,10 +112,10 @@ var InGameComponent = (function () {
                     lat: coor.latitude,
                     long: coor.longitude,
                     time: pos.timestamp,
-                    acc: coor.accuracy
+                    acc: coor.accuracy,
+                    score: _this.authService.user.score
                 };
                 _this.socket.emit("join", joinData);
-                console.log(joinData);
             }
         });
     };
@@ -157,7 +171,7 @@ var InGameComponent = (function () {
     };
     InGameComponent = __decorate([
         core_1.Component({
-            template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2>Target: {{targetName}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h3>Distance to Target: {{distanceToTarget}} meters</h3>\n\t\t\t<h3>Direction to Target: {{bearing}} degrees</h3>\n\t\t\t<h3 [style.color]=\"resolution()\">Accuracy: {{accuracy}} meters</h3>\n\t\t</div>\n\t\t<div *ngIf=\"error\">\n\t\t\t<h2 class=\"error\">{{errorMessage}}</h2>\n\t\t</div>\n\t\t<button class=\"button bottom\">Attack</button>\n\t",
+            template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2 [style.color]=\"online()\">Target: {{targetName}}{{dataTest}}</h2>\n\t\t\t<p *ngIf=\"targetOnline\">Target Aquired</p>\n\t\t\t<p *ngIf=\"!targetOnline\">Target Offline</p>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h3>Distance to Target: {{distanceToTarget}} meters</h3>\n\t\t\t<h3>Direction to Target: {{bearing}} degrees</h3>\n\t\t\t<h3 [style.color]=\"resolution()\">Accuracy: {{accuracy}} meters</h3>\n\t\t</div>\n\t\t<div *ngIf=\"error\">\n\t\t\t<h2 class=\"error\">{{errorMessage}}</h2>\n\t\t</div>\n\t\t<button class=\"button bottom\">Attack</button>\n\t",
         }), 
         __metadata('design:paramtypes', [auth_service_1.AuthService, api_service_1.ApiService, geo_service_1.GeoService])
     ], InGameComponent);

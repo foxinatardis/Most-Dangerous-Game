@@ -10,7 +10,9 @@ import * as io from "socket.io-client";
 			<h2>Score: {{this.authService.user.score}}</h2>
 		</div>
 		<div *ngIf="!error">
-			<h2>Target: {{targetName}}</h2>
+			<h2 [style.color]="online()">Target: {{targetName}}{{dataTest}}</h2>
+			<p *ngIf="targetOnline">Target Aquired</p>
+			<p *ngIf="!targetOnline">Target Offline</p>
 		</div>
 		<div *ngIf="!error">
 			<h3>Distance to Target: {{distanceToTarget}} meters</h3>
@@ -45,6 +47,7 @@ export class InGameComponent {
 	targetTime: number;
 	targetAcc: number;
 	targetLocation: any;
+	targetOnline: boolean = false;
 
 	distanceToTarget: number;
 	directionToTarget: number;
@@ -55,13 +58,29 @@ export class InGameComponent {
 	gameId: string = this.authService.user.currentGame;
 	socket: any;
 
+	dataTest: any;
+
 
 	ngOnInit() {
 		this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
 		this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
 		setInterval(this.sendLocation.bind(this), 15000);
 		this.socket = io();
-		// this.socket.emit("join", this.authService.user.name);
+		this.socket.on("target online", (data) => {
+			console.log("target online", data);
+			if (data) {
+				this.targetOnline = true;
+			} else {
+				this.targetOnline = false;
+			}
+		});
+
+		this.socket.on("score", (data) => {
+			console.log("recieved from 'score': ", data);
+			this.dataTest = data;
+		});
+
+
 	};
 
 	update() {
@@ -76,6 +95,12 @@ export class InGameComponent {
 		console.log("my lat, long, acc", this.myLat, this.myLong, this.myAcc);
 	}
 
+
+	online() {
+		if (this.targetOnline) {
+			return "green";
+		} return "cornflowerblue";
+	}
 	resolution() {
 		if (this.accuracy > 100) {
 			return "red";
@@ -96,13 +121,7 @@ export class InGameComponent {
 			time: this.myTime,
 			currentTarget: this.targetName
 		};
-		// this.apiService.postObs("/api/update-location", toSend).subscribe((res) => {
-		// 	if (res) {
-		// 		this.authService.user.score = res.score;
-		// 	}
-		// 	console.log("message from api/update-location: ", res);
-		// });
-		this.socket.emit("update-location", JSON.stringify(toSend));
+		this.socket.emit("update-location", toSend);
 	}
 
 	positionSuccess(pos) {
@@ -133,10 +152,10 @@ export class InGameComponent {
 					lat: coor.latitude,
 					long: coor.longitude,
 					time: pos.timestamp,
-					acc: coor.accuracy
+					acc: coor.accuracy,
+					score: this.authService.user.score
 				};
 				this.socket.emit("join", joinData);
-				console.log(joinData);
 			}
 		});
 
@@ -145,7 +164,7 @@ export class InGameComponent {
 	positionErr(err) {
 		console.log(err);
 		this.error = true;
-		this.errorMessage = "Sorry, something went wrong. Please reload and try again."
+		this.errorMessage = "Sorry, something went wrong. Please reload and try again.";
 	}
 
 	iMovedSuccess(pos) {
