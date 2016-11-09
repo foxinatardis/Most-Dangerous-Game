@@ -22,7 +22,8 @@ import * as io from "socket.io-client";
 		<div *ngIf="error">
 			<h2 class="error">{{errorMessage}}</h2>
 		</div>
-		<button class="button bottom">Attack</button>
+		<button *ngIf="!takingAim" class="button bottom" (click)="takeAim()">Take Aim</button>
+		<button *ngIf="takingAim" class="button bottom">Attack</button>
 	`,
 })
 export class InGameComponent {
@@ -32,7 +33,7 @@ export class InGameComponent {
 		private geoService: GeoService
 	) {	}
 
-
+	takingAim: boolean;
 	error: boolean = false;
 	errorMessage: string;
 
@@ -55,6 +56,7 @@ export class InGameComponent {
 	bearing: number;
 
 	locationWatch: any;
+	rapid: any;
 	gameId: string = this.authService.user.currentGame;
 	socket: any;
 
@@ -67,35 +69,35 @@ export class InGameComponent {
 		setInterval(this.sendLocation.bind(this), 15000);
 		this.socket = io();
 		this.socket.on("target online", (data) => {
-			console.log("target online", data);
+			console.log("target online: ", data);
 			if (data) {
 				this.targetOnline = true;
+				if (data.targetLat) {
+					this.targetLat = data.targetLat;
+					this.targetLong = data.targetLong;
+					this.targetAcc = data.targetAcc;
+					this.targetTime = data.targetTime;
+					this.update();
+				}
 			} else {
 				this.targetOnline = false;
 			}
 		});
 
 		this.socket.on("score", (data) => {
-			console.log("recieved from 'score': ", data);
 			this.dataTest = data;
 		});
 
+		this.socket.on("being watched", (data) => {
+			this.rapidEmit(data);
+			console.log("you are being watched: ", data);
+		});
 
 	};
 
-	update() {
-		if (this.myLat && this.targetLat) {
-			this.distanceToTarget = this.getDistance(this.myLong, this.myLat, this.targetLong, this.targetLat);
-			this.accuracy = this.myAcc + this.targetAcc;
-			this.bearing = Math.floor(this.getBearing(this.myLong, this.myLat, this.targetLong, this.targetLat));
-			console.log("requirements met");
-		}
-		console.log("update() invoked");
-		console.log("target lat, long, acc", this.targetLat, this.targetLong, this.targetAcc);
-		console.log("my lat, long, acc", this.myLat, this.myLong, this.myAcc);
-	}
 
 
+// functions for styling text colors based on variables
 	online() {
 		if (this.targetOnline) {
 			return "green";
@@ -109,6 +111,39 @@ export class InGameComponent {
 		} else {
 			return "green";
 		}
+	}
+
+// functions for practical uses
+
+	takeAim() {
+		let data = {
+			targetName: this.targetName,
+			trackerName: this.authService.user.name
+		};
+		this.takingAim = true;
+		this.socket.emit("take aim", data);
+		console.log("take aim data: ", data);
+	}
+
+	rapidEmit(hunterName: string) {
+		console.log("rapidEmit()");
+		this.rapid = setInterval(function() {
+			console.log("inside rapidEmit interval function");
+			let data = {
+				trackerName: hunterName,
+				latitude: this.myLat,
+				longitude: this.myLong,
+				accuracy: this.myAcc,
+				time: this.myTime
+			};
+			console.log("data inside rapidEmit interval funciton: ", data);
+			this.socket.emit("give aim", data); // todo finish function for handling someone taking aim at you
+		}.bind(this), 1000);
+		setTimeout(function() {
+			clearInterval(this.rapid);
+			this.takingAim = false;
+			console.log("inside setTimeout function.");
+		}.bind(this), 15000);
 	}
 
 	sendLocation() {
@@ -140,7 +175,6 @@ export class InGameComponent {
 				}
 			} else {
 				this.targetName = res.targetName;
-				console.log("res is: ", res);
 				this.targetLat = res.latitude;
 				this.targetLong = res.longitude;
 				this.targetAcc = res.accuracy;
@@ -174,6 +208,18 @@ export class InGameComponent {
 		this.myTime = pos.timestamp;
 		this.myAcc = coor.accuracy;
 		this.update();
+	}
+
+	update() {
+		if (this.myLat && this.targetLat) {
+			this.distanceToTarget = this.getDistance(this.myLong, this.myLat, this.targetLong, this.targetLat);
+			this.accuracy = this.myAcc + this.targetAcc;
+			this.bearing = Math.floor(this.getBearing(this.myLong, this.myLat, this.targetLong, this.targetLat));
+			// console.log("requirements met");
+		}
+		// console.log("update() invoked");
+		// console.log("target lat, long, acc", this.targetLat, this.targetLong, this.targetAcc);
+		// console.log("my lat, long, acc", this.myLat, this.myLong, this.myAcc);
 	}
 
 	rad(x) {

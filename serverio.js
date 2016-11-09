@@ -426,7 +426,7 @@ io.on("connection", (socket) => {
 	});
 
 	socket.on("update-location", (data) => {
-		console.log("hit update-location socket", data);
+		// console.log("hit update-location socket", data);
 		if (data.latitude) {
 			socket._lat = data.latitude;
 			socket._long = data.longitude;
@@ -434,8 +434,21 @@ io.on("connection", (socket) => {
 			socket._acc = data.accuracy;
 			socket._score += 5;
 		}
-		socket.emit("score", socket._score);
-		socket.emit("target online", connectedUsers[socket._targetName]);
+		// socket.emit("score", socket._score);
+		if (connectedUsers[socket._targetName]) {
+			let targetSocket = connectedUsers[socket._targetName];
+			let targetData = {
+				targetName: socket._targetName,
+				targetLat: targetSocket._lat,
+				targetLong: targetSocket._long,
+				targetAcc: targetSocket._acc,
+				targetTime: targetSocket._time
+			};
+			socket.emit("target online", targetData);
+		} else {
+			socket.emit("target online", false);
+		}
+
 	});
 
 	socket.on("join", (data) => {
@@ -446,16 +459,57 @@ io.on("connection", (socket) => {
 		socket._time = data.time;
 		socket._acc = data.acc;
 		socket._score = data.score;
-		connectedUsers[data.name] = socket.id;
+		connectedUsers[data.name] = socket;
 		console.log("joined");
-		socket.emit("target found", connectedUsers[data.targetName]);
+		if (connectedUsers[socket._targetName]) {
+			let targetSocket = connectedUsers[socket._targetName];
+			let targetData = {
+				targetName: socket._targetName,
+				targetLat: targetSocket._lat,
+				targetLong: targetSocket._long,
+				targetAcc: targetSocket._acc,
+				targetTime: targetSocket._time
+			};
+			socket.emit("target online", targetData);
+		} else {
+			socket.emit("target online", false);
+		}
 	});
 
+	socket.on("take aim", (data) => {
+		console.log("hit take aim socket connection: ", data);
+		var targetSocket = connectedUsers[data.targetName];
+		if (!targetSocket) {
+			console.log("targetSocketId not found");
+			socket.emit("target online", targetSocket);
+		} else {
+			console.log("taking aim");
+			targetSocket.emit("being watched", data.trackerName);
+		}
+	});
 
+	socket.on("give aim", (data) => {
+		console.log("giving aim to: ", data.trackerName);
+		console.log("from: ", socket._name);
+		let trackerSocket = connectedUsers[data.trackerName];
+		if (trackerSocket) {
+			let toSend = {
+				targetLat: data.latitude,
+				targetLong: data.longitude,
+				targetAcc: data.accuracy,
+				targetTime: data.time
+			};
+			trackerSocket.emit("target online", toSend);
+		}
+	});
 
 });
 
 app.use(express.static(__dirname + '/public'));
+
+app.all('/*', function(req, res) { // todo change the route for this once the landing page is in place
+    res.sendFile(__dirname + '/public/index.html');
+});
 
 app.use((req, res, next) => {
 	console.log("file not found");

@@ -29,31 +29,31 @@ var InGameComponent = (function () {
         setInterval(this.sendLocation.bind(this), 15000);
         this.socket = io();
         this.socket.on("target online", function (data) {
-            console.log("target online", data);
+            console.log("target online: ", data);
             if (data) {
                 _this.targetOnline = true;
+                if (data.targetLat) {
+                    _this.targetLat = data.targetLat;
+                    _this.targetLong = data.targetLong;
+                    _this.targetAcc = data.targetAcc;
+                    _this.targetTime = data.targetTime;
+                    _this.update();
+                }
             }
             else {
                 _this.targetOnline = false;
             }
         });
         this.socket.on("score", function (data) {
-            console.log("recieved from 'score': ", data);
             _this.dataTest = data;
+        });
+        this.socket.on("being watched", function (data) {
+            _this.rapidEmit(data);
+            console.log("you are being watched: ", data);
         });
     };
     ;
-    InGameComponent.prototype.update = function () {
-        if (this.myLat && this.targetLat) {
-            this.distanceToTarget = this.getDistance(this.myLong, this.myLat, this.targetLong, this.targetLat);
-            this.accuracy = this.myAcc + this.targetAcc;
-            this.bearing = Math.floor(this.getBearing(this.myLong, this.myLat, this.targetLong, this.targetLat));
-            console.log("requirements met");
-        }
-        console.log("update() invoked");
-        console.log("target lat, long, acc", this.targetLat, this.targetLong, this.targetAcc);
-        console.log("my lat, long, acc", this.myLat, this.myLong, this.myAcc);
-    };
+    // functions for styling text colors based on variables
     InGameComponent.prototype.online = function () {
         if (this.targetOnline) {
             return "green";
@@ -70,6 +70,36 @@ var InGameComponent = (function () {
         else {
             return "green";
         }
+    };
+    // functions for practical uses
+    InGameComponent.prototype.takeAim = function () {
+        var data = {
+            targetName: this.targetName,
+            trackerName: this.authService.user.name
+        };
+        this.takingAim = true;
+        this.socket.emit("take aim", data);
+        console.log("take aim data: ", data);
+    };
+    InGameComponent.prototype.rapidEmit = function (hunterName) {
+        console.log("rapidEmit()");
+        this.rapid = setInterval(function () {
+            console.log("inside rapidEmit interval function");
+            var data = {
+                trackerName: hunterName,
+                latitude: this.myLat,
+                longitude: this.myLong,
+                accuracy: this.myAcc,
+                time: this.myTime
+            };
+            console.log("data inside rapidEmit interval funciton: ", data);
+            this.socket.emit("give aim", data); // todo finish function for handling someone taking aim at you
+        }.bind(this), 1000);
+        setTimeout(function () {
+            clearInterval(this.rapid);
+            this.takingAim = false;
+            console.log("inside setTimeout function.");
+        }.bind(this), 15000);
     };
     InGameComponent.prototype.sendLocation = function () {
         console.log("sendLocation()");
@@ -100,7 +130,6 @@ var InGameComponent = (function () {
             }
             else {
                 _this.targetName = res.targetName;
-                console.log("res is: ", res);
                 _this.targetLat = res.latitude;
                 _this.targetLong = res.longitude;
                 _this.targetAcc = res.accuracy;
@@ -131,6 +160,16 @@ var InGameComponent = (function () {
         this.myTime = pos.timestamp;
         this.myAcc = coor.accuracy;
         this.update();
+    };
+    InGameComponent.prototype.update = function () {
+        if (this.myLat && this.targetLat) {
+            this.distanceToTarget = this.getDistance(this.myLong, this.myLat, this.targetLong, this.targetLat);
+            this.accuracy = this.myAcc + this.targetAcc;
+            this.bearing = Math.floor(this.getBearing(this.myLong, this.myLat, this.targetLong, this.targetLat));
+        }
+        // console.log("update() invoked");
+        // console.log("target lat, long, acc", this.targetLat, this.targetLong, this.targetAcc);
+        // console.log("my lat, long, acc", this.myLat, this.myLong, this.myAcc);
     };
     InGameComponent.prototype.rad = function (x) {
         return x * Math.PI / 180;
@@ -171,7 +210,7 @@ var InGameComponent = (function () {
     };
     InGameComponent = __decorate([
         core_1.Component({
-            template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2 [style.color]=\"online()\">Target: {{targetName}}{{dataTest}}</h2>\n\t\t\t<p *ngIf=\"targetOnline\">Target Aquired</p>\n\t\t\t<p *ngIf=\"!targetOnline\">Target Offline</p>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h3>Distance to Target: {{distanceToTarget}} meters</h3>\n\t\t\t<h3>Direction to Target: {{bearing}} degrees</h3>\n\t\t\t<h3 [style.color]=\"resolution()\">Accuracy: {{accuracy}} meters</h3>\n\t\t</div>\n\t\t<div *ngIf=\"error\">\n\t\t\t<h2 class=\"error\">{{errorMessage}}</h2>\n\t\t</div>\n\t\t<button class=\"button bottom\">Attack</button>\n\t",
+            template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2 [style.color]=\"online()\">Target: {{targetName}}{{dataTest}}</h2>\n\t\t\t<p *ngIf=\"targetOnline\">Target Aquired</p>\n\t\t\t<p *ngIf=\"!targetOnline\">Target Offline</p>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h3>Distance to Target: {{distanceToTarget}} meters</h3>\n\t\t\t<h3>Direction to Target: {{bearing}} degrees</h3>\n\t\t\t<h3 [style.color]=\"resolution()\">Accuracy: {{accuracy}} meters</h3>\n\t\t</div>\n\t\t<div *ngIf=\"error\">\n\t\t\t<h2 class=\"error\">{{errorMessage}}</h2>\n\t\t</div>\n\t\t<button *ngIf=\"!takingAim\" class=\"button bottom\" (click)=\"takeAim()\">Take Aim</button>\n\t\t<button *ngIf=\"takingAim\" class=\"button bottom\">Attack</button>\n\t",
         }), 
         __metadata('design:paramtypes', [auth_service_1.AuthService, api_service_1.ApiService, geo_service_1.GeoService])
     ], InGameComponent);
