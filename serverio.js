@@ -101,10 +101,13 @@ app.post("/api/login", (req, res) => {
 
 app.post("/api/newGame", (req, res) => {
 	//todo: add verification
+	let date = new Date();
 	var name = req.session.user.name;
 	var newGame = new Game({
 		creator: name,
+		startDate: date,
 		players: [name],
+		activePlayers: [name],
 		inProgress: false
 	});
 
@@ -138,7 +141,6 @@ app.post("/api/newGame", (req, res) => {
 });
 
 app.post("/api/joinGame", (req, res) => {
-
 	if (!req.session.user.name) {
 		res.status(500);
 		res.send({error: true, message: "no session user name"});
@@ -148,7 +150,7 @@ app.post("/api/joinGame", (req, res) => {
 			creator: req.body.gameId,
 			inProgress: false
 		},
-		{$push: {players: req.session.user.name}},
+		{$push: {players: req.session.user.name, activePlayers: req.session.user.name}},
 		{new: true},
 		(err, data) => {
 			if (err) {
@@ -406,7 +408,7 @@ io.on("connection", (socket) => {
 	console.log("socket connected");
 
 	socket.on("disconnect", () => {
-		console.log("before delete: ", connectedUsers);
+
 		delete connectedUsers[socket._name];
 		User.findOneAndUpdate(
 			{name: socket._name},
@@ -434,7 +436,7 @@ io.on("connection", (socket) => {
 			socket._acc = data.accuracy;
 			socket._score += 5;
 		}
-		// socket.emit("score", socket._score);
+		socket.emit("score", socket._score);
 		if (connectedUsers[socket._targetName]) {
 			let targetSocket = connectedUsers[socket._targetName];
 			let targetData = {
@@ -500,6 +502,96 @@ io.on("connection", (socket) => {
 				targetTime: data.time
 			};
 			trackerSocket.emit("target online", toSend);
+		}
+	});
+
+	socket.on("attack", (data) => {
+		console.log("attack attempted");
+		let attempt = data.distance + data.accuracy;
+		if (attempt > 1000) { // todo change this to 100
+			socket.emit("attack result", false);
+		} else {
+			let result = Math.random() * attempt;
+			if (result > 200) { // todo change this to 20
+				socket.emit("attack result", false);
+			} else {
+				User.findOneAndUpdate(
+					{
+						name: socket._targetName
+					},
+					{
+						inGame: false,
+						$push: {gameHistory: data.gameId},
+						currentGame: "",
+						currentTarget: "",
+						gameAdmin: false
+					},
+					(err, oldData) => {
+						if (err) {
+							console.log("error at socket attack first User.findOneAndUpdate");
+							socket.emit("attack result", false);
+						} else if (!oldData) {
+							console.log("failed to find target user at socket attack");
+							socket.emit("attack result", false);
+						} else {
+							if (connectedUsers[socket._targetName]) {
+								connectedUsers[socket._targetName].emit("killed", socket._name);
+								connectedUsers[socket._targetName].disconnect();
+							}
+							Game.findByIdAndUpdate(
+								data.gameId,
+								{
+									$pull: {activePlayers: socket._targetName},
+									$push: {kills: (socket._targetName + " taken out by: " + socket._name)}
+								},
+								{new: true},
+								(err, newData) => {
+									if (err) {
+										console.log("error at socket attack, game update: ", err);
+										socket.emit("attack result", false);
+									} else if (newData.activePlayers.length > 1){
+										console.log("attack success, new game data: ", newData);
+										socket._score += 100;
+										socket.emit("score", socket._score);
+										socket.emit("attack result", true);
+									} else {
+										User.findOneAndUpdate(
+											{name: socket._name},
+											{
+												inGame: false,
+												$push: {gameHistory: data.gameId},
+												currentGame: "",
+												currentTarget: "",
+												gameAdmin: false
+											},
+											(err, endData) => {
+												if (err) {
+													console.log("error updating last man standing", err);
+												}
+												let date = new Date();
+												Game.findByIdAndUpdate(
+													data.gameId,
+													{
+														inProgress: false,
+														endDate: date
+													},
+													(err, stuff) => {
+														if (err) {
+															console.log("error ending game after final kill: ", err);
+														}
+														socket._score += (newData.players.length * 10);
+														socket.emit("end game");
+													}
+												);
+											}
+										);
+									}
+								}
+							);
+						}
+					}
+				);
+			}
 		}
 	});
 

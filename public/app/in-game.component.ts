@@ -14,7 +14,7 @@ import * as io from "socket.io-client";
 			<p *ngIf="targetOnline">Target Aquired</p>
 			<p *ngIf="!targetOnline">Target Offline</p>
 		</div>
-		<div *ngIf="!error">
+		<div *ngIf="!error && !attacking">
 			<h3>Distance to Target: {{distanceToTarget}} meters</h3>
 			<h3>Direction to Target: {{bearing}} degrees</h3>
 			<h3 [style.color]="resolution()">Accuracy: {{accuracy}} meters</h3>
@@ -22,8 +22,11 @@ import * as io from "socket.io-client";
 		<div *ngIf="error">
 			<h2 class="error">{{errorMessage}}</h2>
 		</div>
-		<button *ngIf="!takingAim" class="button bottom" (click)="takeAim()">Take Aim</button>
-		<button *ngIf="takingAim" class="button bottom">Attack</button>
+		<button *ngIf="!takingAim && !attacking && !error" class="button bottom" (click)="takeAim()">Take Aim</button>
+		<button *ngIf="takingAim && !attacking && !error" class="button bottom" (click)="attack()">Attack</button>
+		<div *ngIf="attacking">
+			<h2>{{attackMessage}}</h2>
+		</div>
 	`,
 })
 export class InGameComponent {
@@ -34,6 +37,8 @@ export class InGameComponent {
 	) {	}
 
 	takingAim: boolean;
+	attacking: boolean = false;
+	attackMessage: string;
 	error: boolean = false;
 	errorMessage: string;
 
@@ -56,6 +61,7 @@ export class InGameComponent {
 	bearing: number;
 
 	locationWatch: any;
+	locationInterval: any;
 	rapid: any;
 	gameId: string = this.authService.user.currentGame;
 	socket: any;
@@ -66,7 +72,7 @@ export class InGameComponent {
 	ngOnInit() {
 		this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
 		this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
-		setInterval(this.sendLocation.bind(this), 15000);
+		this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
 		this.socket = io();
 		this.socket.on("target online", (data) => {
 			console.log("target online: ", data);
@@ -91,6 +97,31 @@ export class InGameComponent {
 		this.socket.on("being watched", (data) => {
 			this.rapidEmit(data);
 			console.log("you are being watched: ", data);
+		});
+
+		this.socket.on("attack result", (data) => {
+			if (data) {
+				this.attackMessage = "Target taken out. Awaiting info on next target...";
+				this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
+			} else {
+				this.attackMessage = "Target missed... ";
+				setTimeout(function() {
+					this.attacking = false;
+					this.attackMessage = "";
+				}.bind(this), 15000);
+			}
+		});
+
+		this.socket.on("killed", (data) => {
+			clearInterval(this.locationInterval);
+			this.error = true;
+			this.errorMessage = "You were killed by: " + data;
+		});
+
+		this.socket.on("end game", (data) => {
+			this.attackMessage = "";
+			this.error = true;
+			this.errorMessage = "Game Over. You were the last man standing!!!";
 		});
 
 	};
@@ -123,6 +154,26 @@ export class InGameComponent {
 		this.takingAim = true;
 		this.socket.emit("take aim", data);
 		console.log("take aim data: ", data);
+		setInterval(function() {
+			if (this.takingAim) {
+				this.takingAim = false;
+				this.attacking = false;
+				this.attackMessage = "";
+			}
+		}.bind(this), 20000);
+	}
+
+	attack() {
+		this.attacking = true;
+		this.takingAim = false;
+		this.attackMessage = "Confirming kill...";
+		let data = {
+			distance: this.distanceToTarget,
+			accuracy: this.accuracy,
+			targetName: this.targetName,
+			gameId: this.authService.user.currentGame
+		};
+		this.socket.emit("attack", data);
 	}
 
 	rapidEmit(hunterName: string) {
@@ -174,6 +225,8 @@ export class InGameComponent {
 					this.targetName = res.targetName;
 				}
 			} else {
+				this.attacking = false;
+				this.attackMessage = "";
 				this.targetName = res.targetName;
 				this.targetLat = res.latitude;
 				this.targetLong = res.longitude;

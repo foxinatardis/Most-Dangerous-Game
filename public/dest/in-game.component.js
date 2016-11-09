@@ -18,6 +18,7 @@ var InGameComponent = (function () {
         this.authService = authService;
         this.apiService = apiService;
         this.geoService = geoService;
+        this.attacking = false;
         this.error = false;
         this.targetOnline = false;
         this.gameId = this.authService.user.currentGame;
@@ -26,7 +27,7 @@ var InGameComponent = (function () {
         var _this = this;
         this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
         this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
-        setInterval(this.sendLocation.bind(this), 15000);
+        this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
         this.socket = io();
         this.socket.on("target online", function (data) {
             console.log("target online: ", data);
@@ -50,6 +51,29 @@ var InGameComponent = (function () {
         this.socket.on("being watched", function (data) {
             _this.rapidEmit(data);
             console.log("you are being watched: ", data);
+        });
+        this.socket.on("attack result", function (data) {
+            if (data) {
+                _this.attackMessage = "Target taken out. Awaiting info on next target...";
+                _this.geoService.getLocation(_this.positionSuccess.bind(_this), _this.positionErr.bind(_this));
+            }
+            else {
+                _this.attackMessage = "Target missed... ";
+                setTimeout(function () {
+                    this.attacking = false;
+                    this.attackMessage = "";
+                }.bind(_this), 15000);
+            }
+        });
+        this.socket.on("killed", function (data) {
+            clearInterval(_this.locationInterval);
+            _this.error = true;
+            _this.errorMessage = "You were killed by: " + data;
+        });
+        this.socket.on("end game", function (data) {
+            _this.attackMessage = "";
+            _this.error = true;
+            _this.errorMessage = "Game Over. You were the last man standing!!!";
         });
     };
     ;
@@ -80,6 +104,25 @@ var InGameComponent = (function () {
         this.takingAim = true;
         this.socket.emit("take aim", data);
         console.log("take aim data: ", data);
+        setInterval(function () {
+            if (this.takingAim) {
+                this.takingAim = false;
+                this.attacking = false;
+                this.attackMessage = "";
+            }
+        }.bind(this), 20000);
+    };
+    InGameComponent.prototype.attack = function () {
+        this.attacking = true;
+        this.takingAim = false;
+        this.attackMessage = "Confirming kill...";
+        var data = {
+            distance: this.distanceToTarget,
+            accuracy: this.accuracy,
+            targetName: this.targetName,
+            gameId: this.authService.user.currentGame
+        };
+        this.socket.emit("attack", data);
     };
     InGameComponent.prototype.rapidEmit = function (hunterName) {
         console.log("rapidEmit()");
@@ -129,6 +172,8 @@ var InGameComponent = (function () {
                 }
             }
             else {
+                _this.attacking = false;
+                _this.attackMessage = "";
                 _this.targetName = res.targetName;
                 _this.targetLat = res.latitude;
                 _this.targetLong = res.longitude;
@@ -210,7 +255,7 @@ var InGameComponent = (function () {
     };
     InGameComponent = __decorate([
         core_1.Component({
-            template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2 [style.color]=\"online()\">Target: {{targetName}}{{dataTest}}</h2>\n\t\t\t<p *ngIf=\"targetOnline\">Target Aquired</p>\n\t\t\t<p *ngIf=\"!targetOnline\">Target Offline</p>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h3>Distance to Target: {{distanceToTarget}} meters</h3>\n\t\t\t<h3>Direction to Target: {{bearing}} degrees</h3>\n\t\t\t<h3 [style.color]=\"resolution()\">Accuracy: {{accuracy}} meters</h3>\n\t\t</div>\n\t\t<div *ngIf=\"error\">\n\t\t\t<h2 class=\"error\">{{errorMessage}}</h2>\n\t\t</div>\n\t\t<button *ngIf=\"!takingAim\" class=\"button bottom\" (click)=\"takeAim()\">Take Aim</button>\n\t\t<button *ngIf=\"takingAim\" class=\"button bottom\">Attack</button>\n\t",
+            template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2 [style.color]=\"online()\">Target: {{targetName}}{{dataTest}}</h2>\n\t\t\t<p *ngIf=\"targetOnline\">Target Aquired</p>\n\t\t\t<p *ngIf=\"!targetOnline\">Target Offline</p>\n\t\t</div>\n\t\t<div *ngIf=\"!error && !attacking\">\n\t\t\t<h3>Distance to Target: {{distanceToTarget}} meters</h3>\n\t\t\t<h3>Direction to Target: {{bearing}} degrees</h3>\n\t\t\t<h3 [style.color]=\"resolution()\">Accuracy: {{accuracy}} meters</h3>\n\t\t</div>\n\t\t<div *ngIf=\"error\">\n\t\t\t<h2 class=\"error\">{{errorMessage}}</h2>\n\t\t</div>\n\t\t<button *ngIf=\"!takingAim && !attacking && !error\" class=\"button bottom\" (click)=\"takeAim()\">Take Aim</button>\n\t\t<button *ngIf=\"takingAim && !attacking && !error\" class=\"button bottom\" (click)=\"attack()\">Attack</button>\n\t\t<div *ngIf=\"attacking\">\n\t\t\t<h2>{{attackMessage}}</h2>\n\t\t</div>\n\t",
         }), 
         __metadata('design:paramtypes', [auth_service_1.AuthService, api_service_1.ApiService, geo_service_1.GeoService])
     ], InGameComponent);
