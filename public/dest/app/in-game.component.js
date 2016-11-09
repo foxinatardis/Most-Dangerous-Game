@@ -26,6 +26,7 @@ var InGameComponent = (function () {
         this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
         setInterval(this.sendLocation.bind(this), 15000);
         this.socket = io();
+        // this.socket.emit("join", this.authService.user.name);
     };
     ;
     InGameComponent.prototype.update = function () {
@@ -91,11 +92,23 @@ var InGameComponent = (function () {
                 _this.targetAcc = res.accuracy;
                 _this.targetTime = res.timestamp;
                 _this.update();
+                var joinData = {
+                    name: _this.authService.user.name,
+                    targetName: res.targetName,
+                    lat: coor.latitude,
+                    long: coor.longitude,
+                    time: pos.timestamp,
+                    acc: coor.accuracy
+                };
+                _this.socket.emit("join", joinData);
+                console.log(joinData);
             }
         });
     };
     InGameComponent.prototype.positionErr = function (err) {
         console.log(err);
+        this.error = true;
+        this.errorMessage = "Sorry, something went wrong. Please reload and try again.";
     };
     InGameComponent.prototype.iMovedSuccess = function (pos) {
         var coor = pos.coords;
@@ -146,7 +159,7 @@ var InGameComponent = (function () {
 }());
 InGameComponent = __decorate([
     core_1.Component({
-        template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2>Target: {{targetName}}</h2>\n\t\t</div>\n\t\t<div>\n\t\t\t<h3>Distance to Target: {{distanceToTarget}} meters</h3>\n\t\t\t<h3>Direction to Target: {{bearing}} degrees</h3>\n\t\t\t<h3 [style.color]=\"resolution()\">Accuracy: {{accuracy}} meters</h3>\n\t\t</div>\n\t\t<div *ngIf=\"error\">\n\t\t\t<h1 class=\"error\">{{errorMessage}}</h1>\n\t\t</div>\n\t\t<button class=\"button bottom\">Attack</button>\n\t",
+        template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2>Target: {{targetName}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h3>Distance to Target: {{distanceToTarget}} meters</h3>\n\t\t\t<h3>Direction to Target: {{bearing}} degrees</h3>\n\t\t\t<h3 [style.color]=\"resolution()\">Accuracy: {{accuracy}} meters</h3>\n\t\t</div>\n\t\t<div *ngIf=\"error\">\n\t\t\t<h2 class=\"error\">{{errorMessage}}</h2>\n\t\t</div>\n\t\t<button class=\"button bottom\">Attack</button>\n\t",
     }),
     __metadata("design:paramtypes", [auth_service_1.AuthService,
         api_service_1.ApiService,

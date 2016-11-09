@@ -12,13 +12,13 @@ import * as io from "socket.io-client";
 		<div *ngIf="!error">
 			<h2>Target: {{targetName}}</h2>
 		</div>
-		<div>
+		<div *ngIf="!error">
 			<h3>Distance to Target: {{distanceToTarget}} meters</h3>
 			<h3>Direction to Target: {{bearing}} degrees</h3>
 			<h3 [style.color]="resolution()">Accuracy: {{accuracy}} meters</h3>
 		</div>
 		<div *ngIf="error">
-			<h1 class="error">{{errorMessage}}</h1>
+			<h2 class="error">{{errorMessage}}</h2>
 		</div>
 		<button class="button bottom">Attack</button>
 	`,
@@ -30,25 +30,29 @@ export class InGameComponent {
 		private geoService: GeoService
 	) {	}
 
-	targetName: string;
+
 	error: boolean = false;
 	errorMessage: string;
+
 	myLong: number;
 	myLat: number;
 	myTime: number;
 	myAcc: number;
+
+	targetName: string;
 	targetLong: number;
 	targetLat: number;
 	targetTime: number;
 	targetAcc: number;
 	targetLocation: any;
+
 	distanceToTarget: number;
 	directionToTarget: number;
 	accuracy: number;
 	bearing: number;
+
 	locationWatch: any;
 	gameId: string = this.authService.user.currentGame;
-
 	socket: any;
 
 
@@ -57,6 +61,7 @@ export class InGameComponent {
 		this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
 		setInterval(this.sendLocation.bind(this), 15000);
 		this.socket = io();
+		// this.socket.emit("join", this.authService.user.name);
 	};
 
 	update() {
@@ -122,6 +127,16 @@ export class InGameComponent {
 				this.targetAcc = res.accuracy;
 				this.targetTime = res.timestamp;
 				this.update();
+				let joinData: any = {
+					name: this.authService.user.name,
+					targetName: res.targetName,
+					lat: coor.latitude,
+					long: coor.longitude,
+					time: pos.timestamp,
+					acc: coor.accuracy
+				};
+				this.socket.emit("join", joinData);
+				console.log(joinData);
 			}
 		});
 
@@ -129,6 +144,8 @@ export class InGameComponent {
 
 	positionErr(err) {
 		console.log(err);
+		this.error = true;
+		this.errorMessage = "Sorry, something went wrong. Please reload and try again."
 	}
 
 	iMovedSuccess(pos) {

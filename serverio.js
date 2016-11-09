@@ -19,7 +19,7 @@ var secureServer = https.createServer(options, app);
 
 var io = require("socket.io")(secureServer);
 
-
+var connectedUsers = {}; // to store sockets of connected players
 
 
 mongoose.connect("mongodb://localhost");
@@ -402,33 +402,57 @@ app.post("/api/update-location", (req, res) => {
 });
 
 io.on("connection", (socket) => {
+
 	console.log("socket connected");
+
 	socket.on("disconnect", () => {
-		console.log("somebody disconnected :(");
+		console.log("before delete: ", connectedUsers);
+		delete connectedUsers[socket._name];
+		console.log("after: ", connectedUsers);
 	});
 
 	socket.on("update-location", (message) => {
-		console.log("hit update-location socket", message);
-		if (message.targetName && message.latitude) { // todo this seems like a terrible idea
-			User.findOneAndUpdate(
-				{
-					currentTarget: message.targetName
-				},
-				{
-					lastLatitude: message.latitude,
-					lastLongitude: message.longitude,
-					lastAccuracy: message.accuracy,
-					lastTimestamp: message.time,
-					$inc: {score: 5}
-				},
-				(err, data) => {
-					if (err) {
-						console.log("error in socket update-location at User.findOneAndUpdate: ", err);
-					}
-				}
-			);
-		}
+		// console.log("hit update-location socket", message);
+		// if (message.targetName && message.latitude) { // todo this seems like a terrible idea
+		// 	User.findOneAndUpdate(
+		// 		{
+		// 			currentTarget: message.targetName
+		// 		},
+		// 		{
+		// 			lastLatitude: message.latitude,
+		// 			lastLongitude: message.longitude,
+		// 			lastAccuracy: message.accuracy,
+		// 			lastTimestamp: message.time,
+		// 			$inc: {score: 5}
+		// 		},
+		// 		(err, data) => {
+		// 			if (err) {
+		// 				console.log("error in socket update-location at User.findOneAndUpdate: ", err);
+		// 			}
+		// 		}
+		// 	);
+		// }
 	});
+
+	socket.on("join", (data) => {
+		// data = JSON.parse(data);
+		var theName = data.name;
+		socket._name = data.name;
+		socket._targetName = data.targetName;
+		socket._lat = data.lat;
+		socket._long = data.long;
+		socket._time = data.time;
+		socket._acc = data.acc;
+		connectedUsers[theName] = socket.id;
+		console.log("joined");
+		// console.log(connectedUsers);
+		// console.log(socket);
+		// console.log("socket._name: ", socket._name);
+		// console.log(data);
+	});
+
+
+
 });
 
 app.use(express.static(__dirname + '/public'));
