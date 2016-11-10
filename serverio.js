@@ -48,7 +48,7 @@ app.get("/", (req, res) => {
 app.post("/api/signup", (req, res) => {
 	console.log("hit signup api", req.body);
 	if(!req.body.email || !req.body.password) {
-		res.send({message: "error, invalid email or password"});
+		res.send({error: true, message: "error, invalid email or password"});
 	}
 	User.find({$or:[{email: req.body.email}, {name: req.body.username}]}, (err, user) => {
 		if (user.length === 0) {
@@ -62,30 +62,30 @@ app.post("/api/signup", (req, res) => {
 				if(err) {
 					console.log(err);
 					res.status(500);
-					res.send({error: "error registering new user"});
+					res.send({error: true, message: "error registering new user"});
 					return;
 				}
-				res.send({message: "successfully added new user"});
+				res.send({user: {email: req.body.email, name: req.body.username, score: 0}});
 			});
 		} else if (err) {
 			console.log(err);
 			res.status(500);
-			res.send({error: "internal server error"});
+			res.send({error: true, message: "internal server error"});
 			return;
 		} else {
-			res.send({error: "User already exists"});
+			res.send({error: true, message: "User already exists"});
 		}
 	});
 });
 
 app.post("/api/login", (req, res) => {
 	if(!req.body.email || !req.body.password){
-		res.send({message: "error, please provide valid login"});
+		res.send({error: true, message: "error, please provide valid login"});
 		return;
 	}
 	User.find({email: req.body.email}, (err, user) => {
 		if(user.length === 0) {
-			res.send({message: "error, user not found", loggedIn: false});
+			res.send({error: true, message: "error, user not found", loggedIn: false});
 			return;
 		}
 		if(user[0].password === req.body.password) {
@@ -94,7 +94,7 @@ app.post("/api/login", (req, res) => {
 			res.send({message: "successfully logged in!", loggedIn: true, userData: user});
 		} else {
 			res.status(401);
-			res.send({message: "invalid login", loggedIn: false});
+			res.send({error: true, message: "invalid login", loggedIn: false});
 		}
 	});
 });
