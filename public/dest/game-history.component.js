@@ -13,16 +13,24 @@ var api_service_1 = require("./api.service");
 var GameHistoryComponent = (function () {
     function GameHistoryComponent(apiService) {
         this.apiService = apiService;
+        this.games = [];
     }
     GameHistoryComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.apiService.getObs("/api/game-history").subscribe(function (res) {
-            _this.games = res;
+            _this.gameIds = res.history;
+            console.log("respose from /api/game-history", res);
+            for (var i in _this.gameIds) {
+                var toSend = { gameId: _this.gameIds[i] };
+                _this.apiService.postObs("/api/game-stats", toSend).subscribe(function (res) {
+                    _this.games.push(res.game);
+                });
+            }
         });
     };
     GameHistoryComponent = __decorate([
         core_1.Component({
-            template: "\n\t\t<div>\n\t\t\t<ul *ngFor=\"game of games\">\n\t\t\t\t<li>Creator: {{game.creator}}</li>\n\t\t\t\t<li>Start Date: {{game.startDate}}</li>\n\t\t\t\t<li>End Date: {{game.endDate}}</li>\n\t\t\t\t<li>\n\t\t\t\t\tKills:\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li *ngFor=\"kill of game.kills\">{{kill}}</li>\n\t\t\t\t\t</ul>\n\t\t\t\t</li>\n\t\t\t</ul>\n\t\t</div>\n\t",
+            template: "\n\t\t<div>\n\t\t\t<ul *ngFor=\"let game of games\">\n\t\t\t\t<li class=\"listHead\">Creator: {{game.creator}}</li>\n\t\t\t\t<li>Start Date: {{game.startDate}}</li>\n\t\t\t\t<li>End Date: {{game.endDate}}</li>\n\t\t\t\t<li>Last Man Standing: {{game.activePlayers[0]}}</li>\n\t\t\t\t<li>\n\t\t\t\t\tKills:\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li *ngFor=\"let kill of game.kills\">{{kill}}</li>\n\t\t\t\t\t</ul>\n\t\t\t\t</li>\n\t\t\t</ul>\n\t\t</div>\n\t",
         }), 
         __metadata('design:paramtypes', [api_service_1.ApiService])
     ], GameHistoryComponent);

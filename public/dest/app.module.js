@@ -21,6 +21,7 @@ var login_component_1 = require("./login.component");
 var game_selection_component_1 = require("./game-selection.component");
 var enter_game_component_1 = require("./enter-game.component");
 var in_game_component_1 = require("./in-game.component");
+var game_history_component_1 = require("./game-history.component");
 var AppModule = (function () {
     function AppModule() {
     }
@@ -42,7 +43,8 @@ var AppModule = (function () {
                 login_component_1.LoginComponent,
                 game_selection_component_1.GameSelectionComponent,
                 enter_game_component_1.EnterGameComponent,
-                in_game_component_1.InGameComponent
+                in_game_component_1.InGameComponent,
+                game_history_component_1.GameHistoryComponent
             ],
             bootstrap: [app_component_1.AppComponent]
         }), 

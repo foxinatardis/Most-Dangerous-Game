@@ -10,9 +10,14 @@ import { Component } from '@angular/core';
 					<p class="p-nav">Home</p>
 				</div>
 			</a>
-			<a href="/game-selection">
+			<!-- <a href="/game-selection">
 				<div class="for-nav">
 					<p class="p-nav">Create or Join</p>
+				</div>
+			</a> -->
+			<a href="/game-history">
+				<div class="for-nav">
+					<p class="p-nav">Game History</p>
 				</div>
 			</a>
 		</nav>

@@ -8,13 +8,15 @@ import { LoginComponent } from "./login.component";
 import { GameSelectionComponent } from "./game-selection.component";
 import { EnterGameComponent } from "./enter-game.component";
 import { InGameComponent } from "./in-game.component";
+import { GameHistoryComponent} from "./game-history.component";
 
 const routes: Routes = [
 	{path: "", component: LoginComponent },
 	{path: "login", component: LoginComponent },
 	{path: "game-selection", component: GameSelectionComponent },
 	{path: "enter-game", component: EnterGameComponent },
-	{path: "in-game", component: InGameComponent }
+	{path: "in-game", component: InGameComponent },
+	{path: "game-history", component: GameHistoryComponent}
 ];
 
 @NgModule({

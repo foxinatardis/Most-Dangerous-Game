@@ -102,6 +102,10 @@ app.post("/api/login", (req, res) => {
 app.post("/api/newGame", (req, res) => {
 	//todo: add verification
 	let date = new Date();
+	date = date.toString().split(" ");
+	date.pop();
+	date.pop();
+	date = date.join(" ");
 	var name = req.session.user.name;
 	var newGame = new Game({
 		creator: name,
@@ -263,6 +267,7 @@ app.get("/api/target", (req, res) => {
 				console.log("error at get:/api/target Game.findById: ", err);
 				res.status(500);
 				res.send({error: true, message: "Error finding target!!!"});
+				return;
 			}
 			var player = req.session.user.name;
 			var players = data.players;
@@ -399,6 +404,44 @@ app.post("/api/update-location", (req, res) => {
 				res.send({error: true, message: "Who are you? Who Who? Who Who?"});
 			}
 			res.send({score: data.score});
+		}
+	);
+});
+
+app.get("/api/game-history", (req, res) => {
+	User.findOne(
+		{name: req.session.user.name},
+		"gameHistory",
+		(err, data) => {
+			if (err) {
+				console.log("error at /api/game-history: ", err);
+				res.status(500);
+				res.send({error: true, message: "Could not find game history."});
+			} else if (!data) {
+				res.status(500);
+				res.send({error: true, message: "Could not find game history."});
+			} else {
+				console.log("game history: ", data.gameHistory);
+				res.send({history: data.gameHistory});
+			}
+		}
+	);
+});
+
+app.post("/api/game-stats", (req, res) => {
+	console.log(req.body);
+	Game.findById(req.body.gameId,
+		(err, data) => {
+			if (err) {
+				console.log("error at /api/game-stats, id: " + req.body + " err: ", err);
+				res.status(500);
+				res.send({error: true, message: "Error finding game history"});
+			} else if (!data) {
+				res.status(500);
+				res.send({error: true, message: "Error finding game history"});
+			} else {
+				res.send({game: data});
+			}
 		}
 	);
 });
@@ -569,6 +612,10 @@ io.on("connection", (socket) => {
 													console.log("error updating last man standing", err);
 												}
 												let date = new Date();
+												date = date.toString().split(" ");
+												date.pop();
+												date.pop();
+												date = date.join(" ");
 												Game.findByIdAndUpdate(
 													data.gameId,
 													{

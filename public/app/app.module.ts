@@ -14,6 +14,7 @@ import { LoginComponent } from "./login.component";
 import { GameSelectionComponent } from "./game-selection.component";
 import { EnterGameComponent } from "./enter-game.component";
 import { InGameComponent } from "./in-game.component";
+import { GameHistoryComponent } from "./game-history.component";
 
 @NgModule({
 	imports: [
@@ -32,7 +33,8 @@ import { InGameComponent } from "./in-game.component";
 		LoginComponent,
 		GameSelectionComponent,
 		EnterGameComponent,
-		InGameComponent
+		InGameComponent,
+		GameHistoryComponent
 	],
 	bootstrap: [ AppComponent ]
 })

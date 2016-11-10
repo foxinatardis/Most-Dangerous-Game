@@ -17,14 +17,15 @@ var GameHistoryComponent = (function () {
     GameHistoryComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.apiService.getObs("/api/game-history").subscribe(function (res) {
-            _this.games = res;
+            _this.games = res.history;
+            console.log(_this.games);
         });
     };
     return GameHistoryComponent;
 }());
 GameHistoryComponent = __decorate([
     core_1.Component({
-        template: "\n\t\t<div>\n\t\t\t<ul *ngFor=\"game of games\">\n\t\t\t\t<li>Creator: {{game.creator}}</li>\n\t\t\t\t<li>Start Date: {{game.startDate}}</li>\n\t\t\t\t<li>End Date: {{game.endDate}}</li>\n\t\t\t\t<li>\n\t\t\t\t\tKills:\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li *ngFor=\"kill of game.kills\">{{kill}}</li>\n\t\t\t\t\t</ul>\n\t\t\t\t</li>\n\t\t\t</ul>\n\t\t</div>\n\t",
+        template: "\n\t\t<div>\n\t\t\t<ul *ngFor=\"let game of games\">\n\t\t\t\t<li>Creator: {{game.creator}}</li>\n\t\t\t\t<li>Start Date: {{game.startDate}}</li>\n\t\t\t\t<li>End Date: {{game.endDate}}</li>\n\t\t\t\t<li>\n\t\t\t\t\tKills:\n\t\t\t\t\t<ul>\n\t\t\t\t\t\t<li *ngFor=\"let kill of game.kills\">{{kill}}</li>\n\t\t\t\t\t</ul>\n\t\t\t\t</li>\n\t\t\t</ul>\n\t\t</div>\n\t",
     }),
     __metadata("design:paramtypes", [api_service_1.ApiService])
 ], GameHistoryComponent);

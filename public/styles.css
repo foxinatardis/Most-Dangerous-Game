@@ -23,6 +23,13 @@ nav {
 
 }
 
+.listHead {
+	font-size: 22px;
+	font-family: sans-serif;
+	color: #505BFF;
+	text-shadow: 0 0 20px rgb(73, 125, 232);
+}
+
 .error {
 	color: red;
 }
