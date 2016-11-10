@@ -83,17 +83,17 @@ export class LoginComponent {
 			this.test = "login clicked";
 			if (res.loggedIn) {
 				this.authService.user = res.userData[0];
-				console.log(this.authService.user);
-				if (this.authService.user.currentGame) {
-					if (this.authService.user.inGame) {
-						this.router.navigate(["/in-game"]);
-					} else {
-						this.router.navigate(["/waiting-room"]);
-					}
-				} else {
-					this.router.navigate(["/game-selection"]);
-				}
-
+				// console.log(this.authService.user);
+				// if (this.authService.user.currentGame) {
+				// 	if (this.authService.user.inGame) {
+				// 		this.router.navigate(["/in-game"]);
+				// 	} else {
+				// 		this.router.navigate(["/waiting-room"]);
+				// 	}
+				// } else {
+				// 	this.router.navigate(["/game-selection"]);
+				// }
+				this.router.navigate(["/profile"]);
 			}
 		});
 

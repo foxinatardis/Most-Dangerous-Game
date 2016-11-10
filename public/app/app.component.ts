@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
+import { AuthService } from "./auth.service";
 
 
 @Component({
 	selector: 'assassin',
 	template: `
 		<nav>
-			<a href="/">
+			<a href="/" *ngIf="this.authService.user">
 				<div class="for-nav">
 					<p class="p-nav">Home</p>
 				</div>
@@ -15,7 +16,7 @@ import { Component } from '@angular/core';
 					<p class="p-nav">Create or Join</p>
 				</div>
 			</a> -->
-			<a href="/game-history">
+			<a href="/game-history" *ngIf="this.authService.user">
 				<div class="for-nav">
 					<p class="p-nav">Game History</p>
 				</div>
@@ -26,5 +27,8 @@ import { Component } from '@angular/core';
 
 })
 export class AppComponent {
+	constructor(
+		private authService: AuthService
+	) {}
 
 }

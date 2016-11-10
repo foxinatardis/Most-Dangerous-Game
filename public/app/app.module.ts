@@ -15,6 +15,7 @@ import { GameSelectionComponent } from "./game-selection.component";
 import { WaitingRoomComponent } from "./waiting-room.component";
 import { InGameComponent } from "./in-game.component";
 import { GameHistoryComponent } from "./game-history.component";
+import { ProfileComponent } from "./profile.component";
 
 @NgModule({
 	imports: [
@@ -34,7 +35,8 @@ import { GameHistoryComponent } from "./game-history.component";
 		GameSelectionComponent,
 		WaitingRoomComponent,
 		InGameComponent,
-		GameHistoryComponent
+		GameHistoryComponent,
+		ProfileComponent
 	],
 	bootstrap: [ AppComponent ]
 })

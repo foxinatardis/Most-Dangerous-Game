@@ -22,6 +22,7 @@ var game_selection_component_1 = require("./game-selection.component");
 var waiting_room_component_1 = require("./waiting-room.component");
 var in_game_component_1 = require("./in-game.component");
 var game_history_component_1 = require("./game-history.component");
+var profile_component_1 = require("./profile.component");
 var AppModule = (function () {
     function AppModule() {
     }
@@ -44,7 +45,8 @@ var AppModule = (function () {
                 game_selection_component_1.GameSelectionComponent,
                 waiting_room_component_1.WaitingRoomComponent,
                 in_game_component_1.InGameComponent,
-                game_history_component_1.GameHistoryComponent
+                game_history_component_1.GameHistoryComponent,
+                profile_component_1.ProfileComponent
             ],
             bootstrap: [app_component_1.AppComponent]
         }), 
