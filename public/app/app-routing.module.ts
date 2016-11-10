@@ -10,6 +10,7 @@ import { WaitingRoomComponent } from "./waiting-room.component";
 import { InGameComponent } from "./in-game.component";
 import { GameHistoryComponent} from "./game-history.component";
 import { ProfileComponent } from "./profile.component";
+import { OptionsComponent } from "./options.component";
 
 const routes: Routes = [
 	{path: "", component: ProfileComponent, canActivate: [AuthService] },
@@ -18,7 +19,8 @@ const routes: Routes = [
 	{path: "waiting-room", component: WaitingRoomComponent, canActivate: [AuthService] },
 	{path: "in-game", component: InGameComponent, canActivate: [AuthService] },
 	{path: "game-history", component: GameHistoryComponent, canActivate: [AuthService] },
-	{path: "profile", component: ProfileComponent, canActivate: [AuthService] }
+	{path: "profile", component: ProfileComponent, canActivate: [AuthService] },
+	{path: "options", component: OptionsComponent, canActivate: [AuthService] }
 ];
 
 @NgModule({

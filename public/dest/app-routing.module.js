@@ -18,6 +18,7 @@ var waiting_room_component_1 = require("./waiting-room.component");
 var in_game_component_1 = require("./in-game.component");
 var game_history_component_1 = require("./game-history.component");
 var profile_component_1 = require("./profile.component");
+var options_component_1 = require("./options.component");
 var routes = [
     { path: "", component: profile_component_1.ProfileComponent, canActivate: [auth_service_1.AuthService] },
     { path: "login", component: login_component_1.LoginComponent },
@@ -25,7 +26,8 @@ var routes = [
     { path: "waiting-room", component: waiting_room_component_1.WaitingRoomComponent, canActivate: [auth_service_1.AuthService] },
     { path: "in-game", component: in_game_component_1.InGameComponent, canActivate: [auth_service_1.AuthService] },
     { path: "game-history", component: game_history_component_1.GameHistoryComponent, canActivate: [auth_service_1.AuthService] },
-    { path: "profile", component: profile_component_1.ProfileComponent, canActivate: [auth_service_1.AuthService] }
+    { path: "profile", component: profile_component_1.ProfileComponent, canActivate: [auth_service_1.AuthService] },
+    { path: "options", component: options_component_1.OptionsComponent, canActivate: [auth_service_1.AuthService] }
 ];
 var AppRoutingModule = (function () {
     function AppRoutingModule(authService) {

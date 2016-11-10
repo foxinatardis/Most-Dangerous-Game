@@ -34,7 +34,7 @@ var ProfileComponent = (function () {
         this.router.navigate(["/game-history"]);
     };
     ProfileComponent.prototype.options = function () {
-        // todo create options page and navigate via this button.
+        this.router.navigate(["/options"]);
     };
     ProfileComponent = __decorate([
         core_1.Component({

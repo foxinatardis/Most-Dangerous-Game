@@ -104,6 +104,36 @@ app.get("/logout", (req, res) => {
 	res.send({success: true});
 });
 
+app.post("/api/change-password", (req, res) => {
+	if (!req.session.user) {
+		res.redirect("/");
+	} else if (!req.body.oldPassword || !req.body.newPassword){
+		// res.status(401);
+		res.send({message: "Please provide valid credentials."});
+	}
+	User.findOneAndUpdate(
+		{
+			name: req.session.user.name,
+			password: req.body.oldPassword
+		},
+		{
+			password: req.body.newPassword
+		},
+		(err, data) => {
+			if (err) {
+				console.log("Error at /api/change-password at User.findOneAndUpdate: ", err);
+				// res.status(500);
+				res.send({message: "Failed to update password"});
+			} else if (!data) {
+				// res.status(401);
+				res.send({message: "Please provide valid credentials."});
+			} else {
+				res.send({message: "Password successfully changed."});
+			}
+		}
+	);
+});
+
 app.post("/api/newGame", (req, res) => {
 	//todo: add verification
 	let date = new Date();

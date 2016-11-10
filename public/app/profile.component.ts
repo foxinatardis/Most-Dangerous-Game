@@ -44,7 +44,7 @@ export class ProfileComponent {
 		this.router.navigate(["/game-history"]);
 	}
 
-	options(){
-		// todo create options page and navigate via this button.
+	options() {
+		this.router.navigate(["/options"]);
 	}
 }
