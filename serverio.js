@@ -99,6 +99,11 @@ app.post("/api/login", (req, res) => {
 	});
 });
 
+app.get("/logout", (req, res) => {
+	delete req.session.user;
+	res.send({success: true});
+});
+
 app.post("/api/newGame", (req, res) => {
 	//todo: add verification
 	let date = new Date();

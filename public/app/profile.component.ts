@@ -6,18 +6,19 @@ import { AuthService } from "./auth.service";
 
 @Component({
 	template: `
-		<h2>Welcome {{this.authService.user.name}}</h2>
-		<button class="button" (click)="gameSelect()">
+		<h2>Welcome: {{this.authService.user.name}}</h2>
+		<h3>Your Score: {{this.authService.user.score}}</h3>
+		<div class="button" (click)="gameSelect()">
 			<p class="inside-button" *ngIf="this.authService.user.currentGame && this.authService.user.inGame">Enter Game</p>
 			<p class="inside-button" *ngIf="this.authService.user.currentGame && !this.authService.user.inGame">Enter Waiting Room</p>
 			<p class="inside-button" *ngIf="!this.authService.user.currentGame">Join or Create Game</p>
-		<button>
-		<button class="button" (click)="history()">
+		</div>
+		<div class="button" (click)="history()">
 			<p class="inside-button">Game History</p>
-		</button>
-		<button class="button" (click)="options()">
+		</div>
+		<div class="button" (click)="options()">
 			<p class="inside-button">Options</p>
-		</button>
+		</div>
 	`,
 })
 export class ProfileComponent {
