@@ -149,35 +149,51 @@ app.post("/api/joinGame", (req, res) => {
 		res.status(500);
 		res.send({error: true, message: "no session user name"});
 	}
-	Game.findOneAndUpdate(
-		{
-			creator: req.body.gameId,
-			inProgress: false
-		},
-		{$push: {players: req.session.user.name, activePlayers: req.session.user.name}},
-		{new: true},
+	User.findOne(
+		{name: req.body.gameId},
+		"currentGame",
 		(err, data) => {
 			if (err) {
-				console.log("error in post /api/joinGame at Game.findByIdAndUpdate: ", err);
+				console.log("Error at /api/joinGame with finding user: ", err);
 				res.status(500);
-				res.send({error: true, message: "Failed to Join Game"});
+				res.send({error: true, message: "Could not find game."});
 				return;
 			} else if (!data) {
-				res.send({error: true, message: "Game not found or already in progress."});
+				res.status(500);
+				res.send({error: true, message: "Could not find game."});
 				return;
 			}
-			var gameId = data._id;
-			User.findOneAndUpdate(
-				{name: req.session.user.name},
-				{currentGame: gameId},
+			Game.findOneAndUpdate(
+				{
+					_id: data.currentGame,
+					inProgress: false
+				},
+				{$push: {players: req.session.user.name, activePlayers: req.session.user.name}},
 				{new: true},
 				(err, data) => {
 					if (err) {
-						console.log("error in post /api/joinGame at User.findOneAndUpdate: ", err);
+						console.log("error in post /api/joinGame at Game.findByIdAndUpdate: ", err);
 						res.status(500);
-						res.send({error: true, message: "Failed to join Game!"});
+						res.send({error: true, message: "Failed to Join Game"});
+						return;
+					} else if (!data) {
+						res.send({error: true, message: "Game not found or already in progress."});
+						return;
 					}
-					res.send({success: true, message: "Successfully joined game: " + data.currentGame});
+					var gameId = data._id;
+					User.findOneAndUpdate(
+						{name: req.session.user.name},
+						{currentGame: gameId},
+						{new: true},
+						(err, data) => {
+							if (err) {
+								console.log("error in post /api/joinGame at User.findOneAndUpdate: ", err);
+								res.status(500);
+								res.send({error: true, message: "Failed to join Game!"});
+							}
+							res.send({success: true, message: "Successfully joined game: " + data.currentGame, gameId: data.currentGame});
+						}
+					);
 				}
 			);
 		}
@@ -190,7 +206,27 @@ app.get("/api/game", (req, res) => {
 	User.find({email: userEmail}, (err, data) => {
 		var gameId = data[0].currentGame;
 		var admin = data[0].gameAdmin;
+		if (err) {
+			console.log("error at /api/game User.find: ", err);
+			res.status(500);
+			res.send({error: true, message: "Error finding user information, please logout and try again."});
+			return;
+		} else if (!data) {
+			res.status(500);
+			res.send({error: true, message: "Error finding user information, please logout and try again."});
+			return;
+		}
 		Game.find({_id: gameId}, (err, data) => {
+			if (err) {
+				console.log("error at /api/game Game.find: ", err);
+				res.status(500);
+				res.send({error: true, message: "Error finding game information, please logout and try again."});
+				return;
+			} else if (!data) {
+				res.status(500);
+				res.send({error: true, message: "Error finding game information, please logout and try again."});
+				return;
+			}
 			var players = data[0].players;
 			req.session.gameId = gameId;
 			res.send({
@@ -213,8 +249,12 @@ app.post("/api/launch", (req, res) => {
 				console.log("Error at /api/launch Game.findById: ", err);
 				res.status(500);
 				res.send({message: "error launching game... Sorry"});
+				return;
+			} else if (!data) {
+				res.status(500);
+				res.send({message: "error launching game... Sorry"});
+				return;
 			}
-			console.log("line 196 data is: ", data);
 			var shuffle = data.players;
 			var j, x, i;
 			for (i = shuffle.length; i; i--) {
@@ -260,74 +300,90 @@ app.post("/api/launch", (req, res) => {
 });
 
 app.get("/api/target", (req, res) => {
-	Game.findById(
-		req.session.user.currentGame,
+	User.findOne(
+		{email: req.session.user.email},
+		"currentGame",
 		(err, data) => {
 			if (err) {
-				console.log("error at get:/api/target Game.findById: ", err);
+				console.log("Error at /api/target Iser.findOne: ", err);
 				res.status(500);
-				res.send({error: true, message: "Error finding target!!!"});
+				res.send({error: true, message:"Error finding user information, please logout and try again."});
+				return;
+			} else if (!data) {
+				res.status(500);
+				res.send({error: true, message:"Error finding user information, please logout and try again."});
 				return;
 			}
-			var player = req.session.user.name;
-			var players = data.players;
-			var targetPlayer = "";
-			for (var i = 0; i < players.length; i++) {
-				console.log("in for loop");
-				if (players[i] === player && i < (players.length - 1)) {
-					targetPlayer = players[i + 1];
-					console.log("met first if condition");
-					break;
-				} else if (players[i] === player && i === (players.length -1)) {
-					console.log("met second if condition");
-					targetPlayer = players[0];
-					break;
-				}
-			}
-			// todo update User to contain current target
-			if (!targetPlayer) {
-				res.status(500);
-				res.send({error: true, message: "Failed to aquire target"});
-			} else {
-				User.findOneAndUpdate(
-					{name: req.session.user.name},
-					{currentTarget: targetPlayer},
-					{new: true},
-					(err, data) => {
-						if(err) {
-							console.log("error at /api/target User.findOneAndUpdate: ", err);
-							res.status(500);
-							res.send({error: true, message: "failed to find target"});
-							return;
+			Game.findById(
+				data.currentGame,
+				(err, data) => {
+					if (err) {
+						console.log("error at get:/api/target Game.findById: ", err);
+						res.status(500);
+						res.send({error: true, message: "Error finding target!!!"});
+						return;
+					}
+					var player = req.session.user.name;
+					var players = data.activePlayers;
+					var targetPlayer = "";
+					for (var i = 0; i < players.length; i++) {
+						console.log("in for loop");
+						if (players[i] === player && i < (players.length - 1)) {
+							targetPlayer = players[i + 1];
+							console.log("met first if condition");
+							break;
+						} else if (players[i] === player && i === (players.length -1)) {
+							console.log("met second if condition");
+							targetPlayer = players[0];
+							break;
 						}
-						console.log(data.currentTarget);
-						var targetName = data.currentTarget;
-						User.findOne(
-							{name: targetName},
-							"lastLatitude lastLongitude lastAccuracy lastTimestamp",
+					}
+					if (!targetPlayer) {
+						res.status(500);
+						res.send({error: true, message: "Failed to aquire target"});
+						return;
+					} else {
+						User.findOneAndUpdate(
+							{name: req.session.user.name},
+							{currentTarget: targetPlayer},
+							{new: true},
 							(err, data) => {
-								if (err) {
-									console.log("error in api/target/loction at User.findOne", err);
+								if(err) {
+									console.log("error at /api/target User.findOneAndUpdate: ", err);
 									res.status(500);
-									res.send({error: true, message: "failed to find target location", targetName: targetName});
+									res.send({error: true, message: "failed to find target"});
 									return;
 								}
-								if (!data.lastLongitude) {
-									res.send({message: "Target not found.", targetName: targetName});
-									return;
-								}
-								res.send({
-									latitude: data.lastLatitude,
-									longitude: data.lastLongitude,
-									accuracy: data.lastAccuracy,
-									timestamp: data.lastTimestamp,
-									targetName: targetName
-								});
+								console.log(data.currentTarget);
+								var targetName = data.currentTarget;
+								User.findOne(
+									{name: targetName},
+									"lastLatitude lastLongitude lastAccuracy lastTimestamp",
+									(err, data) => {
+										if (err) {
+											console.log("error in api/target/loction at User.findOne", err);
+											res.status(500);
+											res.send({error: true, message: "failed to find target location", targetName: targetName});
+											return;
+										}
+										if (!data.lastLongitude) {
+											res.send({message: "Target not found.", targetName: targetName});
+											return;
+										}
+										res.send({
+											latitude: data.lastLatitude,
+											longitude: data.lastLongitude,
+											accuracy: data.lastAccuracy,
+											timestamp: data.lastTimestamp,
+											targetName: targetName
+										});
+									}
+								);
 							}
 						);
 					}
-				);
-			}
+				}
+			);
 		}
 	);
 });
@@ -451,23 +507,29 @@ io.on("connection", (socket) => {
 	console.log("socket connected");
 
 	socket.on("disconnect", () => {
-
 		delete connectedUsers[socket._name];
-		User.findOneAndUpdate(
-			{name: socket._name},
-			{
-				lastLongitude: socket._long,
-				lastLatitude: socket._lat,
-				lastAccuracy: socket._acc,
-				lastTimestamp: socket._time,
-				score: socket._score
-			},
-			(err) => {
-				if (err) {
-					console.log("Err at disconnect with User.findOneAndUpdate: ", err);
+		if (socket._score) {
+			User.findOneAndUpdate(
+				{name: socket._name},
+				{
+					lastLongitude: socket._long,
+					lastLatitude: socket._lat,
+					lastAccuracy: socket._acc,
+					lastTimestamp: socket._time,
+					score: socket._score
+				},
+				(err) => {
+					if (err) {
+						console.log("Err at disconnect with User.findOneAndUpdate: ", err);
+					} else {
+						console.log("socekt saved: " + socket._name);
+					}
+
 				}
-			}
-		);
+			);
+		} else {
+			console.log("socket for user: " + socket._name + " disconnected without save.");
+		}
 	});
 
 	socket.on("update-location", (data) => {
@@ -519,6 +581,17 @@ io.on("connection", (socket) => {
 		} else {
 			socket.emit("target online", false);
 		}
+	});
+
+	socket.on("waiting", (data) => {
+		console.log("hit socket 'waiting'");
+		socket.join(data.gameId);
+		console.log("Joined room: ", data.gameId);
+		io.sockets.in(data.gameId).emit("update waiting", data.name);
+	});
+
+	socket.on("launch", (data) => {
+		io.sockets.in(data).emit("launch");
 	});
 
 	socket.on("take aim", (data) => {

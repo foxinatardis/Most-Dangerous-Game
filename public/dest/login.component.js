@@ -54,7 +54,7 @@ var LoginComponent = (function () {
                         _this.router.navigate(["/in-game"]);
                     }
                     else {
-                        _this.router.navigate(["/enter-game"]);
+                        _this.router.navigate(["/waiting-room"]);
                     }
                 }
                 else {

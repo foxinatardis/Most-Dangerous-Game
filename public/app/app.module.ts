@@ -12,7 +12,7 @@ import { GeoService } from "./geo.service";
 import { AppComponent } from './app.component';
 import { LoginComponent } from "./login.component";
 import { GameSelectionComponent } from "./game-selection.component";
-import { EnterGameComponent } from "./enter-game.component";
+import { WaitingRoomComponent } from "./waiting-room.component";
 import { InGameComponent } from "./in-game.component";
 import { GameHistoryComponent } from "./game-history.component";
 
@@ -32,7 +32,7 @@ import { GameHistoryComponent } from "./game-history.component";
 		AppComponent,
 		LoginComponent,
 		GameSelectionComponent,
-		EnterGameComponent,
+		WaitingRoomComponent,
 		InGameComponent,
 		GameHistoryComponent
 	],

@@ -102,7 +102,7 @@ export class InGameComponent {
 		this.socket.on("attack result", (data) => {
 			if (data) {
 				this.attackMessage = "Target taken out. Awaiting info on next target...";
-				this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
+				this.nextTarget();
 			} else {
 				this.attackMessage = "Target missed... ";
 				setTimeout(function() {
@@ -174,6 +174,37 @@ export class InGameComponent {
 			gameId: this.authService.user.currentGame
 		};
 		this.socket.emit("attack", data);
+	}
+
+	nextTarget() {
+		this.apiService.getObs("/api/target").subscribe((res) => {
+			if (res.error) {
+				this.error = true;
+				this.errorMessage = res.message;
+				if (res.targetName) {
+					this.targetName = res.targetName;
+				}
+			} else {
+				this.attacking = false;
+				this.attackMessage = "";
+				this.targetName = res.targetName;
+				this.targetLat = res.latitude;
+				this.targetLong = res.longitude;
+				this.targetAcc = res.accuracy;
+				this.targetTime = res.timestamp;
+				this.update();
+				let joinData: any = {
+					name: this.authService.user.name,
+					targetName: res.targetName,
+					lat: this.myLat,
+					long: this.myLong,
+					time: this.myTime,
+					acc: this.myAcc,
+					score: this.authService.user.score
+				};
+				this.socket.emit("join", joinData);
+			}
+		});
 	}
 
 	rapidEmit(hunterName: string) {

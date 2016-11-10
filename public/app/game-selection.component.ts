@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { ApiService } from "./api.service";
+import { Router } from "@angular/router";
+import { AuthService } from "./auth.service";
 
 @Component({
 	template: `
@@ -16,10 +18,11 @@ import { ApiService } from "./api.service";
 		<div *ngIf="gameCreated">
 			<h2>New Game Created</h2>
 			<p class="styled">Your friends can join your game by entering your username in the join game field.</p>
-
+			<button class="button" (click)="enterGame()">Enter Waiting Room</button>
 		</div>
 		<div *ngIf="gameJoined">
 			<h2>{{gameId}}'s game joined successfully!!!</h2>
+			<button class="button" (click)="enterGame()">Enter Waiting Room</button>
 		</div>
 	`,
 	styles: [`
@@ -76,7 +79,11 @@ import { ApiService } from "./api.service";
 	`]
 })
 export class GameSelectionComponent {
-	constructor(private apiService: ApiService) {}
+	constructor(
+		private apiService: ApiService,
+		private router: Router,
+		private authService: AuthService
+	) {}
 
 	gameId: string;
 	start: boolean = true;
@@ -90,6 +97,7 @@ export class GameSelectionComponent {
 				this.gameCreated = true;
 				this.start = false;
 				this.gameId = response.gameId;
+				this.authService.user.currentGame = response.gameId;
 			}
 			// todo handle error creating game
 		});
@@ -101,6 +109,7 @@ export class GameSelectionComponent {
 			if (response.success) {
 				this.start = false;
 				this.gameJoined = true;
+				this.authService.user.currentGame = response.gameId;
 			} else {
 				console.log("didn;t recieve success!");
 				console.log(response.error);
@@ -110,4 +119,8 @@ export class GameSelectionComponent {
 		});
 	}
 
+
+	enterGame() {
+		this.router.navigate(["waiting-room"]);
+	}
 }

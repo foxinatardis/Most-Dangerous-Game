@@ -55,7 +55,7 @@ var InGameComponent = (function () {
         this.socket.on("attack result", function (data) {
             if (data) {
                 _this.attackMessage = "Target taken out. Awaiting info on next target...";
-                _this.geoService.getLocation(_this.positionSuccess.bind(_this), _this.positionErr.bind(_this));
+                _this.nextTarget();
             }
             else {
                 _this.attackMessage = "Target missed... ";
@@ -123,6 +123,38 @@ var InGameComponent = (function () {
             gameId: this.authService.user.currentGame
         };
         this.socket.emit("attack", data);
+    };
+    InGameComponent.prototype.nextTarget = function () {
+        var _this = this;
+        this.apiService.getObs("/api/target").subscribe(function (res) {
+            if (res.error) {
+                _this.error = true;
+                _this.errorMessage = res.message;
+                if (res.targetName) {
+                    _this.targetName = res.targetName;
+                }
+            }
+            else {
+                _this.attacking = false;
+                _this.attackMessage = "";
+                _this.targetName = res.targetName;
+                _this.targetLat = res.latitude;
+                _this.targetLong = res.longitude;
+                _this.targetAcc = res.accuracy;
+                _this.targetTime = res.timestamp;
+                _this.update();
+                var joinData = {
+                    name: _this.authService.user.name,
+                    targetName: res.targetName,
+                    lat: _this.myLat,
+                    long: _this.myLong,
+                    time: _this.myTime,
+                    acc: _this.myAcc,
+                    score: _this.authService.user.score
+                };
+                _this.socket.emit("join", joinData);
+            }
+        });
     };
     InGameComponent.prototype.rapidEmit = function (hunterName) {
         console.log("rapidEmit()");

@@ -88,7 +88,7 @@ export class LoginComponent {
 					if (this.authService.user.inGame) {
 						this.router.navigate(["/in-game"]);
 					} else {
-						this.router.navigate(["/enter-game"]);
+						this.router.navigate(["/waiting-room"]);
 					}
 				} else {
 					this.router.navigate(["/game-selection"]);
