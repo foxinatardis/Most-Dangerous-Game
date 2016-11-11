@@ -147,6 +147,37 @@ app.post("/api/leave-game", (req, res) => {
 	User.findOneAndUpdate(
 		{
 			name: req.session.user.name
+		},
+		{
+			currentGame: "",
+			inGame: false,
+			gameAdmin: false,
+			currentTarget: ""
+		},
+		(err, data) => {
+			if (err) {
+				console.log("error at /api/leave-game User.findOneAndUpdate: ", err);
+				res.send({error: true, message: "Failed to leave game."});
+				return;
+			} else if (!data) {
+				res.status(401);
+				res.send({message: "Womp Womp"});
+				return;
+			}
+			Game.findByIdAndUpdate(
+				data.currentGame,
+				{$pull: {activePlayers: req.session.user.name}},
+				(err, data) => {
+					if (err) {
+						console.log("Error at /api/leave-game Game.findByIdAndUpdate: ", err);
+						res.send({message: "Failed to leave game"});
+						return;
+					} else if (!data) {
+						res.send({message: "Failed to find game"});
+						return;
+					} res.send({message: "Game Abandoned"});
+				}
+			);
 		}
 	);
 });

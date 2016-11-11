@@ -10,7 +10,9 @@ import { AuthService } from "./auth.service";
 			<div class="button" (click)="changePassword()" *ngIf="!selectionMade">
 				<p class="inside-button">Change Password</p>
 			</div>
-			<div class="button" *ngIf="this.authService.user.currentGame" (click)="leaveGame()">Leave Current Game</div>
+			<div class="button" *ngIf="this.authService.user.currentGame" (click)="leaveGame()">
+				<p class="inside-button">Leave Current Game</p>
+			</div>
 			<div class="button"></div>
 			<div class="button"></div>
 		</div>
@@ -28,15 +30,21 @@ import { AuthService } from "./auth.service";
 
 			<div *ngIf="displayLeaveGame">
 				<h3>Are you sure you want to leave your current game?</h3>
-				<div class="button" (click)="confirmLeaveGame()">Yes</div>
-				<div class="button" (click)="displayOptions()">No</div>
+				<div class="button" (click)="confirmLeaveGame()">
+					<p class="inside-button">Yes</p>
+				</div>
+				<div class="button" (click)="displayOptions()">
+					<p class="inside-button">No</p>
+				</div>
 			</div>
 
 		</div>
 
 		<div *ngIf="result">
 			<h3>{{resultMessage}}</h3>
-			<div class="button" (click)="displayOptions()">Back to Options</div>
+			<div class="button" (click)="displayOptions()">
+				<p class="inside-button">Back to Options</p>
+			</div>
 		</div>
 	`,
 })
@@ -53,6 +61,7 @@ export class OptionsComponent {
 	private displayChangePassword: boolean = false;
 	private displayLeaveGame: boolean = false;
 	private displayOptions() {
+		this.selectionMade = false;
 		this.result = false;
 		this.resultMessage = "";
 		this.displayChangePassword = false;
@@ -95,6 +104,12 @@ export class OptionsComponent {
 		this.apiService.postObs("/api/leave-game", this.authService.user.currentGame).subscribe((res) => {
 			this.result = true;
 			this.resultMessage = res.message;
+			if (res.message === "Game Abandoned") {
+				this.authService.user.currentGame = "";
+				this.authService.user.inGame = false;
+				this.authService.user.gameAdmin = false;
+				this.authService.user.currentTarget = "";
+			}
 		});
 	}
 

@@ -29,6 +29,7 @@ var OptionsComponent = (function () {
         this.confirmPassword = "";
     }
     OptionsComponent.prototype.displayOptions = function () {
+        this.selectionMade = false;
         this.result = false;
         this.resultMessage = "";
         this.displayChangePassword = false;
@@ -68,11 +69,17 @@ var OptionsComponent = (function () {
         this.apiService.postObs("/api/leave-game", this.authService.user.currentGame).subscribe(function (res) {
             _this.result = true;
             _this.resultMessage = res.message;
+            if (res.message === "Game Abandoned") {
+                _this.authService.user.currentGame = "";
+                _this.authService.user.inGame = false;
+                _this.authService.user.gameAdmin = false;
+                _this.authService.user.currentTarget = "";
+            }
         });
     };
     OptionsComponent = __decorate([
         core_1.Component({
-            template: "\n\t\t<h2>Welcome: {{this.authService.user.name}}</h2>\n\t\t<div *ngIf=\"!selectionMade && !result\">\n\t\t\t<div class=\"button\" (click)=\"changePassword()\" *ngIf=\"!selectionMade\">\n\t\t\t\t<p class=\"inside-button\">Change Password</p>\n\t\t\t</div>\n\t\t\t<div class=\"button\" *ngIf=\"this.authService.user.currentGame\" (click)=\"leaveGame()\">Leave Current Game</div>\n\t\t\t<div class=\"button\"></div>\n\t\t\t<div class=\"button\"></div>\n\t\t</div>\n\n\t\t<div *ngIf=\"selectionMade && !result\">\n\t\t\t<div *ngIf=\"displayChangePassword\">\n\t\t\t\t<input type=\"password\" [(ngModel)]=\"oldPassword\" placeholder=\"Old Password\">\n\t\t\t\t<input type=\"password\" [(ngModel)]=\"newPassword\" placeholder=\"New Password\">\n\t\t\t\t<input type=\"password\" [(ngModel)]=\"confirmPassword\" placeholder=\"Confirm New Password\">\n\t\t\t\t<h3 class=\"error\" *ngIf=\"!passwordVerify()\">Passwords must match and contain at least 8 characters</h3>\n\t\t\t\t<div class=\"button\" (click)=\"sendPassword()\">\n\t\t\t\t\t<p class=\"inside-button\">Change Password</p>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div *ngIf=\"displayLeaveGame\">\n\t\t\t\t<h3>Are you sure you want to leave your current game?</h3>\n\t\t\t\t<div class=\"button\" (click)=\"confirmLeaveGame()\">Yes</div>\n\t\t\t\t<div class=\"button\" (click)=\"displayOptions()\">No</div>\n\t\t\t</div>\n\n\t\t</div>\n\n\t\t<div *ngIf=\"result\">\n\t\t\t<h3>{{resultMessage}}</h3>\n\t\t\t<div class=\"button\" (click)=\"displayOptions()\">Back to Options</div>\n\t\t</div>\n\t",
+            template: "\n\t\t<h2>Welcome: {{this.authService.user.name}}</h2>\n\t\t<div *ngIf=\"!selectionMade && !result\">\n\t\t\t<div class=\"button\" (click)=\"changePassword()\" *ngIf=\"!selectionMade\">\n\t\t\t\t<p class=\"inside-button\">Change Password</p>\n\t\t\t</div>\n\t\t\t<div class=\"button\" *ngIf=\"this.authService.user.currentGame\" (click)=\"leaveGame()\">\n\t\t\t\t<p class=\"inside-button\">Leave Current Game</p>\n\t\t\t</div>\n\t\t\t<div class=\"button\"></div>\n\t\t\t<div class=\"button\"></div>\n\t\t</div>\n\n\t\t<div *ngIf=\"selectionMade && !result\">\n\t\t\t<div *ngIf=\"displayChangePassword\">\n\t\t\t\t<input type=\"password\" [(ngModel)]=\"oldPassword\" placeholder=\"Old Password\">\n\t\t\t\t<input type=\"password\" [(ngModel)]=\"newPassword\" placeholder=\"New Password\">\n\t\t\t\t<input type=\"password\" [(ngModel)]=\"confirmPassword\" placeholder=\"Confirm New Password\">\n\t\t\t\t<h3 class=\"error\" *ngIf=\"!passwordVerify()\">Passwords must match and contain at least 8 characters</h3>\n\t\t\t\t<div class=\"button\" (click)=\"sendPassword()\">\n\t\t\t\t\t<p class=\"inside-button\">Change Password</p>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t\t<div *ngIf=\"displayLeaveGame\">\n\t\t\t\t<h3>Are you sure you want to leave your current game?</h3>\n\t\t\t\t<div class=\"button\" (click)=\"confirmLeaveGame()\">\n\t\t\t\t\t<p class=\"inside-button\">Yes</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"button\" (click)=\"displayOptions()\">\n\t\t\t\t\t<p class=\"inside-button\">No</p>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t</div>\n\n\t\t<div *ngIf=\"result\">\n\t\t\t<h3>{{resultMessage}}</h3>\n\t\t\t<div class=\"button\" (click)=\"displayOptions()\">\n\t\t\t\t<p class=\"inside-button\">Back to Options</p>\n\t\t\t</div>\n\t\t</div>\n\t",
         }), 
         __metadata('design:paramtypes', [api_service_1.ApiService, auth_service_1.AuthService, router_1.Router])
     ], OptionsComponent);
