@@ -325,20 +325,22 @@ app.post("/api/launch", (req, res) => {
 	// todo add verification
 	console.log("/api/launch req.body: ", req.body, req.session.gameId);
 	Game.findById(
-		req.session.gameId,
-		"players",
+		req.body.gameId,
+		"activePlayers",
 		(err, data) => {
+			console.log("launch game data is: ", data);
 			if (err) {
 				console.log("Error at /api/launch Game.findById: ", err);
-				res.status(500);
 				res.send({message: "error launching game... Sorry"});
 				return;
 			} else if (!data) {
-				res.status(500);
 				res.send({message: "error launching game... Sorry"});
 				return;
+			} else if (data.activePlayers.length < 3) {
+				res.send({message: "Not enough players to launch game."});
+				return;
 			}
-			var shuffle = data.players;
+			var shuffle = data.activePlayers;
 			var j, x, i;
 			for (i = shuffle.length; i; i--) {
 				j = Math.floor(Math.random() * i);
@@ -607,7 +609,6 @@ io.on("connection", (socket) => {
 					} else {
 						console.log("socekt saved: " + socket._name);
 					}
-
 				}
 			);
 		} else {
@@ -622,7 +623,9 @@ io.on("connection", (socket) => {
 			socket._long = data.longitude;
 			socket._time = data.time;
 			socket._acc = data.accuracy;
-			socket._score += 5;
+			if (data.accuracy < 30) {
+				socket._score += 5;
+			}
 		}
 		socket.emit("score", socket._score);
 		if (connectedUsers[socket._targetName]) {

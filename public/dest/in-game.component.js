@@ -46,7 +46,7 @@ var InGameComponent = (function () {
             }
         });
         this.socket.on("score", function (data) {
-            _this.dataTest = data;
+            _this.authService.user.score = data;
         });
         this.socket.on("being watched", function (data) {
             _this.rapidEmit(data);

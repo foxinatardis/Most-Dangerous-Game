@@ -32,7 +32,11 @@ var WaitingRoomComponent = (function () {
         }).subscribe(function (res) {
             if (res.success) {
                 _this.socket.emit("launch", _this.authService.user.currentGame);
-            } // todo handle launch failure
+            }
+            else {
+                _this.error = true;
+                _this.errorMessage = res.message;
+            }
         });
     };
     ;

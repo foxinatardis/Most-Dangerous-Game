@@ -91,7 +91,7 @@ export class InGameComponent {
 		});
 
 		this.socket.on("score", (data) => {
-			this.dataTest = data;
+			this.authService.user.score = data;
 		});
 
 		this.socket.on("being watched", (data) => {

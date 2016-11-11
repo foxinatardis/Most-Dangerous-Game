@@ -13,8 +13,6 @@ import { AuthService } from "./auth.service";
 			<div class="button" *ngIf="this.authService.user.currentGame" (click)="leaveGame()">
 				<p class="inside-button">Leave Current Game</p>
 			</div>
-			<div class="button"></div>
-			<div class="button"></div>
 		</div>
 
 		<div *ngIf="selectionMade && !result">

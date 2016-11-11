@@ -48,7 +48,10 @@ export class WaitingRoomComponent implements OnInit {
 		).subscribe((res) => {
 			if (res.success) {
 				this.socket.emit("launch", this.authService.user.currentGame);
-			} // todo handle launch failure
+			} else {
+				this.error = true;
+				this.errorMessage = res.message;
+			}
 		});
 	};
 
