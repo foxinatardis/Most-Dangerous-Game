@@ -107,9 +107,11 @@ app.get("/logout", (req, res) => {
 app.post("/api/change-password", (req, res) => {
 	if (!req.session.user) {
 		res.redirect("/");
+		return;
 	} else if (!req.body.oldPassword || !req.body.newPassword){
 		// res.status(401);
 		res.send({message: "Please provide valid credentials."});
+		return;
 	}
 	User.findOneAndUpdate(
 		{
@@ -130,6 +132,21 @@ app.post("/api/change-password", (req, res) => {
 			} else {
 				res.send({message: "Password successfully changed."});
 			}
+		}
+	);
+});
+
+app.post("/api/leave-game", (req, res) => {
+	if (!req.session.user.name) {
+		res.redirect("/");
+		return;
+	} else if (!req.body) {
+		res.send({error: true, message: "Couldn't find current game."});
+		return;
+	}
+	User.findOneAndUpdate(
+		{
+			name: req.session.user.name
 		}
 	);
 });

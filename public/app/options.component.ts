@@ -5,14 +5,16 @@ import { AuthService } from "./auth.service";
 
 @Component({
 	template: `
+		<h2>Welcome: {{this.authService.user.name}}</h2>
 		<div *ngIf="!selectionMade && !result">
 			<div class="button" (click)="changePassword()" *ngIf="!selectionMade">
 				<p class="inside-button">Change Password</p>
 			</div>
-			<div class="button"></div>
+			<div class="button" *ngIf="this.authService.user.currentGame" (click)="leaveGame()">Leave Current Game</div>
 			<div class="button"></div>
 			<div class="button"></div>
 		</div>
+
 		<div *ngIf="selectionMade && !result">
 			<div *ngIf="displayChangePassword">
 				<input type="password" [(ngModel)]="oldPassword" placeholder="Old Password">
@@ -23,7 +25,15 @@ import { AuthService } from "./auth.service";
 					<p class="inside-button">Change Password</p>
 				</div>
 			</div>
+
+			<div *ngIf="displayLeaveGame">
+				<h3>Are you sure you want to leave your current game?</h3>
+				<div class="button" (click)="confirmLeaveGame()">Yes</div>
+				<div class="button" (click)="displayOptions()">No</div>
+			</div>
+
 		</div>
+
 		<div *ngIf="result">
 			<h3>{{resultMessage}}</h3>
 			<div class="button" (click)="displayOptions()">Back to Options</div>
@@ -41,14 +51,20 @@ export class OptionsComponent {
 	private result: boolean = false;
 	private resultMessage: string = "";
 	private displayChangePassword: boolean = false;
+	private displayLeaveGame: boolean = false;
 	private displayOptions() {
 		this.result = false;
 		this.resultMessage = "";
 		this.displayChangePassword = false;
+		this.displayLeaveGame = false;
 	}
 	private changePassword() {
 		this.selectionMade = true;
 		this.displayChangePassword = true;
+	}
+	private leaveGame() {
+		this.selectionMade = true;
+		this.displayLeaveGame = true;
 	}
 
 
@@ -73,4 +89,13 @@ export class OptionsComponent {
 			});
 		}
 	};
+
+	// leave game variables and functions
+	confirmLeaveGame() {
+		this.apiService.postObs("/api/leave-game", this.authService.user.currentGame).subscribe((res) => {
+			this.result = true;
+			this.resultMessage = res.message;
+		});
+	}
+
 }
