@@ -10,9 +10,12 @@ import * as io from "socket.io-client";
 			<h2>Score: {{this.authService.user.score}}</h2>
 		</div>
 		<div *ngIf="!error">
-			<h2 [style.color]="online()">Target: {{targetName}}{{dataTest}}</h2>
+			<h2 [style.color]="online()">Target: {{targetName}}</h2>
 			<p *ngIf="targetOnline">Target Aquired</p>
 			<p *ngIf="!targetOnline">Target Offline</p>
+		</div>
+		<div *ngIf="error">
+			<h2 class="error">{{errorMessage}}</h2>
 		</div>
 
 		<div class="compassWrapper" id="compassWrapper">
@@ -45,9 +48,7 @@ import * as io from "socket.io-client";
 			<h3>Direction to Target: {{bearing}} degrees</h3>
 			<h3 [style.color]="resolution()">Accuracy: {{accuracy}} meters</h3>
 		</div>
-		<div *ngIf="error">
-			<h2 class="error">{{errorMessage}}</h2>
-		</div>
+
 		<button *ngIf="!takingAim && !attacking && !error" class="button bottom" (click)="takeAim()">Take Aim</button>
 		<button *ngIf="takingAim && !attacking && !error" class="button bottom" (click)="attack()">Attack</button>
 		<div *ngIf="attacking">
@@ -56,8 +57,8 @@ import * as io from "socket.io-client";
 	`,
 	styles: [`
 		.compassWrapper {
-			width: 90%;
-			margin: 0% 5%;
+			width: 80%;
+			margin: 0% 10%;
 			height: 0;
 			padding-bottom: 100%;
 			position: relative;
@@ -462,8 +463,8 @@ export class InGameComponent {
 
 	update() {
 		if (this.myLat && this.targetLat) {
-			this.distanceToTarget = this.getDistance(this.myLong, this.myLat, this.targetLong, this.targetLat);
-			this.accuracy = this.myAcc + this.targetAcc;
+			this.distanceToTarget = Math.floor(this.getDistance(this.myLong, this.myLat, this.targetLong, this.targetLat));
+			this.accuracy = Math.floor(this.myAcc + this.targetAcc);
 			this.bearing = Math.floor(this.getBearing(this.myLong, this.myLat, this.targetLong, this.targetLat));
 			// console.log("requirements met");
 			let toDraw = document.getElementById("toDraw");
