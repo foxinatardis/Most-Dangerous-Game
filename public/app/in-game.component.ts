@@ -11,8 +11,8 @@ import * as io from "socket.io-client";
 		</div>
 		<div *ngIf="!error">
 			<h2 [style.color]="online()">Target: {{targetName}}</h2>
-			<p *ngIf="targetOnline">Target Aquired</p>
-			<p *ngIf="!targetOnline">Target Offline</p>
+			<p *ngIf="targetOnline">Target Aquired: {{distanceToTarget}} meters from you location.</p>
+			<p *ngIf="!targetOnline">Target Last seen {{distanceToTarget}} meters from your location.</p>
 		</div>
 		<div *ngIf="error">
 			<h2 class="error">{{errorMessage}}</h2>
@@ -43,16 +43,13 @@ import * as io from "socket.io-client";
 			</div>
 		</div>
 
-		<div *ngIf="!error && !attacking">
-			<h3>Distance to Target: {{distanceToTarget}} meters</h3>
-			<h3>Direction to Target: {{bearing}} degrees</h3>
-			<h3 [style.color]="resolution()">Accuracy: {{accuracy}} meters</h3>
-		</div>
-
 		<button *ngIf="!takingAim && !attacking && !error" class="button bottom" (click)="takeAim()">Take Aim</button>
 		<button *ngIf="takingAim && !attacking && !error" class="button bottom" (click)="attack()">Attack</button>
 		<div *ngIf="attacking">
 			<h2>{{attackMessage}}</h2>
+		</div>
+		<div *ngIf="!error && !attacking">
+			<h3 [style.color]="resolution()">Accuracy: {{accuracy}} meters</h3>
 		</div>
 	`,
 	styles: [`
