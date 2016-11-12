@@ -9,7 +9,7 @@ import { ApiService } from "./api.service";
 		<div>
 			<h2 *ngIf="register">Username: <span class="error" *ngIf="error">{{error}}</span></h2>
 			<input type="text" [(ngModel)]="loginUser.username" placeholder="Username" *ngIf="register">
-
+			<h3 class="error" *ngIf="error">{{error}}</h3>
 			<h2>Email: </h2>
 			<input type="text" [(ngModel)]="loginUser.email" placeholder="Email">
 

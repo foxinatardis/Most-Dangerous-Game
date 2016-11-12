@@ -111,7 +111,7 @@ app.post("/api/login", (req, res) => {
 			req.session.user = user[0];
 			res.send({message: "successfully logged in!", loggedIn: true, userData: user});
 		} else {
-			res.status(401);
+			// res.status(401);
 			res.send({error: true, message: "invalid login", loggedIn: false});
 		}
 	});
