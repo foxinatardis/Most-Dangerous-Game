@@ -7,13 +7,22 @@ var mongoose = require("mongoose");
 
 var app = express();
 
+var http = express();
+
+// set up a route to redirect http to https
+http.get('*', (req,res) => {
+	res.redirect('https://adamb.me'+req.url);
+});
+
+http.listen(8000);
+
 var fs = require("fs");
 var https = require("https");
 var options = {
 	key:fs.readFileSync("./server.key"),
 	cert: fs.readFileSync("./server.crt")
 };
-httpsPort = 8001;
+httpsPort = 8443;
 
 var secureServer = https.createServer(options, app);
 
@@ -710,7 +719,7 @@ io.on("connection", (socket) => {
 	socket.on("attack", (data) => {
 		console.log("attack attempted");
 		let attempt = data.distance + data.accuracy;
-		if (attempt > 1000) { // todo change this to 100
+		if (attempt > 1000 || !connectedUsers[socket._targetName]) { // if distance+accuracy is too great or target is offline attempt fails todo change this to 100
 			socket.emit("attack result", false);
 		} else {
 			let result = Math.random() * attempt;
