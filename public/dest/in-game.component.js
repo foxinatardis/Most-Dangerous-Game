@@ -28,8 +28,11 @@ var InGameComponent = (function () {
         this.compass = document.getElementById("compassWrapper");
         this.compassWatch = Compass.watch(function (heading) {
             console.log(heading);
-            this.compass.style.transform = "rotate(" + (90 - heading) + "deg)";
+            this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
         }.bind(this));
+        Compass.noSupport(function () {
+            this.compass.style.transform = "rotate(-90deg)";
+        });
         this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
         this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
         this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
