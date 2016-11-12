@@ -18,7 +18,7 @@ import * as io from "socket.io-client";
 			<h2 class="error">{{errorMessage}}</h2>
 		</div>
 
-		<div class="compassWrapper" id="compassWrapper">
+		<div class="compassWrapper" id="compassWrapper" *ngIf="!error">
 			<div class="compassQuarter one">
 				<div class="compassSixty one">
 					<div class="compassThird one"></div>
@@ -266,6 +266,10 @@ export class InGameComponent {
 
 		this.socket.on("killed", (data) => {
 			clearInterval(this.locationInterval);
+			this.authService.user.currentGame = "";
+			this.authService.user.gameAdmin = false;
+			this.authService.user.inGame = false;
+			this.authService.user.currentTarget = "";
 			this.error = true;
 			this.errorMessage = "You were killed by: " + data;
 		});
