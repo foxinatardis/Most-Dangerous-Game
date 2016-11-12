@@ -17,7 +17,7 @@ var AppComponent = (function () {
 AppComponent = __decorate([
     core_1.Component({
         selector: 'assassin',
-        template: "\n\t\t<nav>\n\t\t\t<a href=\"/\">\n\t\t\t\t<div class=\"for-nav\">\n\t\t\t\t\t<p class=\"p-nav\">Home</p>\n\t\t\t\t</div>\n\t\t\t</a>\n\t\t\t<a href=\"/game-selection\">\n\t\t\t\t<div class=\"for-nav\">\n\t\t\t\t\t<p class=\"p-nav\">Create or Join</p>\n\t\t\t\t</div>\n\t\t\t</a>\n\t\t</nav>\n\t\t<router-outlet></router-outlet>\n\t",
+        template: "\n\t\t<nav>\n\t\t\t<a href=\"/\">\n\t\t\t\t<div class=\"for-nav\">\n\t\t\t\t\t<p class=\"p-nav\">Home</p>\n\t\t\t\t</div>\n\t\t\t</a>\n\t\t\t<a href=\"/game-selection\">\n\t\t\t\t<div class=\"for-nav\">\n\t\t\t\t\t<p class=\"p-nav\">Create or Join</p>\n\t\t\t\t</div>\n\t\t\t</a>\n\t\t\t<a href=\"/game-history\">\n\t\t\t\t<div class=\"for-nav\">\n\t\t\t\t\t<p class=\"p-nav\">Game History</p>\n\t\t\t\t</div>\n\t\t\t</a>\n\t\t</nav>\n\t\t<router-outlet></router-outlet>\n\t",
     }),
     __metadata("design:paramtypes", [])
 ], AppComponent);

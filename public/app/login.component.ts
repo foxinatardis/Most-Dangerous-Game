@@ -7,14 +7,18 @@ import { ApiService } from "./api.service";
 
 	template: `
 		<div>
-			<h2 *ngIf="register">Username: </h2>
+			<h2 *ngIf="register">Username: <span class="error" *ngIf="error">{{error}}</span></h2>
 			<input type="text" [(ngModel)]="loginUser.username" placeholder="Username" *ngIf="register">
 
-			<h2>Email: {{test}}</h2>
+			<h2>Email: </h2>
 			<input type="text" [(ngModel)]="loginUser.email" placeholder="Email">
 
 			<h2>Password: </h2>
 			<input type="password" [(ngModel)]="loginUser.password" placeholder="Password">
+
+			<h2 *ngIf="register">Re-enter Password: </h2>
+			<input type="password" [(ngModel)]="password" placeholder="Password" *ngIf="register">
+			<h3 class="error" *ngIf="register && !passwordVerify()">{{registerError}}</h3>
 
 			<div>
 				<div class="button" (click)="sendLogin()" *ngIf="!register">
@@ -33,7 +37,7 @@ import { ApiService } from "./api.service";
 					<p class="inside-button">Create New User</p>
 				</div>
 			</div>
-			<p *ngIf="error">{{error}}</p>
+
 		</div>
 	`,
 	styles: [`
@@ -60,40 +64,41 @@ export class LoginComponent {
 		email: "",
 		password: ""
 	};
+	password: string = "";
+	registerError: string = "Passwords must match and be atleast 8 characters";
 
 	private error: string = "";
 
 	private newUser() {
-		this.test = "register clicked";
 		this.register = !this.register;
 	};
 
 	private sendRegistration() {
-		this.apiService.postObs("/api/signup", this.loginUser).subscribe((res) => {
-			if (res.error) {
-				// todo handle error
-			} else {
-				this.router.navigate(["/login"]);
-			}
-		});
+		if (this.passwordVerify()) {
+			this.apiService.postObs("/api/signup", this.loginUser).subscribe((res) => {
+				if (res.error) {
+					this.error = res.message;
+				} else if (res.user) {
+					this.authService.user = res.user;
+					this.router.navigate(["/"]);
+				}
+			});
+		}
 	};
+
+	private passwordVerify() {
+		if (this.password === this.loginUser.password && this.password.length >= 8) {
+			return true;
+		} return false;
+	}
 
 	private sendLogin() {
 		this.apiService.postObs("/api/login", this.loginUser).subscribe((res) => {
-			this.test = "login clicked";
 			if (res.loggedIn) {
 				this.authService.user = res.userData[0];
-				console.log(this.authService.user);
-				if (this.authService.user.currentGame) {
-					if (this.authService.user.inGame) {
-						this.router.navigate(["/in-game"]);
-					} else {
-						this.router.navigate(["/enter-game"]);
-					}
-				} else {
-					this.router.navigate(["/game-selection"]);
-				}
-
+				this.router.navigate(["/profile"]);
+			} else if (res.error) {
+				this.error = res.message;
 			}
 		});
 

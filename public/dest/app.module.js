@@ -19,8 +19,11 @@ var geo_service_1 = require("./geo.service");
 var app_component_1 = require('./app.component');
 var login_component_1 = require("./login.component");
 var game_selection_component_1 = require("./game-selection.component");
-var enter_game_component_1 = require("./enter-game.component");
+var waiting_room_component_1 = require("./waiting-room.component");
 var in_game_component_1 = require("./in-game.component");
+var game_history_component_1 = require("./game-history.component");
+var profile_component_1 = require("./profile.component");
+var options_component_1 = require("./options.component");
 var AppModule = (function () {
     function AppModule() {
     }
@@ -41,8 +44,11 @@ var AppModule = (function () {
                 app_component_1.AppComponent,
                 login_component_1.LoginComponent,
                 game_selection_component_1.GameSelectionComponent,
-                enter_game_component_1.EnterGameComponent,
-                in_game_component_1.InGameComponent
+                waiting_room_component_1.WaitingRoomComponent,
+                in_game_component_1.InGameComponent,
+                game_history_component_1.GameHistoryComponent,
+                profile_component_1.ProfileComponent,
+                options_component_1.OptionsComponent
             ],
             bootstrap: [app_component_1.AppComponent]
         }), 

@@ -16,12 +16,14 @@ var login_component_1 = require("./login.component");
 var game_selection_component_1 = require("./game-selection.component");
 var enter_game_component_1 = require("./enter-game.component");
 var in_game_component_1 = require("./in-game.component");
+var game_history_component_1 = require("./game-history.component");
 var routes = [
     { path: "", component: login_component_1.LoginComponent },
     { path: "login", component: login_component_1.LoginComponent },
     { path: "game-selection", component: game_selection_component_1.GameSelectionComponent },
     { path: "enter-game", component: enter_game_component_1.EnterGameComponent },
-    { path: "in-game", component: in_game_component_1.InGameComponent }
+    { path: "in-game", component: in_game_component_1.InGameComponent },
+    { path: "game-history", component: game_history_component_1.GameHistoryComponent }
 ];
 var AppRoutingModule = (function () {
     function AppRoutingModule(authService) {

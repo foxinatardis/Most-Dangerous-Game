@@ -6,15 +6,21 @@ import { RouterModule, Routes } from "@angular/router";
 import { AuthService } from "./auth.service";
 import { LoginComponent } from "./login.component";
 import { GameSelectionComponent } from "./game-selection.component";
-import { EnterGameComponent } from "./enter-game.component";
+import { WaitingRoomComponent } from "./waiting-room.component";
 import { InGameComponent } from "./in-game.component";
+import { GameHistoryComponent} from "./game-history.component";
+import { ProfileComponent } from "./profile.component";
+import { OptionsComponent } from "./options.component";
 
 const routes: Routes = [
-	{path: "", component: LoginComponent },
+	{path: "", component: ProfileComponent, canActivate: [AuthService] },
 	{path: "login", component: LoginComponent },
-	{path: "game-selection", component: GameSelectionComponent },
-	{path: "enter-game", component: EnterGameComponent },
-	{path: "in-game", component: InGameComponent }
+	{path: "game-selection", component: GameSelectionComponent, canActivate: [AuthService] },
+	{path: "waiting-room", component: WaitingRoomComponent, canActivate: [AuthService] },
+	{path: "in-game", component: InGameComponent, canActivate: [AuthService] },
+	{path: "game-history", component: GameHistoryComponent, canActivate: [AuthService] },
+	{path: "profile", component: ProfileComponent, canActivate: [AuthService] },
+	{path: "options", component: OptionsComponent, canActivate: [AuthService] }
 ];
 
 @NgModule({

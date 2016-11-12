@@ -23,6 +23,13 @@ nav {
 
 }
 
+.listHead {
+	font-size: 22px;
+	font-family: sans-serif;
+	color: #505BFF;
+	text-shadow: 0 0 20px rgb(73, 125, 232);
+}
+
 .error {
 	color: red;
 }
@@ -71,9 +78,14 @@ button.button {
 	border-radius: 5px;
 	border: 0;
 	background-color: #505BFF;
+	color: black;
 	-moz-box-shadow: 0px 0px 20px rgb(73, 125, 232);
 	-webkit-box-shadow: 0px 0px 20px rgb(73, 125, 232);
 	box-shadow: 0px 0px 20px rgb(73, 125, 232);
+}
+
+button.bottom {
+	bottom: 5px;
 }
 
 input {
