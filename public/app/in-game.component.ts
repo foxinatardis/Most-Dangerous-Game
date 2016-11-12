@@ -221,7 +221,7 @@ export class InGameComponent {
 		}.bind(this));
 		Compass.noSupport(function () {
 			this.compass.style.transform = "rotate(-90deg)";
-		});
+		}.bind(this));
 		this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
 		this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
 		this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
