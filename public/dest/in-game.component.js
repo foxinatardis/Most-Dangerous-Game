@@ -236,6 +236,10 @@ var InGameComponent = (function () {
         this.myLat = coor.latitude;
         this.myTime = pos.timestamp;
         this.myAcc = coor.accuracy;
+        if (coor.heading) {
+            this.myHeading = coor.heading;
+        }
+        console.log("locationWatch: ", pos);
         this.update();
     };
     InGameComponent.prototype.update = function () {
@@ -243,10 +247,20 @@ var InGameComponent = (function () {
             this.distanceToTarget = this.getDistance(this.myLong, this.myLat, this.targetLong, this.targetLat);
             this.accuracy = this.myAcc + this.targetAcc;
             this.bearing = Math.floor(this.getBearing(this.myLong, this.myLat, this.targetLong, this.targetLat));
+            // console.log("requirements met");
+            var toDraw = document.getElementById("toDraw");
+            var toDrawX = Math.cos(this.rad(this.bearing)) * Math.min(this.distanceToTarget, 100);
+            var toDrawY = Math.sin(this.rad(this.bearing)) * Math.min(this.distanceToTarget, 100);
+            toDraw.style.left = toDrawX + "%";
+            toDraw.style.top = toDrawY + "%";
+            var compass = document.getElementById("compassWrapper");
+            // if (this.myHeading) {
+            // 	compass.style.transform = "rotate(" + (this.myHeading - 90) + "deg)";
+            // } else {
+            // 	compass.style.transform = "rotate(-90deg)";
+            // } // todo this needs fixing, may use compass.js
+            compass.style.transform = "rotate(-90deg)";
         }
-        // console.log("update() invoked");
-        // console.log("target lat, long, acc", this.targetLat, this.targetLong, this.targetAcc);
-        // console.log("my lat, long, acc", this.myLat, this.myLong, this.myAcc);
     };
     InGameComponent.prototype.rad = function (x) {
         return x * Math.PI / 180;
@@ -287,7 +301,8 @@ var InGameComponent = (function () {
     };
     InGameComponent = __decorate([
         core_1.Component({
-            template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2 [style.color]=\"online()\">Target: {{targetName}}{{dataTest}}</h2>\n\t\t\t<p *ngIf=\"targetOnline\">Target Aquired</p>\n\t\t\t<p *ngIf=\"!targetOnline\">Target Offline</p>\n\t\t</div>\n\t\t<div *ngIf=\"!error && !attacking\">\n\t\t\t<h3>Distance to Target: {{distanceToTarget}} meters</h3>\n\t\t\t<h3>Direction to Target: {{bearing}} degrees</h3>\n\t\t\t<h3 [style.color]=\"resolution()\">Accuracy: {{accuracy}} meters</h3>\n\t\t</div>\n\t\t<div *ngIf=\"error\">\n\t\t\t<h2 class=\"error\">{{errorMessage}}</h2>\n\t\t</div>\n\t\t<button *ngIf=\"!takingAim && !attacking && !error\" class=\"button bottom\" (click)=\"takeAim()\">Take Aim</button>\n\t\t<button *ngIf=\"takingAim && !attacking && !error\" class=\"button bottom\" (click)=\"attack()\">Attack</button>\n\t\t<div *ngIf=\"attacking\">\n\t\t\t<h2>{{attackMessage}}</h2>\n\t\t</div>\n\t",
+            template: "\n\t\t<div>\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2 [style.color]=\"online()\">Target: {{targetName}}{{dataTest}}</h2>\n\t\t\t<p *ngIf=\"targetOnline\">Target Aquired</p>\n\t\t\t<p *ngIf=\"!targetOnline\">Target Offline</p>\n\t\t</div>\n\n\t\t<div class=\"compassWrapper\" id=\"compassWrapper\">\n\t\t\t<div class=\"compassQuarter one\">\n\t\t\t\t<div class=\"compassSixty one\">\n\t\t\t\t\t<div class=\"compassThird one\"></div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<div class=\"compassQuarter two\">\n\t\t\t\t<div class=\"compassSixty two\">\n\t\t\t\t\t<div class=\"compassThird two\"></div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<div class=\"compassQuarter three\">\n\t\t\t\t<div class=\"compassSixty three\">\n\t\t\t\t\t<div class=\"compassThird three\"></div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<div class=\"compassQuarter four\">\n\t\t\t\t<div class=\"compassSixty four\">\n\t\t\t\t\t<div class=\"compassThird four\"></div>\n\t\t\t\t</div>\n\t\t\t\t<p class=\"north\">N</p>\n\t\t\t\t<div id=\"toDraw\"></div>\n\t\t\t</div>\n\t\t</div>\n\n\t\t<div *ngIf=\"!error && !attacking\">\n\t\t\t<h3>Distance to Target: {{distanceToTarget}} meters</h3>\n\t\t\t<h3>Direction to Target: {{bearing}} degrees</h3>\n\t\t\t<h3 [style.color]=\"resolution()\">Accuracy: {{accuracy}} meters</h3>\n\t\t</div>\n\t\t<div *ngIf=\"error\">\n\t\t\t<h2 class=\"error\">{{errorMessage}}</h2>\n\t\t</div>\n\t\t<button *ngIf=\"!takingAim && !attacking && !error\" class=\"button bottom\" (click)=\"takeAim()\">Take Aim</button>\n\t\t<button *ngIf=\"takingAim && !attacking && !error\" class=\"button bottom\" (click)=\"attack()\">Attack</button>\n\t\t<div *ngIf=\"attacking\">\n\t\t\t<h2>{{attackMessage}}</h2>\n\t\t</div>\n\t",
+            styles: ["\n\t\t.compassWrapper {\n\t\t\twidth: 90%;\n\t\t\tmargin: 0% 5%;\n\t\t\theight: 0;\n\t\t\tpadding-bottom: 100%;\n\t\t\tposition: relative;\n\t\t}\n\t\t.compassQuarter {\n\t\t\tfloat: left;\n\t\t\tposition: relative;\n\t\t\twidth: 50%;\n\t\t\theight: 0;\n\t\t\tpadding-bottom: 50%;\n\t\t\tbox-sizing: border-box;\n\t\t\tborder: 1px solid rgb(73, 125, 232);\n\t\t}\n\t\t.compassThird {\n\n\t\t\twidth: 50%;\n\t\t\theight: 0;\n\t\t\tpadding-bottom: 50%;\n\t\t\tposition: absolute;\n\n\t\t}\n\t\t.compassSixty {\n\n\t\t\twidth: 66%;\n\t\t\theight: 0;\n\t\t\tpadding-bottom: 66%;\n\t\t\tposition: absolute;\n\n\t\t}\n\t\t.north {\n\t\t\ttransform: rotate(90deg);\n\t\t\ttop: -1.5em;\n\t\t\tleft: 101%;\n\t\t\tposition: absolute;\n\t\t}\n\t\t.one {\n\n\t\t\tborder-radius: 100% 0 0 0;\n\t\t\t-moz-box-shadow: 0px 0px 7px rgb(73, 125, 232);\n\t\t\t-webkit-box-shadow: 0px 0px 7px rgb(73, 125, 232);\n\t\t\tbox-shadow: 0px 0px 7px rgb(73, 125, 232);\n\n\t\t}\n\t\t.one .compassSixty {\n\t\t\ttop: 33.4%;\n\t\t\tleft: 33.2%;\n\t\t\tborder-top: 1px solid rgb(73, 125, 232);\n\t\t\tborder-left: 1px solid rgb(73, 125, 232);\n\t\t}\n\t\t.one .compassThird {\n\t\t\ttop: 50%;\n\t\t\tleft: 50%;\n\t\t\tborder-top: 1px solid rgb(73, 125, 232);\n\t\t\tborder-left: 1px solid rgb(73, 125, 232);\n\t\t}\n\n\t\t.two {\n\n\t\t\tborder-radius: 0 100% 0 0;\n\t\t\t-moz-box-shadow: 0px 0px 7px rgb(73, 125, 232);\n\t\t\t-webkit-box-shadow: 0px 0px 7px rgb(73, 125, 232);\n\t\t\tbox-shadow: 0px 0px 7px rgb(73, 125, 232);\n\n\t\t}\n\t\t.two .compassSixty {\n\t\t\ttop: 33.4%;\n\t\t\tborder-top: 1px solid rgb(73, 125, 232);\n\t\t\tborder-right: 1px solid rgb(73, 125, 232);\n\t\t}\n\t\t.two .compassThird {\n\t\t\ttop: 50%;\n\t\t\tborder-top: 1px solid rgb(73, 125, 232);\n\t\t\tborder-right: 1px solid rgb(73, 125, 232);\n\t\t}\n\t\t.three {\n\n\t\t\tborder-radius: 0 0 0 100%;\n\t\t\t-moz-box-shadow: 0px 0px 7px rgb(73, 125, 232);\n\t\t\t-webkit-box-shadow: 0px 0px 7px rgb(73, 125, 232);\n\t\t\tbox-shadow: 0px 0px 7px rgb(73, 125, 232);\n\n\t\t}\n\t\t.three .compassSixty {\n\t\t\tleft: 33.2%;\n\t\t\tborder-bottom: 1px solid rgb(73, 125, 232);\n\t\t\tborder-left: 1px solid rgb(73, 125, 232);\n\t\t}\n\t\t.three .compassThird {\n\t\t\tleft: 50%;\n\t\t\tborder-bottom: 1px solid rgb(73, 125, 232);\n\t\t\tborder-left: 1px solid rgb(73, 125, 232);\n\t\t}\n\t\t.four {\n\n\t\t\tborder-radius: 0 0 100% 0;\n\t\t\tborder-bottom: 1px solid rgb(73, 125, 232);\n\t\t\tborder-right: 1px solid rgb(73, 125, 232);\n\t\t\t-moz-box-shadow: 0px 0px 7px rgb(73, 125, 232);\n\t\t\t-webkit-box-shadow: 0px 0px 7px rgb(73, 125, 232);\n\t\t\tbox-shadow: 0px 0px 7px rgb(73, 125, 232);\n\t\t}\n\t\t#toDraw {\n\t\t\tbackground-color: rgb(68, 120, 227);\n\t\t\tposition: absolute;\n\t\t\theight: 6px;\n\t\t\twidth: 6px;\n\t\t\tborder-radius: 3px;\n\t\t\t-moz-box-shadow: 0px 0px 5px rgb(73, 125, 232);\n\t\t\t-webkit-box-shadow: 0px 0px 5px rgb(73, 125, 232);\n\t\t\tbox-shadow: 0px 0px 5px rgb(73, 125, 232);\n\t\t}\n\n\t"]
         }), 
         __metadata('design:paramtypes', [auth_service_1.AuthService, api_service_1.ApiService, geo_service_1.GeoService])
     ], InGameComponent);

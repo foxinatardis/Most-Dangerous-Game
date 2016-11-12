@@ -14,6 +14,32 @@ import * as io from "socket.io-client";
 			<p *ngIf="targetOnline">Target Aquired</p>
 			<p *ngIf="!targetOnline">Target Offline</p>
 		</div>
+
+		<div class="compassWrapper" id="compassWrapper">
+			<div class="compassQuarter one">
+				<div class="compassSixty one">
+					<div class="compassThird one"></div>
+				</div>
+			</div>
+			<div class="compassQuarter two">
+				<div class="compassSixty two">
+					<div class="compassThird two"></div>
+				</div>
+			</div>
+			<div class="compassQuarter three">
+				<div class="compassSixty three">
+					<div class="compassThird three"></div>
+				</div>
+			</div>
+			<div class="compassQuarter four">
+				<div class="compassSixty four">
+					<div class="compassThird four"></div>
+				</div>
+				<p class="north">N</p>
+				<div id="toDraw"></div>
+			</div>
+		</div>
+
 		<div *ngIf="!error && !attacking">
 			<h3>Distance to Target: {{distanceToTarget}} meters</h3>
 			<h3>Direction to Target: {{bearing}} degrees</h3>
@@ -28,6 +54,123 @@ import * as io from "socket.io-client";
 			<h2>{{attackMessage}}</h2>
 		</div>
 	`,
+	styles: [`
+		.compassWrapper {
+			width: 90%;
+			margin: 0% 5%;
+			height: 0;
+			padding-bottom: 100%;
+			position: relative;
+		}
+		.compassQuarter {
+			float: left;
+			position: relative;
+			width: 50%;
+			height: 0;
+			padding-bottom: 50%;
+			box-sizing: border-box;
+			border: 1px solid rgb(73, 125, 232);
+		}
+		.compassThird {
+
+			width: 50%;
+			height: 0;
+			padding-bottom: 50%;
+			position: absolute;
+
+		}
+		.compassSixty {
+
+			width: 66%;
+			height: 0;
+			padding-bottom: 66%;
+			position: absolute;
+
+		}
+		.north {
+			transform: rotate(90deg);
+			top: -1.5em;
+			left: 101%;
+			position: absolute;
+		}
+		.one {
+
+			border-radius: 100% 0 0 0;
+			-moz-box-shadow: 0px 0px 7px rgb(73, 125, 232);
+			-webkit-box-shadow: 0px 0px 7px rgb(73, 125, 232);
+			box-shadow: 0px 0px 7px rgb(73, 125, 232);
+
+		}
+		.one .compassSixty {
+			top: 33.4%;
+			left: 33.2%;
+			border-top: 1px solid rgb(73, 125, 232);
+			border-left: 1px solid rgb(73, 125, 232);
+		}
+		.one .compassThird {
+			top: 50%;
+			left: 50%;
+			border-top: 1px solid rgb(73, 125, 232);
+			border-left: 1px solid rgb(73, 125, 232);
+		}
+
+		.two {
+
+			border-radius: 0 100% 0 0;
+			-moz-box-shadow: 0px 0px 7px rgb(73, 125, 232);
+			-webkit-box-shadow: 0px 0px 7px rgb(73, 125, 232);
+			box-shadow: 0px 0px 7px rgb(73, 125, 232);
+
+		}
+		.two .compassSixty {
+			top: 33.4%;
+			border-top: 1px solid rgb(73, 125, 232);
+			border-right: 1px solid rgb(73, 125, 232);
+		}
+		.two .compassThird {
+			top: 50%;
+			border-top: 1px solid rgb(73, 125, 232);
+			border-right: 1px solid rgb(73, 125, 232);
+		}
+		.three {
+
+			border-radius: 0 0 0 100%;
+			-moz-box-shadow: 0px 0px 7px rgb(73, 125, 232);
+			-webkit-box-shadow: 0px 0px 7px rgb(73, 125, 232);
+			box-shadow: 0px 0px 7px rgb(73, 125, 232);
+
+		}
+		.three .compassSixty {
+			left: 33.2%;
+			border-bottom: 1px solid rgb(73, 125, 232);
+			border-left: 1px solid rgb(73, 125, 232);
+		}
+		.three .compassThird {
+			left: 50%;
+			border-bottom: 1px solid rgb(73, 125, 232);
+			border-left: 1px solid rgb(73, 125, 232);
+		}
+		.four {
+
+			border-radius: 0 0 100% 0;
+			border-bottom: 1px solid rgb(73, 125, 232);
+			border-right: 1px solid rgb(73, 125, 232);
+			-moz-box-shadow: 0px 0px 7px rgb(73, 125, 232);
+			-webkit-box-shadow: 0px 0px 7px rgb(73, 125, 232);
+			box-shadow: 0px 0px 7px rgb(73, 125, 232);
+		}
+		#toDraw {
+			background-color: rgb(68, 120, 227);
+			position: absolute;
+			height: 6px;
+			width: 6px;
+			border-radius: 3px;
+			-moz-box-shadow: 0px 0px 5px rgb(73, 125, 232);
+			-webkit-box-shadow: 0px 0px 5px rgb(73, 125, 232);
+			box-shadow: 0px 0px 5px rgb(73, 125, 232);
+		}
+
+	`]
 })
 export class InGameComponent {
 	constructor(
@@ -46,6 +189,7 @@ export class InGameComponent {
 	myLat: number;
 	myTime: number;
 	myAcc: number;
+	myHeading: number;
 
 	targetName: string;
 	targetLong: number;
@@ -291,6 +435,10 @@ export class InGameComponent {
 		this.myLat = coor.latitude;
 		this.myTime = pos.timestamp;
 		this.myAcc = coor.accuracy;
+		if (coor.heading) {
+			this.myHeading = coor.heading;
+		}
+		console.log("locationWatch: ", pos);
 		this.update();
 	}
 
@@ -300,10 +448,21 @@ export class InGameComponent {
 			this.accuracy = this.myAcc + this.targetAcc;
 			this.bearing = Math.floor(this.getBearing(this.myLong, this.myLat, this.targetLong, this.targetLat));
 			// console.log("requirements met");
+			let toDraw = document.getElementById("toDraw");
+			let toDrawX = Math.cos(this.rad(this.bearing)) * Math.min(this.distanceToTarget, 100);
+			let toDrawY = Math.sin(this.rad(this.bearing)) * Math.min(this.distanceToTarget, 100);
+			toDraw.style.left = toDrawX + "%";
+			toDraw.style.top = toDrawY + "%";
+			let compass = document.getElementById("compassWrapper");
+			// if (this.myHeading) {
+			// 	compass.style.transform = "rotate(" + (this.myHeading - 90) + "deg)";
+			// } else {
+			// 	compass.style.transform = "rotate(-90deg)";
+			// } // todo this needs fixing, may use compass.js
+			compass.style.transform = "rotate(-90deg)";
+
+
 		}
-		// console.log("update() invoked");
-		// console.log("target lat, long, acc", this.targetLat, this.targetLong, this.targetAcc);
-		// console.log("my lat, long, acc", this.myLat, this.myLong, this.myAcc);
 	}
 
 	rad(x) {
@@ -344,5 +503,7 @@ export class InGameComponent {
 
 		return (this.deg(Math.atan2(dLong, dPhi)) + 360.0) % 360.0;
 	}
+
+
 
 }
