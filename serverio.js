@@ -56,6 +56,14 @@ app.get("/", (req, res) => {
 	res.sendFile(__dirname + "/public/index.html");
 });
 
+app.get("/.well-known/acme-challenge/TPM9TOp3anX5P0YEtSGQ07iiKvjhfTH7bMj0kGbTKaM", (req, res)=> {
+	res.sendFile(__dirname + "/.well-known/acme-challenge/TPM9TOp3anX5P0YEtSGQ07iiKvjhfTH7bMj0kGbTKaM");
+});
+
+app.get("/.well-known/acme-challenge/zAnoH5durfAVFuzi4exhvkUyTxTETQjCC0WfxW1AYEU", (req, res) => {
+	res.sendfile(__dirname + "/.well-known/acme-challenge/zAnoH5durfAVFuzi4exhvkUyTxTETQjCC0WfxW1AYEU");
+});
+
 
 app.post("/api/signup", (req, res) => {
 	console.log("hit signup api", req.body);
