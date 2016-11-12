@@ -7,24 +7,25 @@ var mongoose = require("mongoose");
 
 var app = express();
 
-// var http = express();
-//
-// // set up a route to redirect http to https
-// http.get('*', (req,res) => {
-// 	res.redirect('https://adamb.me'+req.url);
-// });
-//
-// http.listen(8000);
-//
-// var fs = require("fs");
-// var https = require("https");
-// var options = {
-// 	key:fs.readFileSync("./server.key"),
-// 	cert: fs.readFileSync("./server.crt")
-// };
-// httpsPort = 8443;
+var http = express();
 
-// var secureServer = https.createServer(options, app);
+// set up a route to redirect http to https
+http.get('*', (req,res) => {
+	res.redirect('https://adamb.me'+req.url);
+});
+
+http.listen(8000);
+//
+var fs = require("fs");
+var https = require("https");
+var options = {
+	key:fs.readFileSync("./adamb.key"),
+	cert: fs.readFileSync("./adamb.crt"),
+	ca: fs.readFileSync("./adamb.ca-bundle")
+};
+httpsPort = 8443;
+
+var secureServer = https.createServer(options, app);
 
 var http = require("http");
 var unsecure = http.createServer(app);
@@ -843,13 +844,13 @@ app.use((err, req, res, next) => {
 
 
 
-// secureServer.listen(httpsPort);
+secureServer.listen(httpsPort);
 
 
-require('letsencrypt-express').create({
-	server: 'https://acme-staging.api.letsencrypt.org/directory',
-	email: 'abellive@me.com',
-	agreeTos: true,
-	approveDomains: [ 'adamb.me', 'www.adamb.me' ],
-	app: app
-}).listen(8000, 8443);
+// require('letsencrypt-express').create({
+// 	server: 'https://acme-staging.api.letsencrypt.org/directory',
+// 	email: 'abellive@me.com',
+// 	agreeTos: true,
+// 	approveDomains: [ 'adamb.me', 'www.adamb.me' ],
+// 	app: app
+// }).listen(8000, 8443);
