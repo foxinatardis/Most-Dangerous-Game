@@ -27,10 +27,7 @@ httpsPort = 8443;
 
 var secureServer = https.createServer(options, app);
 
-var http = require("http");
-var unsecure = http.createServer(app);
-
-var io = require("socket.io")(unsecure);
+var io = require("socket.io")(secureServer);
 
 var connectedUsers = {}; // to store sockets of connected players
 
@@ -845,12 +842,3 @@ app.use((err, req, res, next) => {
 
 
 secureServer.listen(httpsPort);
-
-
-// require('letsencrypt-express').create({
-// 	server: 'https://acme-staging.api.letsencrypt.org/directory',
-// 	email: 'abellive@me.com',
-// 	agreeTos: true,
-// 	approveDomains: [ 'adamb.me', 'www.adamb.me' ],
-// 	app: app
-// }).listen(8000, 8443);
