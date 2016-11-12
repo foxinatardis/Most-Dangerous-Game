@@ -58,9 +58,9 @@ import * as io from "socket.io-client";
 	styles: [`
 		.compassWrapper {
 			width: 80%;
-			margin: 0% 10%;
+			margin: auto;
 			height: 0;
-			padding-bottom: 100%;
+			padding-bottom: 80%;
 			position: relative;
 		}
 		.compassQuarter {
