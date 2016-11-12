@@ -227,7 +227,8 @@ export class InGameComponent {
 		this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
 		this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
 		this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
-		this.socket = io();
+		// this.socket = io();
+		this.socket = io.connect("https://adamb.me");
 		this.socket.on("target online", (data) => {
 			console.log("target online: ", data);
 			if (data) {
