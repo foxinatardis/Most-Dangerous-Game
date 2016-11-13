@@ -23,7 +23,7 @@ var GameHistoryComponent = (function () {
             for (var i in _this.gameIds) {
                 var toSend = { gameId: _this.gameIds[i] };
                 _this.apiService.postObs("/api/game-stats", toSend).subscribe(function (res) {
-                    _this.games.push(res.game);
+                    _this.games.unshift(res.game);
                 });
             }
         });
