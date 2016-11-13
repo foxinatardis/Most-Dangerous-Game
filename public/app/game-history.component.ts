@@ -35,7 +35,7 @@ export class GameHistoryComponent {
 			for (let i in this.gameIds) {
 				let toSend = {gameId: this.gameIds[i]};
 				this.apiService.postObs("/api/game-stats", toSend).subscribe((res) => {
-					this.games.push(res.game);
+					this.games.unshift(res.game);
 				});
 			}
 		});
