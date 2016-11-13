@@ -44,7 +44,7 @@ app.use(bodyParser.json());
 
 //basic config for express-session
 app.use(session({
-	secret: "wiufhn49qeiurhfn249fuewindq298ef2n0eo",
+	secret: require("./secret.js"),
 	saveUninitialized: false,
 	resave: false
 }));
@@ -54,13 +54,13 @@ app.get("/", (req, res) => {
 	res.sendFile(__dirname + "/public/index.html");
 });
 
-app.get("/.well-known/acme-challenge/TPM9TOp3anX5P0YEtSGQ07iiKvjhfTH7bMj0kGbTKaM", (req, res)=> {
-	res.sendFile(__dirname + "/.well-known/acme-challenge/TPM9TOp3anX5P0YEtSGQ07iiKvjhfTH7bMj0kGbTKaM");
-});
-
-app.get("/.well-known/acme-challenge/zAnoH5durfAVFuzi4exhvkUyTxTETQjCC0WfxW1AYEU", (req, res) => {
-	res.sendfile(__dirname + "/.well-known/acme-challenge/zAnoH5durfAVFuzi4exhvkUyTxTETQjCC0WfxW1AYEU");
-});
+// app.get("/.well-known/acme-challenge/TPM9TOp3anX5P0YEtSGQ07iiKvjhfTH7bMj0kGbTKaM", (req, res)=> {
+// 	res.sendFile(__dirname + "/.well-known/acme-challenge/TPM9TOp3anX5P0YEtSGQ07iiKvjhfTH7bMj0kGbTKaM");
+// });
+//
+// app.get("/.well-known/acme-challenge/zAnoH5durfAVFuzi4exhvkUyTxTETQjCC0WfxW1AYEU", (req, res) => {
+// 	res.sendfile(__dirname + "/.well-known/acme-challenge/zAnoH5durfAVFuzi4exhvkUyTxTETQjCC0WfxW1AYEU");
+// });
 
 
 app.post("/api/signup", (req, res) => {
@@ -79,7 +79,7 @@ app.post("/api/signup", (req, res) => {
 			newUser.save((err)=> {
 				if(err) {
 					console.log(err);
-					res.status(500);
+					// res.status(500);
 					res.send({error: true, message: "error registering new user"});
 					return;
 				}
@@ -87,7 +87,7 @@ app.post("/api/signup", (req, res) => {
 			});
 		} else if (err) {
 			console.log(err);
-			res.status(500);
+			// res.status(500);
 			res.send({error: true, message: "internal server error"});
 			return;
 		} else {
@@ -202,6 +202,10 @@ app.post("/api/leave-game", (req, res) => {
 
 app.post("/api/newGame", (req, res) => {
 	//todo: add verification
+	if (!req.session.user) {
+		res.redirect("/");
+		return;
+	}
 	let date = new Date();
 	date = date.toString().split(" ");
 	date.pop();
@@ -238,7 +242,7 @@ app.post("/api/newGame", (req, res) => {
 					res.send({message: "error updating user"});
 					return;
 				}
-				console.log("updated user", data);
+				// console.log("updated user", data);
 				res.send({gameId: gameId});
 			}
 		);
@@ -246,9 +250,9 @@ app.post("/api/newGame", (req, res) => {
 });
 
 app.post("/api/joinGame", (req, res) => {
-	if (!req.session.user.name) {
-		res.status(500);
-		res.send({error: true, message: "no session user name"});
+	if (!req.session.user) {
+		res.redirect("/");
+		return;
 	}
 	User.findOne(
 		{name: req.body.gameId},
@@ -256,11 +260,11 @@ app.post("/api/joinGame", (req, res) => {
 		(err, data) => {
 			if (err) {
 				console.log("Error at /api/joinGame with finding user: ", err);
-				res.status(500);
+				// res.status(500);
 				res.send({error: true, message: "Could not find game."});
 				return;
 			} else if (!data) {
-				res.status(500);
+				// res.status(500);
 				res.send({error: true, message: "Could not find game."});
 				return;
 			}
@@ -274,7 +278,7 @@ app.post("/api/joinGame", (req, res) => {
 				(err, data) => {
 					if (err) {
 						console.log("error in post /api/joinGame at Game.findByIdAndUpdate: ", err);
-						res.status(500);
+						// res.status(500);
 						res.send({error: true, message: "Failed to Join Game"});
 						return;
 					} else if (!data) {
@@ -289,7 +293,7 @@ app.post("/api/joinGame", (req, res) => {
 						(err, data) => {
 							if (err) {
 								console.log("error in post /api/joinGame at User.findOneAndUpdate: ", err);
-								res.status(500);
+								// res.status(500);
 								res.send({error: true, message: "Failed to join Game!"});
 							}
 							res.send({success: true, message: "Successfully joined game: " + data.currentGame, gameId: data.currentGame});
@@ -302,29 +306,32 @@ app.post("/api/joinGame", (req, res) => {
 });
 
 app.get("/api/game", (req, res) => {
-	// todo add verification
+	if (!req.session.user) {
+		res.redirect("/");
+		return;
+	}
 	var userEmail = req.session.user.email;
 	User.find({email: userEmail}, (err, data) => {
 		var gameId = data[0].currentGame;
 		var admin = data[0].gameAdmin;
 		if (err) {
 			console.log("error at /api/game User.find: ", err);
-			res.status(500);
+			// res.status(500);
 			res.send({error: true, message: "Error finding user information, please logout and try again."});
 			return;
 		} else if (!data) {
-			res.status(500);
+			// res.status(500);
 			res.send({error: true, message: "Error finding user information, please logout and try again."});
 			return;
 		}
 		Game.find({_id: gameId}, (err, data) => {
 			if (err) {
 				console.log("error at /api/game Game.find: ", err);
-				res.status(500);
+				// res.status(500);
 				res.send({error: true, message: "Error finding game information, please logout and try again."});
 				return;
 			} else if (!data) {
-				res.status(500);
+				// res.status(500);
 				res.send({error: true, message: "Error finding game information, please logout and try again."});
 				return;
 			}
@@ -340,7 +347,10 @@ app.get("/api/game", (req, res) => {
 });
 
 app.post("/api/launch", (req, res) => {
-	// todo add verification
+	if (!req.session.user) {
+		res.redirect("/");
+		return;
+	}
 	console.log("/api/launch req.body: ", req.body, req.session.gameId);
 	Game.findById(
 		req.body.gameId,
@@ -376,7 +386,7 @@ app.post("/api/launch", (req, res) => {
 				(err, data) => {
 					if (err) {
 						console.log("error at /api/launch Game.findByIdAndUpdate: ", err);
-						res.status(500);
+						// res.status(500);
 						res.send({error: true, message: "Terribly sorry but I encountered an error whilst attempting to launch yur game."});
 						return;
 					}
@@ -387,11 +397,10 @@ app.post("/api/launch", (req, res) => {
 						(err, data) => {
 							if (err) {
 								console.log("error with multiUser update /api/launch: ", err);
-								res.status(500);
+								// res.status(500);
 								res.send({error: true, message: "Error launching game"});
 								return;
 							}
-							console.log("Data from multiUser update: ", data);
 							res.send({success: true});
 						}
 					);
@@ -403,17 +412,21 @@ app.post("/api/launch", (req, res) => {
 });
 
 app.get("/api/target", (req, res) => {
+	if (!req.session.user) {
+		res.redirect("/");
+		return;
+	}
 	User.findOne(
 		{email: req.session.user.email},
 		"currentGame",
 		(err, data) => {
 			if (err) {
 				console.log("Error at /api/target Iser.findOne: ", err);
-				res.status(500);
+				// res.status(500);
 				res.send({error: true, message:"Error finding user information, please logout and try again."});
 				return;
 			} else if (!data) {
-				res.status(500);
+				// res.status(500);
 				res.send({error: true, message:"Error finding user information, please logout and try again."});
 				return;
 			}
@@ -442,7 +455,7 @@ app.get("/api/target", (req, res) => {
 						}
 					}
 					if (!targetPlayer) {
-						res.status(500);
+						// res.status(500);
 						res.send({error: true, message: "Failed to aquire target"});
 						return;
 					} else {
@@ -453,7 +466,7 @@ app.get("/api/target", (req, res) => {
 							(err, data) => {
 								if(err) {
 									console.log("error at /api/target User.findOneAndUpdate: ", err);
-									res.status(500);
+									// res.status(500);
 									res.send({error: true, message: "failed to find target"});
 									return;
 								}
@@ -465,7 +478,7 @@ app.get("/api/target", (req, res) => {
 									(err, data) => {
 										if (err) {
 											console.log("error in api/target/loction at User.findOne", err);
-											res.status(500);
+											// res.status(500);
 											res.send({error: true, message: "failed to find target location", targetName: targetName});
 											return;
 										}
@@ -491,34 +504,36 @@ app.get("/api/target", (req, res) => {
 	);
 });
 
-app.get("/api/target/location", (req, res) => { // might not need this api
-	User.findOne(
-		{name: req.session.user.currentTarget},
-		"lastLatitude lastLongitude lastAccuracy lastTimestamp",
-		(err, data) => {
-			if (err) {
-				console.log("error in api/target/loction at User.findOne", err);
-				res.status(500);
-				res.send({error: true, message: "failed to find target location"});
-				return;
-			}
-			if (!data.lastLongitude) {
-				res.send({message: "Target not found."});
-				return;
-			}
-			res.send({
-				latitude: data.lastLatitude,
-				longitude: data.lastLongitude,
-				accuracy: data.lastAccuracy,
-				timestamp: data.lastTimestamp
-			});
-		}
-	);
-});
+// app.get("/api/target/location", (req, res) => { // might not need this api
+// 	User.findOne(
+// 		{name: req.session.user.currentTarget},
+// 		"lastLatitude lastLongitude lastAccuracy lastTimestamp",
+// 		(err, data) => {
+// 			if (err) {
+// 				console.log("error in api/target/loction at User.findOne", err);
+// 				res.status(500);
+// 				res.send({error: true, message: "failed to find target location"});
+// 				return;
+// 			}
+// 			if (!data.lastLongitude) {
+// 				res.send({message: "Target not found."});
+// 				return;
+// 			}
+// 			res.send({
+// 				latitude: data.lastLatitude,
+// 				longitude: data.lastLongitude,
+// 				accuracy: data.lastAccuracy,
+// 				timestamp: data.lastTimestamp
+// 			});
+// 		}
+// 	);
+// });
 
 app.post("/api/location", (req, res) => {
-	// todo add verifiaction
-	console.log(req.body.location);
+	if (!req.session.user) {
+		res.redirect("/");
+		return;
+	}
 	User.findOneAndUpdate(
 		{email: req.session.user.email},
 		{
@@ -538,49 +553,52 @@ app.post("/api/location", (req, res) => {
 	);
 });
 
-app.post("/api/update-location", (req, res) => {
-	console.log("hit /api/update-location");
-	User.findOneAndUpdate(
-		{email: req.session.user.name},
-		{
-			lastLatitude: req.body.latitude,
-			lastLongitude: req.body.longitude,
-			lastAccuracy: req.body.accuracy,
-			lastTimestamp: req.body.time,
-			$inc: {score: 1}
-		},
-		{new: true},
-		(err, data) => {
-			if (err) {
-				console.log("error in /api/update-location at User.findOneAndUpdate: ", err);
-				res.status(500);
-				res.send({error: true, message: "Failed to update score... oops"});
-				return;
-			}
-			if (!data) {
-				console.log("error in api/update-location, no data!");
-				res.status(500);
-				res.send({error: true, message: "Who are you? Who Who? Who Who?"});
-			}
-			res.send({score: data.score});
-		}
-	);
-});
+// app.post("/api/update-location", (req, res) => {
+// 	console.log("hit /api/update-location");
+// 	User.findOneAndUpdate(
+// 		{email: req.session.user.name},
+// 		{
+// 			lastLatitude: req.body.latitude,
+// 			lastLongitude: req.body.longitude,
+// 			lastAccuracy: req.body.accuracy,
+// 			lastTimestamp: req.body.time,
+// 			$inc: {score: 1}
+// 		},
+// 		{new: true},
+// 		(err, data) => {
+// 			if (err) {
+// 				console.log("error in /api/update-location at User.findOneAndUpdate: ", err);
+// 				res.status(500);
+// 				res.send({error: true, message: "Failed to update score... oops"});
+// 				return;
+// 			}
+// 			if (!data) {
+// 				console.log("error in api/update-location, no data!");
+// 				res.status(500);
+// 				res.send({error: true, message: "Who are you? Who Who? Who Who?"});
+// 			}
+// 			res.send({score: data.score});
+// 		}
+// 	);
+// });
 
 app.get("/api/game-history", (req, res) => {
+	if (!req.session.user) {
+		res.redirect("/");
+		return;
+	}
 	User.findOne(
 		{name: req.session.user.name},
 		"gameHistory",
 		(err, data) => {
 			if (err) {
 				console.log("error at /api/game-history: ", err);
-				res.status(500);
+				// res.status(500);
 				res.send({error: true, message: "Could not find game history."});
 			} else if (!data) {
-				res.status(500);
-				res.send({error: true, message: "Could not find game history."});
+				// res.status(500);
+				res.send({error: true, message: "No game history to display."});
 			} else {
-				console.log("game history: ", data.gameHistory);
 				res.send({history: data.gameHistory});
 			}
 		}
@@ -588,7 +606,10 @@ app.get("/api/game-history", (req, res) => {
 });
 
 app.post("/api/game-stats", (req, res) => {
-	console.log(req.body);
+	if (!req.session.user) {
+		res.redirect("/");
+		return;
+	}
 	Game.findById(req.body.gameId,
 		(err, data) => {
 			if (err) {
@@ -824,6 +845,10 @@ io.on("connection", (socket) => {
 app.use(express.static(__dirname + '/public'));
 
 app.all('/*', function(req, res) { // todo change the route for this once the landing page is in place
+	if (!req.session.user) {
+		res.redirect("/");
+		return;
+	}
     res.sendFile(__dirname + '/public/index.html');
 });
 
