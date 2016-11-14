@@ -15,11 +15,6 @@ var AuthService = (function () {
         this.router = router;
         this.user = undefined;
     }
-    // public user = { // todo take this out for live data
-    // 	score: 0,
-    // 	currentGame: "",
-    // 	inProgress: ""
-    // };
     AuthService.prototype.canActivate = function (route, state) {
         if (this.user === undefined) {
             this.router.navigate(["login"]);

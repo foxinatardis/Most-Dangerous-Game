@@ -24,6 +24,9 @@ import { AuthService } from "./auth.service";
 			<h2>{{gameId}}'s game joined successfully!!!</h2>
 			<button class="button" (click)="enterGame()">Enter Waiting Room</button>
 		</div>
+		<div *ngIf="error">
+			<h3 class="error">{{errorMessage}}</h3>
+		</div>
 	`,
 	styles: [`
 
@@ -89,33 +92,45 @@ export class GameSelectionComponent {
 	start: boolean = true;
 	gameCreated: boolean = false;
 	gameJoined: boolean = false;
+	error: boolean = false;
+	errorMessage: string = "";
 
 
 	createGame() {
 		this.apiService.postObs("/api/newGame", {message: "newgame"}).subscribe((response) => {
+			if (response.error) {
+				this.error = true;
+				this.errorMessage = response.message;
+				return;
+			}
 			if (response.gameId) {
+				this.error = false;
+				this.errorMessage = "";
 				this.gameCreated = true;
 				this.start = false;
 				this.gameId = response.gameId;
 				this.authService.user.currentGame = response.gameId;
 			}
-			// todo handle error creating game
 		});
 	}
 
 	joinGame() {
-		console.log("a");
 		this.apiService.postObs("/api/joinGame", {message: "joingame", gameId: this.gameId}).subscribe((response) => {
+			if (response.error) {
+				this.error = true;
+				this.errorMessage = response.message;
+				return;
+			}
 			if (response.success) {
+				this.error = false;
+				this.errorMessage = "";
 				this.start = false;
 				this.gameJoined = true;
 				this.authService.user.currentGame = response.gameId;
 			} else {
-				console.log("didn;t recieve success!");
-				console.log(response.error);
-				// todo handle error joining game
+				this.error = true;
+				this.errorMessage = "Error encountered, please try again.";
 			}
-			console.log(response.message);
 		});
 	}
 
