@@ -789,7 +789,7 @@ io.on("connection", (socket) => {
 
 });
 
-app.use(express.static(__dirname + '/dist/public'));
+app.use(express.static(__dirname + '/public/dist'));
 
 app.all('/*', function(req, res) { // todo change the route for this once the landing page is in place
 	if (!req.session.user) {
