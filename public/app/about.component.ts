@@ -20,10 +20,9 @@ import { AuthService } from "./auth.service";
 		<div class="button" *ngIf="!this.authService.user">
 			<p class="inside-button" (click)="toLogin()">Login/Register</p>
 		</div>
-
 	`,
 })
-export class AboutComponent implements OnInit {
+export class AboutComponent {
 	constructor(
 		private authService: AuthService,
 		private router: Router
