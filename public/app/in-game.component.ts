@@ -449,7 +449,7 @@ export class InGameComponent {
 	positionErr(err) {
 		console.log(err);
 		this.error = true;
-		this.errorMessage = "Sorry, something went wrong. Please reload and try again.";
+		this.errorMessage = "Unable to obtain your location, please make sure you have 'Location Services' turned on and try again.";
 	}
 
 	iMovedSuccess(pos) {
@@ -517,6 +517,6 @@ export class InGameComponent {
 		return (this.deg(Math.atan2(dLong, dPhi)) + 360.0) % 360.0;
 	}
 
-	
+
 
 }
