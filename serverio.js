@@ -51,7 +51,7 @@ app.use(session({
 
 app.get("/", (req, res) => {
 	// todo this will change once app is completed and ready to serve
-	res.sendFile(__dirname + "/public/index.html");
+	res.sendFile(__dirname + "/public/dist/index.html");
 });
 
 // app.get("/.well-known/acme-challenge/TPM9TOp3anX5P0YEtSGQ07iiKvjhfTH7bMj0kGbTKaM", (req, res)=> {
@@ -789,14 +789,14 @@ io.on("connection", (socket) => {
 
 });
 
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/dist/public'));
 
 app.all('/*', function(req, res) { // todo change the route for this once the landing page is in place
 	if (!req.session.user) {
 		res.redirect("/");
 		return;
 	}
-    res.sendFile(__dirname + '/public/index.html');
+    res.sendFile(__dirname + '/public/dist/index.html');
 });
 
 app.use((req, res, next) => {
