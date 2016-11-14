@@ -103,9 +103,9 @@ export class LoginComponent {
 				this.error = res.message;
 			}
 		});
+	}
 
 	private about() {
 		this.router.navigate(["/about"]);
-	}
 	}
 }
