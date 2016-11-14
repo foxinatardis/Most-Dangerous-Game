@@ -21,7 +21,7 @@ var profile_component_1 = require("./profile.component");
 var options_component_1 = require("./options.component");
 var about_component_1 = require("./about.component");
 var routes = [
-    { path: "", component: about_component_1.AboutComponent },
+    { path: "", component: profile_component_1.ProfileComponent, canActivate: [auth_service_1.AuthService] },
     { path: "login", component: login_component_1.LoginComponent },
     { path: "game-selection", component: game_selection_component_1.GameSelectionComponent, canActivate: [auth_service_1.AuthService] },
     { path: "waiting-room", component: waiting_room_component_1.WaitingRoomComponent, canActivate: [auth_service_1.AuthService] },

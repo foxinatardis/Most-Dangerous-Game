@@ -14,7 +14,7 @@ import { OptionsComponent } from "./options.component";
 import { AboutComponent } from "./about.component";
 
 const routes: Routes = [
-	{path: "", component: AboutComponent },
+	{path: "", component: ProfileComponent, canActivate: [AuthService] },
 	{path: "login", component: LoginComponent },
 	{path: "game-selection", component: GameSelectionComponent, canActivate: [AuthService] },
 	{path: "waiting-room", component: WaitingRoomComponent, canActivate: [AuthService] },
