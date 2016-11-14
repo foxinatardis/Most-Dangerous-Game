@@ -19,15 +19,17 @@ var in_game_component_1 = require("./in-game.component");
 var game_history_component_1 = require("./game-history.component");
 var profile_component_1 = require("./profile.component");
 var options_component_1 = require("./options.component");
+var about_component_1 = require("./about.component");
 var routes = [
-    { path: "", component: profile_component_1.ProfileComponent, canActivate: [auth_service_1.AuthService] },
+    { path: "", component: about_component_1.AboutComponent },
     { path: "login", component: login_component_1.LoginComponent },
     { path: "game-selection", component: game_selection_component_1.GameSelectionComponent, canActivate: [auth_service_1.AuthService] },
     { path: "waiting-room", component: waiting_room_component_1.WaitingRoomComponent, canActivate: [auth_service_1.AuthService] },
     { path: "in-game", component: in_game_component_1.InGameComponent, canActivate: [auth_service_1.AuthService] },
     { path: "game-history", component: game_history_component_1.GameHistoryComponent, canActivate: [auth_service_1.AuthService] },
     { path: "profile", component: profile_component_1.ProfileComponent, canActivate: [auth_service_1.AuthService] },
-    { path: "options", component: options_component_1.OptionsComponent, canActivate: [auth_service_1.AuthService] }
+    { path: "options", component: options_component_1.OptionsComponent, canActivate: [auth_service_1.AuthService] },
+    { path: "about", component: about_component_1.AboutComponent }
 ];
 var AppRoutingModule = (function () {
     function AppRoutingModule(authService) {

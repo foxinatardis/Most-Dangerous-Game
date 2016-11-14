@@ -38,7 +38,6 @@ var InGameComponent = (function () {
         this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
         this.socket = io();
         this.socket.on("target online", function (data) {
-            console.log("target online: ", data);
             if (data) {
                 _this.targetOnline = true;
                 if (data.targetLat) {
@@ -186,7 +185,7 @@ var InGameComponent = (function () {
                 time: this.myTime
             };
             console.log("data inside rapidEmit interval funciton: ", data);
-            this.socket.emit("give aim", data); // todo finish function for handling someone taking aim at you
+            this.socket.emit("give aim", data);
         }.bind(this), 1000);
         setTimeout(function () {
             clearInterval(this.rapid);
@@ -266,7 +265,6 @@ var InGameComponent = (function () {
             this.distanceToTarget = Math.floor(this.getDistance(this.myLong, this.myLat, this.targetLong, this.targetLat));
             this.accuracy = Math.floor(this.myAcc + this.targetAcc);
             this.bearing = Math.floor(this.getBearing(this.myLong, this.myLat, this.targetLong, this.targetLat));
-            // console.log("requirements met");
             var toDraw = document.getElementById("toDraw");
             var toDrawX = Math.cos(this.rad(this.bearing)) * Math.min(this.distanceToTarget, 100);
             var toDrawY = Math.sin(this.rad(this.bearing)) * Math.min(this.distanceToTarget, 100);
