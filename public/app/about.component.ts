@@ -25,7 +25,8 @@ import { AuthService } from "./auth.service";
 })
 export class AboutComponent implements OnInit {
 	constructor(
-		private authService: AuthService
+		private authService: AuthService,
+		private router: Router
 	) { }
 
 	toLogin() {
