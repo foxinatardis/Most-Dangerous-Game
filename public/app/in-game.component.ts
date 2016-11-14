@@ -214,14 +214,7 @@ export class InGameComponent {
 
 
 	ngOnInit() {
-		this.compass = document.getElementById("compassWrapper");
-		this.compassWatch = Compass.watch(function (heading) {
-			console.log(heading);
-			this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
-		}.bind(this));
-		Compass.noSupport(function () {
-			this.compass.style.transform = "rotate(-90deg)";
-		}.bind(this));
+
 		this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
 		this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
 		this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
@@ -280,6 +273,16 @@ export class InGameComponent {
 		});
 
 	};
+
+	ngAfterViewChecked() {
+		this.compass = document.getElementById("compassWrapper");
+		this.compassWatch = Compass.watch(function (heading) {
+			this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
+		}.bind(this));
+		Compass.noSupport(function () {
+			this.compass.style.transform = "rotate(-90deg)";
+		}.bind(this));
+	}
 
 	ngOnDestroy() {
 		Compass.unwatch(this.compassWatch);
