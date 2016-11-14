@@ -37,7 +37,9 @@ import { ApiService } from "./api.service";
 					<p class="inside-button">Create New User</p>
 				</div>
 			</div>
-
+		</div>
+		<div class="button" (click)="about()">
+			<p class="inside-button">About</p>
 		</div>
 	`,
 	styles: [`
@@ -102,12 +104,8 @@ export class LoginComponent {
 			}
 		});
 
-		// fake!!!
-		// if (this.loginUser.username.length === 0) {
-		// 	this.error = "Username cannot be empty";
-		// } else {
-		// 	this.authService.user = this.loginUser;
-		// 	this.router.navigate(["/league"]);
-		// }
+	private about() {
+		this.router.navigate(["/about"]);
+	}
 	}
 }
