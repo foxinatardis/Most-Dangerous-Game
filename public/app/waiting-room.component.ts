@@ -82,4 +82,8 @@ export class WaitingRoomComponent implements OnInit {
 		});
 	}
 
+	ngOnDestroy() {
+		this.socket.disconnect();
+	}
+
 }
