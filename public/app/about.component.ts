@@ -4,7 +4,7 @@ import { AuthService } from "./auth.service";
 
 @Component({
 	template: `
-		<div class="button" *ngIF="!this.authService.user">
+		<div class="button" *ngIf="!this.authService.user">
 			<p class="inside-button" (click)="toLogin()">Login</p>
 		</div>
 		<div>
