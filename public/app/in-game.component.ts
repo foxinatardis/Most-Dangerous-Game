@@ -227,7 +227,6 @@ export class InGameComponent {
 		this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
 		this.socket = io();
 		this.socket.on("target online", (data) => {
-			console.log("target online: ", data);
 			if (data) {
 				this.targetOnline = true;
 				if (data.targetLat) {
@@ -382,7 +381,7 @@ export class InGameComponent {
 				time: this.myTime
 			};
 			console.log("data inside rapidEmit interval funciton: ", data);
-			this.socket.emit("give aim", data); // todo finish function for handling someone taking aim at you
+			this.socket.emit("give aim", data);
 		}.bind(this), 1000);
 		setTimeout(function() {
 			clearInterval(this.rapid);
@@ -467,21 +466,11 @@ export class InGameComponent {
 			this.distanceToTarget = Math.floor(this.getDistance(this.myLong, this.myLat, this.targetLong, this.targetLat));
 			this.accuracy = Math.floor(this.myAcc + this.targetAcc);
 			this.bearing = Math.floor(this.getBearing(this.myLong, this.myLat, this.targetLong, this.targetLat));
-			// console.log("requirements met");
 			let toDraw = document.getElementById("toDraw");
 			let toDrawX = Math.cos(this.rad(this.bearing)) * Math.min(this.distanceToTarget, 100);
 			let toDrawY = Math.sin(this.rad(this.bearing)) * Math.min(this.distanceToTarget, 100);
 			toDraw.style.left = toDrawX + "%";
 			toDraw.style.top = toDrawY + "%";
-			// let compass = document.getElementById("compassWrapper");
-			// // if (this.myHeading) {
-			// // 	compass.style.transform = "rotate(" + (this.myHeading - 90) + "deg)";
-			// // } else {
-			// // 	compass.style.transform = "rotate(-90deg)";
-			// // } // todo this needs fixing, may use compass.js
-			//
-
-
 		}
 	}
 

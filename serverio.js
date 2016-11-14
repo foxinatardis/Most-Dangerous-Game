@@ -67,6 +67,8 @@ app.post("/api/signup", (req, res) => {
 	console.log("hit signup api", req.body);
 	if(!req.body.email || !req.body.password) {
 		res.send({error: true, message: "error, invalid email or password"});
+	} else if (req.body.password.length < 8 || !req.body.email.includes("@")) {
+		res.send({error: true, message: "error, invalid email or password"});
 	}
 	User.find({$or:[{email: req.body.email}, {name: req.body.username}]}, (err, user) => {
 		if (user.length === 0) {
@@ -201,7 +203,6 @@ app.post("/api/leave-game", (req, res) => {
 });
 
 app.post("/api/newGame", (req, res) => {
-	//todo: add verification
 	if (!req.session.user) {
 		res.redirect("/");
 		return;
@@ -223,8 +224,8 @@ app.post("/api/newGame", (req, res) => {
 	newGame.save((err) => {
 		if (err) {
 			console.log(err);
-			res.status(500);
-			res.send({message: "error saving new game"});
+			// res.status(500);
+			res.send({error: true, message: "Error saving new game."});
 			return;
 		}
 
@@ -238,8 +239,8 @@ app.post("/api/newGame", (req, res) => {
 			(err, data) => {
 				if(err) {
 					console.log(err);
-					res.status(500);
-					res.send({message: "error updating user"});
+					// res.status(500);
+					res.send({error: true, message: "Error assigning new game."});
 					return;
 				}
 				// console.log("updated user", data);
@@ -504,31 +505,6 @@ app.get("/api/target", (req, res) => {
 	);
 });
 
-// app.get("/api/target/location", (req, res) => { // might not need this api
-// 	User.findOne(
-// 		{name: req.session.user.currentTarget},
-// 		"lastLatitude lastLongitude lastAccuracy lastTimestamp",
-// 		(err, data) => {
-// 			if (err) {
-// 				console.log("error in api/target/loction at User.findOne", err);
-// 				res.status(500);
-// 				res.send({error: true, message: "failed to find target location"});
-// 				return;
-// 			}
-// 			if (!data.lastLongitude) {
-// 				res.send({message: "Target not found."});
-// 				return;
-// 			}
-// 			res.send({
-// 				latitude: data.lastLatitude,
-// 				longitude: data.lastLongitude,
-// 				accuracy: data.lastAccuracy,
-// 				timestamp: data.lastTimestamp
-// 			});
-// 		}
-// 	);
-// });
-
 app.post("/api/location", (req, res) => {
 	if (!req.session.user) {
 		res.redirect("/");
@@ -552,35 +528,6 @@ app.post("/api/location", (req, res) => {
 		}
 	);
 });
-
-// app.post("/api/update-location", (req, res) => {
-// 	console.log("hit /api/update-location");
-// 	User.findOneAndUpdate(
-// 		{email: req.session.user.name},
-// 		{
-// 			lastLatitude: req.body.latitude,
-// 			lastLongitude: req.body.longitude,
-// 			lastAccuracy: req.body.accuracy,
-// 			lastTimestamp: req.body.time,
-// 			$inc: {score: 1}
-// 		},
-// 		{new: true},
-// 		(err, data) => {
-// 			if (err) {
-// 				console.log("error in /api/update-location at User.findOneAndUpdate: ", err);
-// 				res.status(500);
-// 				res.send({error: true, message: "Failed to update score... oops"});
-// 				return;
-// 			}
-// 			if (!data) {
-// 				console.log("error in api/update-location, no data!");
-// 				res.status(500);
-// 				res.send({error: true, message: "Who are you? Who Who? Who Who?"});
-// 			}
-// 			res.send({score: data.score});
-// 		}
-// 	);
-// });
 
 app.get("/api/game-history", (req, res) => {
 	if (!req.session.user) {
@@ -749,11 +696,11 @@ io.on("connection", (socket) => {
 	socket.on("attack", (data) => {
 		console.log("attack attempted");
 		let attempt = data.distance + data.accuracy;
-		if (attempt > 1000 || !connectedUsers[socket._targetName]) { // if distance+accuracy is too great or target is offline attempt fails todo change this to 100
+		if (attempt > 100 || !connectedUsers[socket._targetName]) { // if distance+accuracy is too great or target is offline attempt fails
 			socket.emit("attack result", false);
 		} else {
 			let result = Math.random() * attempt;
-			if (result > 200) { // todo change this to 20
+			if (result > 20) {
 				socket.emit("attack result", false);
 			} else {
 				User.findOneAndUpdate(
