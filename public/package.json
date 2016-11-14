@@ -5,7 +5,8 @@
     "start": "tsc && concurrently \"tsc -w\" \"lite-server\" ",
     "lite": "lite-server",
     "tsc": "tsc",
-    "tsc:w": "tsc -w"
+    "tsc:w": "tsc -w",
+	"build": "rimraf dist && webpack --config config/webpack.prod.js --progress --profile --bail --display-error-details"
   },
   "licenses": [
     {
