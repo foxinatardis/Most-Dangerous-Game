@@ -15,7 +15,7 @@ import { ApiService } from "./api.service";
 
 		<div *ngIf="selectionMade">
 
-			<div *ngIf="displayEndGame"
+			<div *ngIf="displayEndGame">
 				<h3>Are you sure you would like to end the current game for all players?</h3>
 				<div class="button" (click)="unselect()">
 					<p class="inside-button">No! Back to Admin</p>
