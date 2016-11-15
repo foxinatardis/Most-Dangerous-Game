@@ -13,6 +13,9 @@ import { AuthService } from "./auth.service";
 			<div class="button" *ngIf="this.authService.user.currentGame" (click)="leaveGame()">
 				<p class="inside-button">Leave Current Game</p>
 			</div>
+			<div class="button" *ngIf="this.authService.user.gameAdmin" (click)="admin()">
+				<p class="inside-button">Admin Options</p>
+			</div>
 			<div class="button" (click)="about()" *ngIf="!selectionMade">
 				<p class="inside-button">About</p>
 			</div>
@@ -116,6 +119,11 @@ export class OptionsComponent {
 
 	about() {
 		this.router.navigate(["/about"]);
+	}
+
+	admin() {
+		// stub
+		this.router.navigate(["/admin"]);
 	}
 
 }
