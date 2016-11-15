@@ -182,6 +182,9 @@ var InGameComponent = (function () {
     };
     InGameComponent.prototype.rapidEmit = function (hunterName) {
         console.log("rapidEmit()");
+        if (this.rapid) {
+            clearInterval(this.rapid);
+        }
         this.rapid = setInterval(function () {
             console.log("inside rapidEmit interval function");
             var data = {

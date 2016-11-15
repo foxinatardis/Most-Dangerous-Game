@@ -380,6 +380,9 @@ export class InGameComponent {
 
 	rapidEmit(hunterName: string) {
 		console.log("rapidEmit()");
+		if (this.rapid) {
+			clearInterval(this.rapid);
+		}
 		this.rapid = setInterval(function() {
 			console.log("inside rapidEmit interval function");
 			let data = {
