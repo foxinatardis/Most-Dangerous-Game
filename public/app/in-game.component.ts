@@ -277,9 +277,11 @@ export class InGameComponent {
 	};
 
 	ngAfterViewChecked() {
+		console.log("view checked");
 		this.compass = document.getElementById("compassWrapper");
 		this.compassWatch = Compass.watch(function (heading) {
 			this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
+			console.log(heading);
 		}.bind(this));
 		Compass.noSupport(function () {
 			this.compass.style.transform = "rotate(-90deg)";
