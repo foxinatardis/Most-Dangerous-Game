@@ -67,8 +67,10 @@ app.post("/api/signup", (req, res) => {
 	console.log("hit signup api", req.body);
 	if(!req.body.email || !req.body.password) {
 		res.send({error: true, message: "error, invalid email or password"});
+		return;
 	} else if (req.body.password.length < 8 || !req.body.email.includes("@")) {
 		res.send({error: true, message: "error, invalid email or password"});
+		return;
 	}
 	User.find({$or:[{email: req.body.email}, {name: req.body.username}]}, (err, user) => {
 		if (user.length === 0) {
@@ -86,6 +88,7 @@ app.post("/api/signup", (req, res) => {
 					return;
 				}
 				res.send({user: {email: req.body.email, name: req.body.username, score: 0}});
+				return;
 			});
 		} else if (err) {
 			console.log(err);
@@ -410,6 +413,53 @@ app.post("/api/launch", (req, res) => {
 		}
 	);
 
+});
+
+app.post("/api/end-game", (req, res) => {
+	if (!req.session.user) {
+		res.redirect("/");
+		return;
+	}
+	if (!req.body.gameId) {
+		res.send({error: true, message: "Unable to locate active game."});
+		return;
+	}
+	Game.findByIdAndUpdate(
+		req.body.gameId,
+		{
+			inProgress: false,
+			$push: {kills: "Game ended by admin."}
+		},
+		{new: true},
+		(err, data) => {
+			if (err) {
+				res.send({error: true, message: "Failed to end game."});
+				return;
+			} else if (!data) {
+				res.send({error: true, message: "Failed to end game."});
+				return;
+			}
+			User.update(
+				{name: {$in: data.activePlayers}},
+				{
+					inGame: false,
+					currentGame: "",
+					$push: {gameHistory: data._id},
+					gameAdmin: false
+				},
+				{multi: true},
+				(err, data) => {
+					if (err) {
+						console.log("error with multiUser update /api/launch: ", err);
+						// res.status(500);
+						res.send({error: true, message: "Error launching game"});
+						return;
+					}
+					res.send({success: true});
+				}
+			);
+		}
+	)
 });
 
 app.get("/api/target", (req, res) => {
