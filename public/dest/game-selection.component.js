@@ -38,6 +38,11 @@ var GameSelectionComponent = (function () {
                 _this.start = false;
                 _this.gameId = response.gameId;
                 _this.authService.user.currentGame = response.gameId;
+                _this.authService.user.gameAdmin = true;
+            }
+            else {
+                _this.error = true;
+                _this.errorMessage = "Error encountered, please try again.";
             }
         });
     };

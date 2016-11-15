@@ -110,6 +110,10 @@ export class GameSelectionComponent {
 				this.start = false;
 				this.gameId = response.gameId;
 				this.authService.user.currentGame = response.gameId;
+				this.authService.user.gameAdmin = true;
+			} else {
+				this.error = true;
+				this.errorMessage = "Error encountered, please try again.";
 			}
 		});
 	}
