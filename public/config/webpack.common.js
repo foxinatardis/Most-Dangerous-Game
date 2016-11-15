@@ -35,7 +35,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        include: helpers.root('app', 'app'),
+        include: helpers.root('./', 'app'),
         loader: 'raw'
       }
     ]
