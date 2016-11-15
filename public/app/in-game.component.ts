@@ -233,6 +233,7 @@ export class InGameComponent {
 			} else {
 				this.targetOnline = false;
 			}
+			console.log("data from socket 'target online' is: ", data);
 		});
 
 		this.socket.on("score", (data) => {
