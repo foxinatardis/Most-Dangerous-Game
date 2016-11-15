@@ -10,7 +10,7 @@ import { ApiService } from "./api.service";
 			<h2 *ngIf="register">Username: <span class="error" *ngIf="error">{{error}}</span></h2>
 			<input type="text" [(ngModel)]="loginUser.username" placeholder="Username" *ngIf="register">
 			<h3 class="error" *ngIf="error">{{error}}</h3>
-			<h2>Email: </h2>
+			<h2>Email: <span class="error" *ngIf="error">{{error}}</span></h2>
 			<input type="text" [(ngModel)]="loginUser.email" placeholder="Email">
 
 			<h2>Password: </h2>
@@ -77,6 +77,8 @@ export class LoginComponent {
 
 	private sendRegistration() {
 		if (this.passwordVerify()) {
+			this.loginUser.username = this.loginUser.username.trim();
+			this.loginUser.email = this.loginUser.email.trim();
 			this.apiService.postObs("/api/signup", this.loginUser).subscribe((res) => {
 				if (res.error) {
 					this.error = res.message;
@@ -95,6 +97,8 @@ export class LoginComponent {
 	}
 
 	private sendLogin() {
+		this.loginUser.username = this.loginUser.username.trim();
+		this.loginUser.email = this.loginUser.email.trim();
 		this.apiService.postObs("/api/login", this.loginUser).subscribe((res) => {
 			if (res.loggedIn) {
 				this.authService.user = res.userData[0];

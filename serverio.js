@@ -72,11 +72,13 @@ app.post("/api/signup", (req, res) => {
 		res.send({error: true, message: "error, invalid email or password"});
 		return;
 	}
-	User.find({$or:[{email: req.body.email}, {name: req.body.username}]}, (err, user) => {
+	var email = req.body.email.toLowerCase();
+	var username = req.body.username.toLowerCase();
+	User.find({$or:[{email: email}, {name: username}]}, (err, user) => {
 		if (user.length === 0) {
 			var newUser = new User({
-				email: req.body.email,
-				name: req.body.username,
+				email: email,
+				name: username,
 				password: req.body.password,
 				score: 0
 			});
@@ -87,7 +89,7 @@ app.post("/api/signup", (req, res) => {
 					res.send({error: true, message: "error registering new user"});
 					return;
 				}
-				res.send({user: {email: req.body.email, name: req.body.username, score: 0}});
+				res.send({user: {email: email, name: username, score: 0}});
 				return;
 			});
 		} else if (err) {
@@ -106,7 +108,8 @@ app.post("/api/login", (req, res) => {
 		res.send({error: true, message: "error, please provide valid login"});
 		return;
 	}
-	User.find({email: req.body.email}, (err, user) => {
+	var email = req.body.email.toLowerCase();
+	User.find({email: email}, (err, user) => {
 		if(user.length === 0) {
 			res.send({error: true, message: "error, user not found", loggedIn: false});
 			return;
@@ -452,13 +455,14 @@ app.post("/api/end-game", (req, res) => {
 					currentTarget: ""
 				},
 				{multi: true},
-				(err, data) => {
+				(err, userdata) => {
 					if (err) {
 						console.log("error with multiUser update /api/end-game: ", err);
 						// res.status(500);
 						res.send({error: true, message: "Trouble with ending game, users may need to leave manually."});
 						return;
 					}
+					console.log("game ended: ", data._id);
 					res.send({message: "Game successfully ended."});
 				}
 			);
@@ -761,7 +765,7 @@ io.on("connection", (socket) => {
 			socket.emit("attack result", false);
 		} else {
 			let result = Math.random() * attempt;
-			if (result > 20) {
+			if (result > 25) {
 				socket.emit("attack result", false);
 			} else {
 				User.findOneAndUpdate(

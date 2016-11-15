@@ -101,9 +101,7 @@ export class GameSelectionComponent {
 			if (response.error) {
 				this.error = true;
 				this.errorMessage = response.message;
-				return;
-			}
-			if (response.gameId) {
+			} else if (response.gameId) {
 				this.error = false;
 				this.errorMessage = "";
 				this.gameCreated = true;
@@ -123,9 +121,7 @@ export class GameSelectionComponent {
 			if (response.error) {
 				this.error = true;
 				this.errorMessage = response.message;
-				return;
-			}
-			if (response.success) {
+			} else if (response.success) {
 				this.error = false;
 				this.errorMessage = "";
 				this.start = false;

@@ -29,9 +29,8 @@ var GameSelectionComponent = (function () {
             if (response.error) {
                 _this.error = true;
                 _this.errorMessage = response.message;
-                return;
             }
-            if (response.gameId) {
+            else if (response.gameId) {
                 _this.error = false;
                 _this.errorMessage = "";
                 _this.gameCreated = true;
@@ -52,9 +51,8 @@ var GameSelectionComponent = (function () {
             if (response.error) {
                 _this.error = true;
                 _this.errorMessage = response.message;
-                return;
             }
-            if (response.success) {
+            else if (response.success) {
                 _this.error = false;
                 _this.errorMessage = "";
                 _this.start = false;

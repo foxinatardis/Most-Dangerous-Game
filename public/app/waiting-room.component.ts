@@ -72,6 +72,7 @@ export class WaitingRoomComponent implements OnInit {
 		});
 		this.geoService.postLocation();
 		this.socket.on("launch", () => {
+			this.authService.user.inGame = true;
 			this.router.navigate(["/in-game"]);
 		});
 		this.socket.on("update waiting", (newPlayer) => {
