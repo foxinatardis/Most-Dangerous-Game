@@ -470,9 +470,13 @@ app.get("/api/target", (req, res) => {
 									// res.status(500);
 									res.send({error: true, message: "failed to find target"});
 									return;
+								} else if (!data) {
+									res.send({error: true, message: "failed to find target"});
+									return;
 								}
-								console.log(data.currentTarget);
+								// console.log(data.currentTarget);
 								var targetName = data.currentTarget;
+								var userScore = data.score;
 								User.findOne(
 									{name: targetName},
 									"lastLatitude lastLongitude lastAccuracy lastTimestamp",
@@ -492,7 +496,8 @@ app.get("/api/target", (req, res) => {
 											longitude: data.lastLongitude,
 											accuracy: data.lastAccuracy,
 											timestamp: data.lastTimestamp,
-											targetName: targetName
+											targetName: targetName,
+											userScore: userScore
 										});
 									}
 								);
