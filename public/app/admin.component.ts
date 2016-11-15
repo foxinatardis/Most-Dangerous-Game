@@ -5,7 +5,8 @@ import { ApiService } from "./api.service";
 
 @Component({
 	template: `
-		<div *ngIf="!selectionMade">
+		<h2>Welcome: {{this.authService.user.name}}</h2>
+		<div *ngIf="!selectionMade && !result">
 
 			<div class="button" (click)="selectEndGame()">
 				<p class="inside-button">End Current Game</p>
@@ -13,7 +14,7 @@ import { ApiService } from "./api.service";
 
 		</div>
 
-		<div *ngIf="selectionMade">
+		<div *ngIf="selectionMade && !result">
 
 			<div *ngIf="displayEndGame">
 				<h3>Are you sure you would like to end the current game for all players?</h3>
@@ -25,6 +26,13 @@ import { ApiService } from "./api.service";
 				</div>
 			</div>
 
+		</div>
+
+		<div *ngIf="result">
+			<h3>{{resultMessage}}</h3>
+			<div class="button" (click)="unselect()">
+				<p class="inside-button">Back to Admin Options</p>
+			</div>
 		</div>
 	`,
 })
