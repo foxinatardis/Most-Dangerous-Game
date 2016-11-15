@@ -811,6 +811,4 @@ app.use((err, req, res, next) => {
 	res.send("500 Error: Killed by ninjas");
 });
 
-
-
 secureServer.listen(httpsPort);
