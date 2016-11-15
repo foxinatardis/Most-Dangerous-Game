@@ -10,4 +10,5 @@ require('@angular/router');
 require('rxjs');
 // Other vendors for example jQuery, Lodash or Bootstrap
 // You can import js, ts, css, sass, ...
+require('socket.io-client');
 //# sourceMappingURL=vendor.js.map
