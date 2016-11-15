@@ -10,7 +10,7 @@ import { ApiService } from "./api.service";
 			<div class="button" (click)="selectEndGame()">
 				<p class="inside-button">End Current Game</p>
 			</div>
-			
+
 		</div>
 
 		<div *ngIf="selectionMade">
@@ -58,7 +58,7 @@ export class AdminComponent {
 	}
 
 	endGame() {
-		this.apiService.postObs("/api/end-game", {gameId: this.authService.currentGame}).subscribe((res) => {
+		this.apiService.postObs("/api/end-game", {gameId: this.authService.user.currentGame}).subscribe((res) => {
 			if (res.error) {
 				this.error = true;
 				this.errorMessage = res.message;

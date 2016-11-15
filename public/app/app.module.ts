@@ -18,6 +18,7 @@ import { GameHistoryComponent } from "./game-history.component";
 import { ProfileComponent } from "./profile.component";
 import { OptionsComponent } from "./options.component";
 import { AboutComponent } from "./about.component";
+import { AdminComponent } from "./admin.component";
 
 @NgModule({
 	imports: [
@@ -40,7 +41,8 @@ import { AboutComponent } from "./about.component";
 		GameHistoryComponent,
 		ProfileComponent,
 		OptionsComponent,
-		AboutComponent
+		AboutComponent,
+		AdminComponent
 	],
 	bootstrap: [ AppComponent ]
 })
