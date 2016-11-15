@@ -106,6 +106,7 @@ var InGameComponent = (function () {
         this.socket.disconnect();
         clearInterval(this.locationInterval);
         navigator.geolocation.clearWatch(this.locationWatch);
+        console.log("destroyed");
     };
     // functions for styling text colors based on variables
     InGameComponent.prototype.online = function () {
