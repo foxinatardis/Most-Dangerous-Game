@@ -43,11 +43,12 @@ declare let Compass: any;
 				<div id="toDraw"></div>
 			</div>
 		</div>
-
-		<button *ngIf="!takingAim && !attacking && !error" class="button bottom" (click)="takeAim()">Take Aim</button>
-		<button *ngIf="takingAim && !attacking && !error" class="button bottom" (click)="attack()">Attack</button>
-		<div *ngIf="attacking">
-			<h2>{{attackMessage}}</h2>
+		<div *ngIf="targetOnline">
+			<button *ngIf="!takingAim && !attacking && !error" class="button bottom" (click)="takeAim()">Take Aim</button>
+			<button *ngIf="takingAim && !attacking && !error" class="button bottom" (click)="attack()">Attack</button>
+			<div *ngIf="attacking">
+				<h2>{{attackMessage}}</h2>
+			</div>
 		</div>
 		<div *ngIf="!error && !attacking">
 			<h3 [style.color]="resolution()">Accuracy: {{accuracy}} meters</h3>
@@ -188,7 +189,6 @@ export class InGameComponent {
 	myLat: number;
 	myTime: number;
 	myAcc: number;
-	myHeading: number;
 	compass: any;
 	compassWatch: any;
 
@@ -303,7 +303,6 @@ export class InGameComponent {
 		this.socket.disconnect();
 		clearInterval(this.locationInterval);
 		navigator.geolocation.clearWatch(this.locationWatch);
-		console.log("destroyed");
 	}
 
 // functions for styling text colors based on variables
@@ -472,9 +471,6 @@ export class InGameComponent {
 		this.myLat = coor.latitude;
 		this.myTime = pos.timestamp;
 		this.myAcc = coor.accuracy;
-		if (coor.heading) {
-			this.myHeading = coor.heading;
-		}
 		console.log("locationWatch: ", pos);
 		this.update();
 	}
