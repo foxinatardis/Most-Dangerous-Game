@@ -17,6 +17,7 @@ var GameSelectionComponent = (function () {
         this.apiService = apiService;
         this.router = router;
         this.authService = authService;
+        this.gameId = "";
         this.start = true;
         this.gameCreated = false;
         this.gameJoined = false;
