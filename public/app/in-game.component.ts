@@ -217,14 +217,14 @@ export class InGameComponent {
 	ngOnInit() {
 
 		// this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
-		// this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
-		// this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
+		this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
+		this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
 		this.socket = io();
 		this.socket.on("connected", () => {
 			console.log("connected, authService.user is: ", this.authService.user);
 			this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
-			this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
-			this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
+			// this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
+			// this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
 		});
 		this.socket.on("target online", (data) => {
 			if (data) {
@@ -243,7 +243,9 @@ export class InGameComponent {
 		});
 
 		this.socket.on("score", (data) => {
-			this.authService.user.score = data;
+			if (data) {
+				this.authService.user.score = data;
+			}
 		});
 
 		this.socket.on("being watched", (data) => {
@@ -452,7 +454,7 @@ export class InGameComponent {
 					score: res.userScore
 				};
 				this.socket.emit("join", joinData);
-				// this.compass = document.getElementById("compassWrapper");
+				this.compass = document.getElementById("compassWrapper");
 			}
 		});
 

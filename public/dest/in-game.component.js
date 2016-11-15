@@ -27,14 +27,14 @@ var InGameComponent = (function () {
     InGameComponent.prototype.ngOnInit = function () {
         var _this = this;
         // this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
-        // this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
-        // this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
+        this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
+        this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
         this.socket = io();
         this.socket.on("connected", function () {
             console.log("connected, authService.user is: ", _this.authService.user);
             _this.geoService.getLocation(_this.positionSuccess.bind(_this), _this.positionErr.bind(_this));
-            _this.locationWatch = navigator.geolocation.watchPosition(_this.iMovedSuccess.bind(_this));
-            _this.locationInterval = setInterval(_this.sendLocation.bind(_this), 15000);
+            // this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
+            // this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
         });
         this.socket.on("target online", function (data) {
             if (data) {
@@ -53,7 +53,9 @@ var InGameComponent = (function () {
             console.log("data from socket 'target online' is: ", data);
         });
         this.socket.on("score", function (data) {
-            _this.authService.user.score = data;
+            if (data) {
+                _this.authService.user.score = data;
+            }
         });
         this.socket.on("being watched", function (data) {
             _this.rapidEmit(data);
@@ -256,6 +258,7 @@ var InGameComponent = (function () {
                     score: res.userScore
                 };
                 _this.socket.emit("join", joinData);
+                _this.compass = document.getElementById("compassWrapper");
             }
         });
     };
