@@ -575,7 +575,7 @@ app.post("/api/game-stats", (req, res) => {
 
 io.on("connection", (socket) => {
 
-	console.log("socket connected");
+	console.log("socket connected", socket);
 
 	socket.on("disconnect", () => {
 		delete connectedUsers[socket._name];
@@ -593,7 +593,7 @@ io.on("connection", (socket) => {
 					if (err) {
 						console.log("Err at disconnect with User.findOneAndUpdate: ", err);
 					} else {
-						console.log("socekt saved: " + socket._name);
+						console.log("socket saved: " + socket._name);
 					}
 				}
 			);
