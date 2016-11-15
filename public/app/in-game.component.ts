@@ -216,10 +216,16 @@ export class InGameComponent {
 
 	ngOnInit() {
 
-		this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
-		this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
-		this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
+		// this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
+		// this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
+		// this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
 		this.socket = io();
+		this.socket.on("connected", () => {
+			console.log("connected, authService.user is: ", this.authService.user);
+			this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
+			this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
+			this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
+		});
 		this.socket.on("target online", (data) => {
 			if (data) {
 				this.targetOnline = true;
@@ -297,8 +303,6 @@ export class InGameComponent {
 		navigator.geolocation.clearWatch(this.locationWatch);
 	}
 
-
-
 // functions for styling text colors based on variables
 	online() {
 		if (this.targetOnline) {
@@ -316,7 +320,6 @@ export class InGameComponent {
 	}
 
 // functions for practical uses
-
 	takeAim() {
 		let data = {
 			targetName: this.targetName,

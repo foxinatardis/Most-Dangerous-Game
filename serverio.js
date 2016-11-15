@@ -575,7 +575,9 @@ app.post("/api/game-stats", (req, res) => {
 
 io.on("connection", (socket) => {
 
-	console.log("socket connected", socket);
+	console.log("socket connected");
+
+	socket.emit("connected");
 
 	socket.on("disconnect", () => {
 		delete connectedUsers[socket._name];
