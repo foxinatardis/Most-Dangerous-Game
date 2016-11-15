@@ -117,7 +117,11 @@ export class GameSelectionComponent {
 	}
 
 	joinGame() {
-		this.apiService.postObs("/api/joinGame", {message: "joingame", gameId: this.gameId}).subscribe((response) => {
+		var toSend = {
+			message: "joingame",
+			gameId: this.gameId
+		};
+		this.apiService.postObs("/api/joinGame", toSend).subscribe((response) => {
 			if (response.error) {
 				this.error = true;
 				this.errorMessage = response.message;

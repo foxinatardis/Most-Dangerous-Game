@@ -48,7 +48,11 @@ var GameSelectionComponent = (function () {
     };
     GameSelectionComponent.prototype.joinGame = function () {
         var _this = this;
-        this.apiService.postObs("/api/joinGame", { message: "joingame", gameId: this.gameId }).subscribe(function (response) {
+        var toSend = {
+            message: "joingame",
+            gameId: this.gameId
+        };
+        this.apiService.postObs("/api/joinGame", toSend).subscribe(function (response) {
             if (response.error) {
                 _this.error = true;
                 _this.errorMessage = response.message;
