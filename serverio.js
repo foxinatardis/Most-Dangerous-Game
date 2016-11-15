@@ -445,21 +445,22 @@ app.post("/api/end-game", (req, res) => {
 					inGame: false,
 					currentGame: "",
 					$push: {gameHistory: data._id},
-					gameAdmin: false
+					gameAdmin: false,
+					currentTarget: ""
 				},
 				{multi: true},
 				(err, data) => {
 					if (err) {
-						console.log("error with multiUser update /api/launch: ", err);
+						console.log("error with multiUser update /api/end-game: ", err);
 						// res.status(500);
-						res.send({error: true, message: "Error launching game"});
+						res.send({error: true, message: "Trouble with ending game, users may need to leave manually."});
 						return;
 					}
 					res.send({success: true});
 				}
 			);
 		}
-	)
+	);
 });
 
 app.get("/api/target", (req, res) => {
