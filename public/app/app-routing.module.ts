@@ -12,6 +12,7 @@ import { GameHistoryComponent} from "./game-history.component";
 import { ProfileComponent } from "./profile.component";
 import { OptionsComponent } from "./options.component";
 import { AboutComponent } from "./about.component";
+import { AdminComponent } from "./admin.component";
 
 const routes: Routes = [
 	{path: "", component: ProfileComponent, canActivate: [AuthService] },
@@ -22,7 +23,8 @@ const routes: Routes = [
 	{path: "game-history", component: GameHistoryComponent, canActivate: [AuthService] },
 	{path: "profile", component: ProfileComponent, canActivate: [AuthService] },
 	{path: "options", component: OptionsComponent, canActivate: [AuthService] },
-	{path: "about", component: AboutComponent}
+	{path: "about", component: AboutComponent},
+	{path: "admin", component: AdminComponent, canActivate: [AuthService]}
 ];
 
 @NgModule({

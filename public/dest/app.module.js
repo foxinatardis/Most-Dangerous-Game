@@ -25,6 +25,7 @@ var game_history_component_1 = require("./game-history.component");
 var profile_component_1 = require("./profile.component");
 var options_component_1 = require("./options.component");
 var about_component_1 = require("./about.component");
+var admin_component_1 = require("./admin.component");
 var AppModule = (function () {
     function AppModule() {
     }
@@ -50,7 +51,8 @@ var AppModule = (function () {
                 game_history_component_1.GameHistoryComponent,
                 profile_component_1.ProfileComponent,
                 options_component_1.OptionsComponent,
-                about_component_1.AboutComponent
+                about_component_1.AboutComponent,
+                admin_component_1.AdminComponent
             ],
             bootstrap: [app_component_1.AppComponent]
         }), 

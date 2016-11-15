@@ -424,8 +424,11 @@ app.post("/api/end-game", (req, res) => {
 		res.send({error: true, message: "Unable to locate active game."});
 		return;
 	}
-	Game.findByIdAndUpdate(
-		req.body.gameId,
+	Game.findByOneAndUpdate(
+		{
+			_id: req.body.gameId,
+			creator: req.session.user.name
+		},
 		{
 			inProgress: false,
 			$push: {kills: "Game ended by admin."}
@@ -456,7 +459,7 @@ app.post("/api/end-game", (req, res) => {
 						res.send({error: true, message: "Trouble with ending game, users may need to leave manually."});
 						return;
 					}
-					res.send({success: true});
+					res.send({message: "Game successfully ended."});
 				}
 			);
 		}
