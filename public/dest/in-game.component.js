@@ -22,6 +22,7 @@ var InGameComponent = (function () {
         this.error = false;
         this.targetOnline = false;
         this.gameId = this.authService.user.currentGame;
+        this.initialized = false;
     }
     InGameComponent.prototype.ngOnInit = function () {
         var _this = this;
@@ -82,15 +83,18 @@ var InGameComponent = (function () {
     };
     ;
     InGameComponent.prototype.ngAfterContentInit = function () {
-        console.log("after content init");
-        this.compass = document.getElementById("compassWrapper");
-        this.compassWatch = Compass.watch(function (heading) {
-            this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
-            console.log(heading);
-        }.bind(this));
-        Compass.noSupport(function () {
-            this.compass.style.transform = "rotate(-90deg)";
-        }.bind(this));
+        if (!this.initialized) {
+            this.initialized = true;
+            console.log("after content init");
+            this.compass = document.getElementById("compassWrapper");
+            this.compassWatch = Compass.watch(function (heading) {
+                this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
+                console.log(heading);
+            }.bind(this));
+            Compass.noSupport(function () {
+                this.compass.style.transform = "rotate(-90deg)";
+            }.bind(this));
+        }
     };
     InGameComponent.prototype.ngOnDestroy = function () {
         Compass.unwatch(this.compassWatch);

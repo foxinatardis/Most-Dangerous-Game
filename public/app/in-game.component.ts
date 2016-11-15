@@ -211,7 +211,7 @@ export class InGameComponent {
 	gameId: string = this.authService.user.currentGame;
 	socket: any;
 
-	dataTest: any;
+	initialized: boolean = false;
 
 
 	ngOnInit() {
@@ -277,15 +277,18 @@ export class InGameComponent {
 	};
 
 	ngAfterContentInit() {
-		console.log("after content init");
-		this.compass = document.getElementById("compassWrapper");
-		this.compassWatch = Compass.watch(function (heading) {
-			this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
-			console.log(heading);
-		}.bind(this));
-		Compass.noSupport(function () {
-			this.compass.style.transform = "rotate(-90deg)";
-		}.bind(this));
+		if (!this.initialized) {
+			this.initialized = true;
+			console.log("after content init");
+			this.compass = document.getElementById("compassWrapper");
+			this.compassWatch = Compass.watch(function (heading) {
+				this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
+				console.log(heading);
+			}.bind(this));
+			Compass.noSupport(function () {
+				this.compass.style.transform = "rotate(-90deg)";
+			}.bind(this));
+		}
 	}
 
 	ngOnDestroy() {
