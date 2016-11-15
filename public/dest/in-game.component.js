@@ -253,10 +253,9 @@ var InGameComponent = (function () {
                     long: coor.longitude,
                     time: pos.timestamp,
                     acc: coor.accuracy,
-                    score: _this.authService.user.score
+                    score: res.userScore
                 };
                 _this.socket.emit("join", joinData);
-                _this.compass = document.getElementById("compassWrapper");
             }
         });
     };

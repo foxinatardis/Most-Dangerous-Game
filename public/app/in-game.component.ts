@@ -449,10 +449,10 @@ export class InGameComponent {
 					long: coor.longitude,
 					time: pos.timestamp,
 					acc: coor.accuracy,
-					score: this.authService.user.score
+					score: res.userScore
 				};
 				this.socket.emit("join", joinData);
-				this.compass = document.getElementById("compassWrapper");
+				// this.compass = document.getElementById("compassWrapper");
 			}
 		});
 
