@@ -34,6 +34,7 @@ var AdminComponent = (function () {
     };
     AdminComponent.prototype.selectEndGame = function () {
         this.selectionMade = true;
+        this.displayEndGame = true;
     };
     AdminComponent.prototype.endGame = function () {
         var _this = this;
