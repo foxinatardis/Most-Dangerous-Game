@@ -50,7 +50,7 @@ var AdminComponent = (function () {
     };
     AdminComponent = __decorate([
         core_1.Component({
-            template: "\n\t\t<div *ngIf=\"!selectionMade\">\n\n\t\t\t<div class=\"button\" (click)=\"selectEndGame()\">\n\t\t\t\t<p class=\"inside-button\">End Current Game</p>\n\t\t\t</div>\n\n\t\t</div>\n\n\t\t<div *ngIf=\"selectionMade\">\n\n\t\t\t<div *ngIf=\"displayEndGame\"\n\t\t\t\t<h3>Are you sure you would like to end the current game for all players?</h3>\n\t\t\t\t<div class=\"button\" (click)=\"unselect()\">\n\t\t\t\t\t<p class=\"inside-button\">No! Back to Admin</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"button\" (click)=\"endGame()\">\n\t\t\t\t\t<p class=\"inside-button\">Yes! End Current Game</p>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t</div>\n\t",
+            template: "\n\t\t<div *ngIf=\"!selectionMade\">\n\n\t\t\t<div class=\"button\" (click)=\"selectEndGame()\">\n\t\t\t\t<p class=\"inside-button\">End Current Game</p>\n\t\t\t</div>\n\n\t\t</div>\n\n\t\t<div *ngIf=\"selectionMade\">\n\n\t\t\t<div *ngIf=\"displayEndGame\">\n\t\t\t\t<h3>Are you sure you would like to end the current game for all players?</h3>\n\t\t\t\t<div class=\"button\" (click)=\"unselect()\">\n\t\t\t\t\t<p class=\"inside-button\">No! Back to Admin</p>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"button\" (click)=\"endGame()\">\n\t\t\t\t\t<p class=\"inside-button\">Yes! End Current Game</p>\n\t\t\t\t</div>\n\t\t\t</div>\n\n\t\t</div>\n\t",
         }), 
         __metadata('design:paramtypes', [api_service_1.ApiService, auth_service_1.AuthService, router_1.Router])
     ], AdminComponent);
