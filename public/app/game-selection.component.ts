@@ -88,7 +88,7 @@ export class GameSelectionComponent {
 		private authService: AuthService
 	) {}
 
-	gameId: string;
+	gameId: string = "";
 	start: boolean = true;
 	gameCreated: boolean = false;
 	gameJoined: boolean = false;
