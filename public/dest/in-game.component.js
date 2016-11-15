@@ -43,6 +43,7 @@ var InGameComponent = (function () {
             else {
                 _this.targetOnline = false;
             }
+            console.log("data from socket 'target online' is: ", data);
         });
         this.socket.on("score", function (data) {
             _this.authService.user.score = data;
@@ -81,9 +82,11 @@ var InGameComponent = (function () {
     };
     ;
     InGameComponent.prototype.ngAfterViewChecked = function () {
+        console.log("view checked");
         this.compass = document.getElementById("compassWrapper");
         this.compassWatch = Compass.watch(function (heading) {
             this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
+            console.log(heading);
         }.bind(this));
         Compass.noSupport(function () {
             this.compass.style.transform = "rotate(-90deg)";
