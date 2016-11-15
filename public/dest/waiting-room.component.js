@@ -58,6 +58,7 @@ var WaitingRoomComponent = (function () {
         });
         this.geoService.postLocation();
         this.socket.on("launch", function () {
+            _this.authService.user.inGame = true;
             _this.router.navigate(["/in-game"]);
         });
         this.socket.on("update waiting", function (newPlayer) {
