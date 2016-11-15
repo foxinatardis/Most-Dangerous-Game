@@ -81,8 +81,8 @@ var InGameComponent = (function () {
         });
     };
     ;
-    InGameComponent.prototype.ngAfterViewChecked = function () {
-        console.log("view checked");
+    InGameComponent.prototype.ngAfterContentInit = function () {
+        console.log("after content init");
         this.compass = document.getElementById("compassWrapper");
         this.compassWatch = Compass.watch(function (heading) {
             this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
