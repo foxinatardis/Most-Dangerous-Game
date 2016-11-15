@@ -424,7 +424,7 @@ app.post("/api/end-game", (req, res) => {
 		res.send({error: true, message: "Unable to locate active game."});
 		return;
 	}
-	Game.findByOneAndUpdate(
+	Game.findOneAndUpdate(
 		{
 			_id: req.body.gameId,
 			creator: req.session.user.name
