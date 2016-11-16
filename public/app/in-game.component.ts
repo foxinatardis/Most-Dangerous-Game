@@ -70,7 +70,7 @@ declare let Compass: any;
 			height: 6px;
 			width: 6px;
 			border-radius: 3px;
-			border: 1px solid yellow;
+			border: 1px solid rgb(64, 244, 255);
 			box-sizing: border-box;
 		}
 		.compassWrapper {
@@ -230,6 +230,7 @@ export class InGameComponent {
 	aimInterval: any;
 	reloadCounter: number;
 	reloadInterval: any;
+	pingInterval: any;
 	rapid: any;
 	gameId: string = this.authService.user.currentGame;
 	socket: any;
@@ -351,13 +352,14 @@ export class InGameComponent {
 		}
 	}
 	displayPing() {
+		this.clearPing();
 		let ping = document.getElementById("ping");
 		let width = parseInt(window.getComputedStyle(ping).getPropertyValue("width"));
 		let height = parseInt(window.getComputedStyle(ping).getPropertyValue("height"));
 		let radius = parseInt(window.getComputedStyle(ping).getPropertyValue("border-radius"));
 		let top = parseInt(window.getComputedStyle(ping).getPropertyValue("top"));
 		let left = parseInt(window.getComputedStyle(ping).getPropertyValue("left"));
-		let interval = setInterval(function() {
+		this.pingInterval = setInterval(function() {
 			width += 1;
 			height += 1;
 			radius += .5;
@@ -368,15 +370,16 @@ export class InGameComponent {
 			ping.style.borderRadius = radius + "px";
 			ping.style.top = top + "px";
 			ping.style.left = left + "px";
-		}, 1000 / 60);
-		setTimeout(function () {
-			clearInterval(interval);
-			ping.style.height = "6px";
-			ping.style.width = "6px";
-			ping.style.borderRadius = "3px";
-			ping.style.top = "0px";
-			ping.style.left = "0px";
-		}, 1000);
+		}.bind(this), 1000 / 60);
+		setTimeout(clearPing, 2000);
+	}
+	clearPing() {
+		clearInterval(this.pingInterval);
+		ping.style.height = "6px";
+		ping.style.width = "6px";
+		ping.style.borderRadius = "3px";
+		ping.style.top = "0px";
+		ping.style.left = "0px";
 	}
 
 // functions for practical uses
