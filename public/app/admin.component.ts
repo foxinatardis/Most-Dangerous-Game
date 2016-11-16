@@ -53,12 +53,16 @@ export class AdminComponent {
 	displayEndGame: boolean = false;
 
 	unselect() {
-		this.selectionMade = false;
-		this.result = false;
-		this.resultMessage = "";
-		this.error = false;
-		this.errorMessage = "";
-		this.displayEndGame = false;
+		if (!this.authService.user.gameAdmin) {
+			this.router.navigate(["/options"]);
+		} else {
+			this.selectionMade = false;
+			this.result = false;
+			this.resultMessage = "";
+			this.error = false;
+			this.errorMessage = "";
+			this.displayEndGame = false;
+		}
 	}
 
 	selectEndGame() {
@@ -74,6 +78,10 @@ export class AdminComponent {
 			} else {
 				this.result = true;
 				this.resultMessage = res.message;
+				this.authService.user.currentGame = "";
+				this.authService.user.inGame = false;
+				this.authService.user.currentTarget = "";
+				this.authService.user.gameAdmin = false;
 			}
 		});
 	}
