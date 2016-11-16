@@ -106,6 +106,7 @@ var InGameComponent = (function () {
             this.initialized = true;
             console.log("after view init");
             this.compass = document.getElementById("compassWrapper");
+            this.ping = document.getElementById("ping");
             console.log("ngAfterViewInit this.compass: ", this.compass);
             this.compassWatch = Compass.watch(function (heading) {
                 this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
@@ -138,13 +139,12 @@ var InGameComponent = (function () {
     };
     InGameComponent.prototype.displayPing = function () {
         this.clearPing();
-        var ping = document.getElementById("ping");
-        var width = parseInt(window.getComputedStyle(ping).getPropertyValue("width"), 10);
-        var height = parseInt(window.getComputedStyle(ping).getPropertyValue("height"), 10);
-        var radius = parseInt(window.getComputedStyle(ping).getPropertyValue("border-radius"), 10);
-        var top = parseInt(window.getComputedStyle(ping).getPropertyValue("top"), 10);
-        var left = parseInt(window.getComputedStyle(ping).getPropertyValue("left"), 10);
-        var opacity = window.getComputedStyle(ping).getPropertyValue("opacity");
+        var width = parseInt(window.getComputedStyle(this.ping).getPropertyValue("width"), 10);
+        var height = parseInt(window.getComputedStyle(this.ping).getPropertyValue("height"), 10);
+        var radius = parseInt(window.getComputedStyle(this.ping).getPropertyValue("border-radius"), 10);
+        var top = parseInt(window.getComputedStyle(this.ping).getPropertyValue("top"), 10);
+        var left = parseInt(window.getComputedStyle(this.ping).getPropertyValue("left"), 10);
+        var opacity = parseInt(window.getComputedStyle(this.ping).getPropertyValue("opacity"), 10);
         this.pingInterval = setInterval(function () {
             width += 2;
             height += 2;
@@ -152,12 +152,12 @@ var InGameComponent = (function () {
             top -= 1;
             left -= 1;
             opacity -= .03;
-            ping.style.height = height + "px";
-            ping.style.width = width + "px";
-            ping.style.borderRadius = radius + "px";
-            ping.style.top = top + "px";
-            ping.style.left = left + "px";
-            ping.style.opacity = opacity;
+            this.ping.style.height = height + "px";
+            this.ping.style.width = width + "px";
+            this.ping.style.borderRadius = radius + "px";
+            this.ping.style.top = top + "px";
+            this.ping.style.left = left + "px";
+            this.ping.style.opacity = opacity.toString();
         }.bind(this), 1000 / 40);
         setTimeout(this.clearPing, 2000);
     };
@@ -165,12 +165,12 @@ var InGameComponent = (function () {
         if (this.pingInterval && this.pingInterval.runCount > 0) {
             clearInterval(this.pingInterval);
         }
-        ping.style.height = "6px";
-        ping.style.width = "6px";
-        ping.style.borderRadius = "3px";
-        ping.style.top = "0px";
-        ping.style.left = "0px";
-        ping.style.opacity = 1;
+        this.ping.style.height = "6px";
+        this.ping.style.width = "6px";
+        this.ping.style.borderRadius = "3px";
+        this.ping.style.top = "0px";
+        this.ping.style.left = "0px";
+        this.ping.style.opacity = 1;
         console.log("post clear: ", this.pingInterval);
     };
     // functions for practical uses
