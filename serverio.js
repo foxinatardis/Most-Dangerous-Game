@@ -257,6 +257,7 @@ app.post("/api/newGame", (req, res) => {
 });
 
 app.post("/api/joinGame", (req, res) => {
+	console.log("I hit the join game thingy");
 	if (!req.session.user) {
 		res.redirect("/");
 		return;
