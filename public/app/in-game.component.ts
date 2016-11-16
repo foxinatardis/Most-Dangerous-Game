@@ -364,6 +364,7 @@ export class InGameComponent {
 		let left = parseInt(window.getComputedStyle(this.ping).getPropertyValue("left"), 10);
 		let opacity = parseInt(window.getComputedStyle(this.ping).getPropertyValue("opacity"), 10);
 		this.pingInterval = setInterval(function() {
+			console.log("pingInterval");
 			width += 2;
 			height += 2;
 			radius += 1;
