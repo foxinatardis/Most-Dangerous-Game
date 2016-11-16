@@ -382,13 +382,13 @@ export class InGameComponent {
 	clearPing() {
 		if (this.pingInterval && this.pingInterval.runCount > 0) {
 			clearInterval(this.pingInterval);
+			this.ping.style.height = "6px";
+			this.ping.style.width = "6px";
+			this.ping.style.borderRadius = "3px";
+			this.ping.style.top = "0px";
+			this.ping.style.left = "0px";
+			this.ping.style.opacity = 1;
 		}
-		this.ping.style.height = "6px";
-		this.ping.style.width = "6px";
-		this.ping.style.borderRadius = "3px";
-		this.ping.style.top = "0px";
-		this.ping.style.left = "0px";
-		this.ping.style.opacity = 1;
 		console.log("post clear: ", this.pingInterval);
 	}
 
