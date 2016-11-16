@@ -257,6 +257,7 @@ export class InGameComponent {
 					this.targetAcc = data.targetAcc;
 					this.targetTime = data.targetTime;
 					this.update();
+					this.displayPing();
 				}
 			} else {
 				this.targetOnline = false;
@@ -349,7 +350,7 @@ export class InGameComponent {
 			return "green";
 		}
 	}
-	function displayPing() {
+	displayPing() {
 		let ping = document.getElementById("ping");
 		let width = parseInt(window.getComputedStyle(ping).getPropertyValue("width"));
 		let height = parseInt(window.getComputedStyle(ping).getPropertyValue("height"));
