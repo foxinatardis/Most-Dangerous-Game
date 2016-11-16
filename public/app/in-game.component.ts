@@ -69,7 +69,7 @@ declare let Compass: any;
 			height: 0;
 			padding-bottom: 50%;
 			box-sizing: border-box;
-			border: 1px solid rgb(73, 125, 232);
+			border: 1px solid rgb(64, 244, 255);
 		}
 		.compassThird {
 
@@ -96,78 +96,78 @@ declare let Compass: any;
 		.one {
 
 			border-radius: 100% 0 0 0;
-			-moz-box-shadow: 0px 0px 7px rgb(73, 125, 232);
-			-webkit-box-shadow: 0px 0px 7px rgb(73, 125, 232);
-			box-shadow: 0px 0px 7px rgb(73, 125, 232);
+			-moz-box-shadow: 0px 0px 7px rgb(64, 244, 255);
+			-webkit-box-shadow: 0px 0px 7px rgb(64, 244, 255);
+			box-shadow: 0px 0px 7px rgb(64, 244, 255);
 
 		}
 		.one .compassSixty {
 			top: 33.4%;
 			left: 33.2%;
-			border-top: 1px solid rgb(73, 125, 232);
-			border-left: 1px solid rgb(73, 125, 232);
+			border-top: 1px solid rgb(64, 244, 255);
+			border-left: 1px solid rgb(64, 244, 255);
 		}
 		.one .compassThird {
 			top: 50%;
 			left: 50%;
-			border-top: 1px solid rgb(73, 125, 232);
-			border-left: 1px solid rgb(73, 125, 232);
+			border-top: 1px solid rgb(64, 244, 255);
+			border-left: 1px solid rgb(64, 244, 255);
 		}
 
 		.two {
 
 			border-radius: 0 100% 0 0;
-			-moz-box-shadow: 0px 0px 7px rgb(73, 125, 232);
-			-webkit-box-shadow: 0px 0px 7px rgb(73, 125, 232);
-			box-shadow: 0px 0px 7px rgb(73, 125, 232);
+			-moz-box-shadow: 0px 0px 7px rgb(64, 244, 255);
+			-webkit-box-shadow: 0px 0px 7px rgb(64, 244, 255);
+			box-shadow: 0px 0px 7px rgb(64, 244, 255);
 
 		}
 		.two .compassSixty {
 			top: 33.4%;
-			border-top: 1px solid rgb(73, 125, 232);
-			border-right: 1px solid rgb(73, 125, 232);
+			border-top: 1px solid rgb(64, 244, 255);
+			border-right: 1px solid rgb(64, 244, 255);
 		}
 		.two .compassThird {
 			top: 50%;
-			border-top: 1px solid rgb(73, 125, 232);
-			border-right: 1px solid rgb(73, 125, 232);
+			border-top: 1px solid rgb(64, 244, 255);
+			border-right: 1px solid rgb(64, 244, 255);
 		}
 		.three {
 
 			border-radius: 0 0 0 100%;
-			-moz-box-shadow: 0px 0px 7px rgb(73, 125, 232);
-			-webkit-box-shadow: 0px 0px 7px rgb(73, 125, 232);
-			box-shadow: 0px 0px 7px rgb(73, 125, 232);
+			-moz-box-shadow: 0px 0px 7px rgb(64, 244, 255);
+			-webkit-box-shadow: 0px 0px 7px rgb(64, 244, 255);
+			box-shadow: 0px 0px 7px rgb(64, 244, 255);
 
 		}
 		.three .compassSixty {
 			left: 33.2%;
-			border-bottom: 1px solid rgb(73, 125, 232);
-			border-left: 1px solid rgb(73, 125, 232);
+			border-bottom: 1px solid rgb(64, 244, 255);
+			border-left: 1px solid rgb(64, 244, 255);
 		}
 		.three .compassThird {
 			left: 50%;
-			border-bottom: 1px solid rgb(73, 125, 232);
-			border-left: 1px solid rgb(73, 125, 232);
+			border-bottom: 1px solid rgb(64, 244, 255);
+			border-left: 1px solid rgb(64, 244, 255);
 		}
 		.four {
 
 			border-radius: 0 0 100% 0;
-			border-bottom: 1px solid rgb(73, 125, 232);
-			border-right: 1px solid rgb(73, 125, 232);
-			-moz-box-shadow: 0px 0px 7px rgb(73, 125, 232);
-			-webkit-box-shadow: 0px 0px 7px rgb(73, 125, 232);
-			box-shadow: 0px 0px 7px rgb(73, 125, 232);
+			border-bottom: 1px solid rgb(64, 244, 255);
+			border-right: 1px solid rgb(64, 244, 255);
+			-moz-box-shadow: 0px 0px 7px rgb(64, 244, 255);
+			-webkit-box-shadow: 0px 0px 7px rgb(64, 244, 255);
+			box-shadow: 0px 0px 7px rgb(64, 244, 255);
 		}
 		#toDraw {
-			background-color: rgb(68, 120, 227);
+			background-color: rgb(61, 233, 244);
 			position: absolute;
 			height: 6px;
 			width: 6px;
 			border-radius: 3px;
-			-moz-box-shadow: 0px 0px 5px rgb(73, 125, 232);
-			-webkit-box-shadow: 0px 0px 5px rgb(73, 125, 232);
-			box-shadow: 0px 0px 5px rgb(73, 125, 232);
+			-moz-box-shadow: 0px 0px 5px rgb(64, 244, 255);
+			-webkit-box-shadow: 0px 0px 5px rgb(64, 244, 255);
+			box-shadow: 0px 0px 5px rgb(64, 244, 255);
 		}
 
 	`]
