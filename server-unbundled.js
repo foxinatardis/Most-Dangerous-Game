@@ -746,10 +746,10 @@ io.on("connection", (socket) => {
 	});
 
 	socket.on("give aim", (data) => {
-		console.log("giving aim to: ", data.trackerName);
-		console.log("from: ", socket._name);
-		console.log("trakerSocket: ", connectedUsers[data.trackerName]);
+		// console.log("giving aim to: ", data.trackerName);
+		// console.log("from: ", socket._name);
 		let trackerSocket = connectedUsers[data.trackerName];
+		console.log("trakerSocket: ", trackerSocket);
 		if (trackerSocket) {
 			let toSend = {
 				targetLat: data.latitude,
