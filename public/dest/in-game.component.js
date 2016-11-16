@@ -32,7 +32,7 @@ var InGameComponent = (function () {
         this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
         this.socket = io();
         this.socket.on("connected", function () {
-            console.log("connected, authService.user is: ", _this.authService.user);
+            // console.log("connected, authService.user is: ", this.authService.user);
             _this.geoService.getLocation(_this.positionSuccess.bind(_this), _this.positionErr.bind(_this));
             // this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
             // this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
@@ -305,12 +305,11 @@ var InGameComponent = (function () {
                     score: res.userScore
                 };
                 _this.socket.emit("join", joinData);
-                _this.compass = document.getElementById("compassWrapper");
             }
         });
     };
     InGameComponent.prototype.positionErr = function (err) {
-        console.log(err);
+        // console.log(err);
         this.error = true;
         this.errorMessage = "Unable to obtain your location, please make sure you have 'Location Services' turned on and try again.";
     };
@@ -320,7 +319,7 @@ var InGameComponent = (function () {
         this.myLat = coor.latitude;
         this.myTime = pos.timestamp;
         this.myAcc = coor.accuracy;
-        console.log("locationWatch: ", pos);
+        // console.log("locationWatch: ", pos);
         this.update();
     };
     InGameComponent.prototype.update = function () {
