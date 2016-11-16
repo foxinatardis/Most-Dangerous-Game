@@ -378,7 +378,7 @@ export class InGameComponent {
 		setTimeout(clearPing, 2000);
 	}
 	clearPing() {
-		if (this.pingInterval.runCount && this.pingInterval.runCount > 0) {
+		if (this.pingInterval && this.pingInterval.runCount > 0) {
 			clearInterval(this.pingInterval);
 		}
 		ping.style.height = "6px";
