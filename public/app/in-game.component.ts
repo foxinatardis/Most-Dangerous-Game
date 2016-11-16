@@ -324,9 +324,9 @@ export class InGameComponent {
 			this.compassWatch = Compass.watch(function (heading) {
 				this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
 			}.bind(this));
-			Compass.noSupport(function () {
-				this.compass.style.transform = "rotate(-90deg)";
-			}.bind(this));
+			// Compass.noSupport(function () {
+			// 	this.compass.style.transform = "rotate(-90deg)";
+			// }.bind(this));
 		}
 	}
 
