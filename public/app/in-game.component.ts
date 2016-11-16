@@ -7,13 +7,11 @@ declare let Compass: any;
 
 @Component({
 	template: `
-		<div>
-			<h2>Score: {{this.authService.user.score}}</h2>
-		</div>
 		<div *ngIf="error">
 			<h2 class="error">{{errorMessage}}</h2>
 		</div>
 		<div *ngIf="!error">
+			<h2>Score: {{this.authService.user.score}}</h2>
 			<h2 [style.color]="online()">Target: {{targetName}}</h2>
 			<p *ngIf="targetOnline">Target Aquired: {{distanceToTarget}} meters from you location.</p>
 			<p *ngIf="!targetOnline">Target Last seen {{distanceToTarget}} meters from your location.</p>
@@ -61,8 +59,8 @@ declare let Compass: any;
 	styles: [`
 		.reload {
 			text-align: center;
-			font-size: 3em;
-			
+			font-size: 5em;
+			font-family: sans-serif;
 		}
 		.compassWrapper {
 			width: 80%;
