@@ -72,6 +72,7 @@ declare let Compass: any;
 			border-radius: 3px;
 			border: 1px solid rgb(64, 244, 255);
 			box-sizing: border-box;
+			opacity: 1;
 		}
 		.compassWrapper {
 			width: 80%;
@@ -359,17 +360,20 @@ export class InGameComponent {
 		let radius = parseInt(window.getComputedStyle(ping).getPropertyValue("border-radius"));
 		let top = parseInt(window.getComputedStyle(ping).getPropertyValue("top"));
 		let left = parseInt(window.getComputedStyle(ping).getPropertyValue("left"));
+		let opacity = window.getComputedStyle(ping).getPropertyValue("opacity");
 		this.pingInterval = setInterval(function() {
 			width += 1;
 			height += 1;
 			radius += .5;
 			top -= .5;
 			left -= .5;
+			opacity -= .03;
 			ping.style.height = height + "px";
 			ping.style.width = width + "px";
 			ping.style.borderRadius = radius + "px";
 			ping.style.top = top + "px";
 			ping.style.left = left + "px";
+			ping.style.opacity = opacity;
 		}.bind(this), 1000 / 60);
 		setTimeout(clearPing, 2000);
 	}
@@ -380,6 +384,7 @@ export class InGameComponent {
 		ping.style.borderRadius = "3px";
 		ping.style.top = "0px";
 		ping.style.left = "0px";
+		ping.style.opacity = 1;
 	}
 
 // functions for practical uses
