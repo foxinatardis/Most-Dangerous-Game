@@ -59,7 +59,7 @@ declare let Compass: any;
 	styles: [`
 		.reload {
 			text-align: center;
-			font-size: 5em;
+			font-size: 7em;
 			font-family: sans-serif;
 		}
 		.compassWrapper {
