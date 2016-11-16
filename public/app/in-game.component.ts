@@ -364,7 +364,7 @@ export class InGameComponent {
 		this.pingInterval = setInterval(function() {
 			width += 2;
 			height += 2;
-			radius += .1;
+			radius += 1;
 			top -= .1;
 			left -= .1;
 			opacity -= .03;
@@ -375,7 +375,7 @@ export class InGameComponent {
 			ping.style.left = left + "px";
 			ping.style.opacity = opacity;
 		}.bind(this), 1000 / 60);
-		setTimeout(clearPing, 2000);
+		setTimeout(this.clearPing, 2000);
 	}
 	clearPing() {
 		if (this.pingInterval && this.pingInterval.runCount > 0) {
