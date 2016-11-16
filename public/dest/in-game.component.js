@@ -157,8 +157,8 @@ var InGameComponent = (function () {
             this.ping.style.borderRadius = radius + "px";
             this.ping.style.top = top + "px";
             this.ping.style.left = left + "px";
-            this.ping.style.opacity = opacity.toString();
-        }.bind(this), 1000 / 40);
+            this.ping.style.opacity = opacity + "";
+        }.bind(this), 1000 / 30);
         setTimeout(this.clearPing, 2000);
     };
     InGameComponent.prototype.clearPing = function () {
