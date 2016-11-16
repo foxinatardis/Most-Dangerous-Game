@@ -338,6 +338,7 @@ export class InGameComponent {
 		this.socket.disconnect();
 		clearInterval(this.locationInterval);
 		navigator.geolocation.clearWatch(this.locationWatch);
+		clearInterval(this.pingInterval);
 	}
 
 // functions for styling text colors based on variables
@@ -381,7 +382,7 @@ export class InGameComponent {
 		setTimeout(this.clearPing.bind(this), 2000);
 	}
 	clearPing() {
-		if (this.pingInterval && this.pingInterval.runCount > 0) {
+		// if (this.pingInterval && this.pingInterval.runCount > 0) {
 			clearInterval(this.pingInterval);
 			this.ping.style.height = "6px";
 			this.ping.style.width = "6px";
@@ -389,7 +390,7 @@ export class InGameComponent {
 			this.ping.style.top = "0px";
 			this.ping.style.left = "0px";
 			this.ping.style.opacity = 1;
-		}
+		// }
 		console.log("post clear: ", this.pingInterval);
 	}
 

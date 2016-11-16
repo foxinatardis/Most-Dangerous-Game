@@ -118,6 +118,7 @@ var InGameComponent = (function () {
         this.socket.disconnect();
         clearInterval(this.locationInterval);
         navigator.geolocation.clearWatch(this.locationWatch);
+        clearInterval(this.pingInterval);
     };
     // functions for styling text colors based on variables
     InGameComponent.prototype.online = function () {
@@ -163,15 +164,15 @@ var InGameComponent = (function () {
         setTimeout(this.clearPing.bind(this), 2000);
     };
     InGameComponent.prototype.clearPing = function () {
-        if (this.pingInterval && this.pingInterval.runCount > 0) {
-            clearInterval(this.pingInterval);
-            this.ping.style.height = "6px";
-            this.ping.style.width = "6px";
-            this.ping.style.borderRadius = "3px";
-            this.ping.style.top = "0px";
-            this.ping.style.left = "0px";
-            this.ping.style.opacity = 1;
-        }
+        // if (this.pingInterval && this.pingInterval.runCount > 0) {
+        clearInterval(this.pingInterval);
+        this.ping.style.height = "6px";
+        this.ping.style.width = "6px";
+        this.ping.style.borderRadius = "3px";
+        this.ping.style.top = "0px";
+        this.ping.style.left = "0px";
+        this.ping.style.opacity = 1;
+        // }
         console.log("post clear: ", this.pingInterval);
     };
     // functions for practical uses
