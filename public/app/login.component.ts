@@ -42,7 +42,7 @@ import { ApiService } from "./api.service";
 			<p class="inside-button">About</p>
 		</div>
 	`,
-	styles: [`
+	/*styles: [`
 		div.button: {
 			width: 49%;
 			background-color: #505BFF;
@@ -50,7 +50,7 @@ import { ApiService } from "./api.service";
 			box-sizing: border-box;
 			float: left;
 		}
-	`]
+	`]*/
 })
 export class LoginComponent {
 	constructor(
