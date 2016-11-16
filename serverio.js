@@ -89,6 +89,7 @@ app.post("/api/signup", (req, res) => {
 					res.send({error: true, message: "error registering new user"});
 					return;
 				}
+				req.session.user = {email: email, name: username, score: 0};
 				res.send({user: {email: email, name: username, score: 0}});
 				return;
 			});
