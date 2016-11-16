@@ -61,7 +61,7 @@ declare let Compass: any;
 			text-align: center;
 			font-size: 7em;
 			font-family: sans-serif;
-			padding-top: 5px;
+			margin-top: 20px;
 		}
 		.compassWrapper {
 			width: 80%;
