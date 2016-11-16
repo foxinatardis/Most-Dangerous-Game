@@ -316,12 +316,12 @@ export class InGameComponent {
 
 	};
 
-	ngAfterContentInit() {
+	ngAfterViewInit() {
 		if (!this.initialized) {
 			this.initialized = true;
-			console.log("after content init");
+			console.log("after view init");
 			this.compass = document.getElementById("compassWrapper");
-			console.log("ngAfterContentInit this.compass: ", this.compass);
+			console.log("ngAfterViewInit this.compass: ", this.compass);
 			this.compassWatch = Compass.watch(function (heading) {
 				this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
 			}.bind(this));
