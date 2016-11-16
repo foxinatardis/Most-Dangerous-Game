@@ -28,7 +28,7 @@ import { AuthService } from "./auth.service";
 			<h3 class="error">{{errorMessage}}</h3>
 		</div>
 	`,
-	styles: [`
+	/*styles: [`
 
 		h2 {
 			text-align: center;
@@ -79,7 +79,7 @@ import { AuthService } from "./auth.service";
 			font-family: sans-serif;
 		}
 
-	`]
+	`]*/
 })
 export class GameSelectionComponent {
 	constructor(
