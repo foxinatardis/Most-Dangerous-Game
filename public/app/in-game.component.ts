@@ -365,8 +365,8 @@ export class InGameComponent {
 			width += 2;
 			height += 2;
 			radius += 1;
-			top -= .1;
-			left -= .1;
+			top -= 1;
+			left -= 1;
 			opacity -= .03;
 			ping.style.height = height + "px";
 			ping.style.width = width + "px";
@@ -374,7 +374,7 @@ export class InGameComponent {
 			ping.style.top = top + "px";
 			ping.style.left = left + "px";
 			ping.style.opacity = opacity;
-		}.bind(this), 1000 / 60);
+		}.bind(this), 1000 / 40);
 		setTimeout(this.clearPing, 2000);
 	}
 	clearPing() {
