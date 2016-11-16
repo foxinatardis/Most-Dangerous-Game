@@ -141,11 +141,11 @@ var InGameComponent = (function () {
     InGameComponent.prototype.displayPing = function () {
         this.clearPing();
         var ping = document.getElementById("ping");
-        var width = parseInt(window.getComputedStyle(ping).getPropertyValue("width"));
-        var height = parseInt(window.getComputedStyle(ping).getPropertyValue("height"));
-        var radius = parseInt(window.getComputedStyle(ping).getPropertyValue("border-radius"));
-        var top = parseInt(window.getComputedStyle(ping).getPropertyValue("top"));
-        var left = parseInt(window.getComputedStyle(ping).getPropertyValue("left"));
+        var width = parseInt(window.getComputedStyle(ping).getPropertyValue("width"), 10);
+        var height = parseInt(window.getComputedStyle(ping).getPropertyValue("height"), 10);
+        var radius = parseInt(window.getComputedStyle(ping).getPropertyValue("border-radius"), 10);
+        var top = parseInt(window.getComputedStyle(ping).getPropertyValue("top"), 10);
+        var left = parseInt(window.getComputedStyle(ping).getPropertyValue("left"), 10);
         var opacity = window.getComputedStyle(ping).getPropertyValue("opacity");
         this.pingInterval = setInterval(function () {
             width += 1;
@@ -164,6 +164,7 @@ var InGameComponent = (function () {
         setTimeout(clearPing, 2000);
     };
     InGameComponent.prototype.clearPing = function () {
+        console.log("pre clear: ", this.pingInterval);
         clearInterval(this.pingInterval);
         ping.style.height = "6px";
         ping.style.width = "6px";
@@ -171,6 +172,7 @@ var InGameComponent = (function () {
         ping.style.top = "0px";
         ping.style.left = "0px";
         ping.style.opacity = 1;
+        console.log("post clear: ", this.pingInterval);
     };
     // functions for practical uses
     InGameComponent.prototype.takeAim = function () {

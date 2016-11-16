@@ -355,11 +355,11 @@ export class InGameComponent {
 	displayPing() {
 		this.clearPing();
 		let ping = document.getElementById("ping");
-		let width = parseInt(window.getComputedStyle(ping).getPropertyValue("width"));
-		let height = parseInt(window.getComputedStyle(ping).getPropertyValue("height"));
-		let radius = parseInt(window.getComputedStyle(ping).getPropertyValue("border-radius"));
-		let top = parseInt(window.getComputedStyle(ping).getPropertyValue("top"));
-		let left = parseInt(window.getComputedStyle(ping).getPropertyValue("left"));
+		let width = parseInt(window.getComputedStyle(ping).getPropertyValue("width"), 10);
+		let height = parseInt(window.getComputedStyle(ping).getPropertyValue("height"), 10);
+		let radius = parseInt(window.getComputedStyle(ping).getPropertyValue("border-radius"), 10);
+		let top = parseInt(window.getComputedStyle(ping).getPropertyValue("top"), 10);
+		let left = parseInt(window.getComputedStyle(ping).getPropertyValue("left"), 10);
 		let opacity = window.getComputedStyle(ping).getPropertyValue("opacity");
 		this.pingInterval = setInterval(function() {
 			width += 1;
@@ -378,6 +378,7 @@ export class InGameComponent {
 		setTimeout(clearPing, 2000);
 	}
 	clearPing() {
+		console.log("pre clear: ", this.pingInterval);
 		clearInterval(this.pingInterval);
 		ping.style.height = "6px";
 		ping.style.width = "6px";
@@ -385,6 +386,7 @@ export class InGameComponent {
 		ping.style.top = "0px";
 		ping.style.left = "0px";
 		ping.style.opacity = 1;
+		console.log("post clear: ", this.pingInterval);
 	}
 
 // functions for practical uses
