@@ -10,57 +10,67 @@ declare let Compass: any;
 		<div>
 			<h2>Score: {{this.authService.user.score}}</h2>
 		</div>
+		<div *ngIf="error">
+			<h2 class="error">{{errorMessage}}</h2>
+		</div>
 		<div *ngIf="!error">
 			<h2 [style.color]="online()">Target: {{targetName}}</h2>
 			<p *ngIf="targetOnline">Target Aquired: {{distanceToTarget}} meters from you location.</p>
 			<p *ngIf="!targetOnline">Target Last seen {{distanceToTarget}} meters from your location.</p>
-		</div>
-		<div *ngIf="error">
-			<h2 class="error">{{errorMessage}}</h2>
-		</div>
+			<div class="compassWrapper" id="compassWrapper" *ngIf="!reloading">
+				<div class="compassQuarter one">
+					<div class="compassSixty one">
+						<div class="compassThird one"></div>
+					</div>
+				</div>
+				<div class="compassQuarter two">
+					<div class="compassSixty two">
+						<div class="compassThird two"></div>
+					</div>
+				</div>
+				<div class="compassQuarter three">
+					<div class="compassSixty three">
+						<div class="compassThird three"></div>
+					</div>
+				</div>
+				<div class="compassQuarter four">
+					<div class="compassSixty four">
+						<div class="compassThird four"></div>
+					</div>
+					<p class="north">N</p>
+					<div id="toDraw"></div>
+				</div>
+			</div>
+			<div *ngIf="targetOnline">
+				<button *ngIf="!takingAim && !attacking" class="button bottom" (click)="takeAim()">Take Aim</button>
+				<button *ngIf="takingAim && !attacking" class="button bottom" (click)="attack()">Attack</button>
+				<div *ngIf="attacking">
+					<h2>{{attackMessage}}</h2>
+				</div>
+				<div *ngIf="reloading">
+					<h3>Reloading...</h3>
+					<p class="reload">{{reloadCounter}}</p>
+				</div>
+			</div>
+			<div *ngIf="!attacking">
+				<h3 [style.color]="resolution()">Accuracy: {{accuracy}} meters</h3>
+			</div>
 
-		<div class="compassWrapper" id="compassWrapper" *ngIf="!error">
-			<div class="compassQuarter one">
-				<div class="compassSixty one">
-					<div class="compassThird one"></div>
-				</div>
-			</div>
-			<div class="compassQuarter two">
-				<div class="compassSixty two">
-					<div class="compassThird two"></div>
-				</div>
-			</div>
-			<div class="compassQuarter three">
-				<div class="compassSixty three">
-					<div class="compassThird three"></div>
-				</div>
-			</div>
-			<div class="compassQuarter four">
-				<div class="compassSixty four">
-					<div class="compassThird four"></div>
-				</div>
-				<p class="north">N</p>
-				<div id="toDraw"></div>
-			</div>
-		</div>
-		<div *ngIf="targetOnline">
-			<button *ngIf="!takingAim && !attacking && !error" class="button bottom" (click)="takeAim()">Take Aim</button>
-			<button *ngIf="takingAim && !attacking && !error" class="button bottom" (click)="attack()">Attack</button>
-			<div *ngIf="attacking">
-				<h2>{{attackMessage}}</h2>
-			</div>
-		</div>
-		<div *ngIf="!error && !attacking">
-			<h3 [style.color]="resolution()">Accuracy: {{accuracy}} meters</h3>
 		</div>
 	`,
 	styles: [`
+		.reload {
+			text-align: center;
+			font-size: 3em;
+			
+		}
 		.compassWrapper {
 			width: 80%;
 			margin: auto;
 			height: 0;
 			padding-bottom: 80%;
 			position: relative;
+			transform: rotate(-90deg);
 		}
 		.compassQuarter {
 			float: left;
@@ -178,20 +188,21 @@ export class InGameComponent {
 		private apiService: ApiService,
 		private geoService: GeoService
 	) {	}
-
+	// display variables
 	takingAim: boolean;
 	attacking: boolean = false;
 	attackMessage: string;
 	error: boolean = false;
 	errorMessage: string;
-
+	reloading: boolean = false;
+	// my location variables
 	myLong: number;
 	myLat: number;
 	myTime: number;
 	myAcc: number;
 	compass: any;
 	compassWatch: any;
-
+	// target variables
 	targetName: string;
 	targetLong: number;
 	targetLat: number;
@@ -199,18 +210,20 @@ export class InGameComponent {
 	targetAcc: number;
 	targetLocation: any;
 	targetOnline: boolean = false;
-
+	// combined target/tracker variables
 	distanceToTarget: number;
 	directionToTarget: number;
 	accuracy: number;
 	bearing: number;
-
+	// funcitonal variables
 	locationWatch: any;
 	locationInterval: any;
+	aimInterval: any;
+	reloadCounter: number;
+	reloadInterval: any;
 	rapid: any;
 	gameId: string = this.authService.user.currentGame;
 	socket: any;
-
 	initialized: boolean = false;
 
 
@@ -259,7 +272,14 @@ export class InGameComponent {
 				this.nextTarget();
 			} else {
 				this.attackMessage = "Target missed... ";
+				this.reloadCounter = 15;
+				this.reloading = true;
+				this.reloadInterval = setInterval(function() {
+					if (this.reloadCounter > 0) { this.reloadCounter--; }
+				}.bind(this), 1000);
 				setTimeout(function() {
+					clearInterval(this.reloadInterval);
+					this.reloading = false;
 					this.attacking = false;
 					this.attackMessage = "";
 				}.bind(this), 15000);
@@ -330,7 +350,7 @@ export class InGameComponent {
 		this.takingAim = true;
 		this.socket.emit("take aim", data);
 		console.log("take aim data: ", data);
-		setInterval(function() {
+		this.aimInterval = setInterval(function() {
 			if (this.takingAim) {
 				this.takingAim = false;
 				this.attacking = false;
@@ -340,6 +360,7 @@ export class InGameComponent {
 	}
 
 	attack() {
+		clearInterval(this.aimInterval);
 		this.attacking = true;
 		this.takingAim = false;
 		this.attackMessage = "Confirming kill...";
