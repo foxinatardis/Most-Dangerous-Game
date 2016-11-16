@@ -233,6 +233,7 @@ export class InGameComponent {
 	reloadCounter: number;
 	reloadInterval: any;
 	pingInterval: any;
+	pingTimeout: any;
 	rapid: any;
 	gameId: string = this.authService.user.currentGame;
 	socket: any;
@@ -358,6 +359,7 @@ export class InGameComponent {
 	}
 	displayPing() {
 		this.clearPing();
+		clearTimeout(this.pingTimeout);
 		let width = parseInt(window.getComputedStyle(this.ping).getPropertyValue("width"), 10);
 		let height = parseInt(window.getComputedStyle(this.ping).getPropertyValue("height"), 10);
 		let radius = parseInt(window.getComputedStyle(this.ping).getPropertyValue("border-radius"), 10);
@@ -379,7 +381,7 @@ export class InGameComponent {
 			this.ping.style.left = left + "px";
 			this.ping.style.opacity = opacity + "";
 		}.bind(this), 1000 / 30);
-		setTimeout(this.clearPing.bind(this), 2000);
+		this.pingTimeout = setTimeout(this.clearPing.bind(this), 2000);
 	}
 	clearPing() {
 		// if (this.pingInterval && this.pingInterval.runCount > 0) {

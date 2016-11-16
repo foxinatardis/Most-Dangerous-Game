@@ -140,6 +140,7 @@ var InGameComponent = (function () {
     };
     InGameComponent.prototype.displayPing = function () {
         this.clearPing();
+        clearTimeout(this.pingTimeout);
         var width = parseInt(window.getComputedStyle(this.ping).getPropertyValue("width"), 10);
         var height = parseInt(window.getComputedStyle(this.ping).getPropertyValue("height"), 10);
         var radius = parseInt(window.getComputedStyle(this.ping).getPropertyValue("border-radius"), 10);
@@ -161,7 +162,7 @@ var InGameComponent = (function () {
             this.ping.style.left = left + "px";
             this.ping.style.opacity = opacity + "";
         }.bind(this), 1000 / 30);
-        setTimeout(this.clearPing.bind(this), 2000);
+        this.pingTimeout = setTimeout(this.clearPing.bind(this), 2000);
     };
     InGameComponent.prototype.clearPing = function () {
         // if (this.pingInterval && this.pingInterval.runCount > 0) {
