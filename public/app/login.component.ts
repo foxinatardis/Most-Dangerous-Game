@@ -6,6 +6,7 @@ import { ApiService } from "./api.service";
 @Component({
 
 	template: `
+		<h2>The Most Dangerous Game</h2>
 		<div>
 			<h2 *ngIf="register">Username: <span class="error" *ngIf="error">{{error}}</span></h2>
 			<input type="text" [(ngModel)]="loginUser.username" placeholder="Username" *ngIf="register">
