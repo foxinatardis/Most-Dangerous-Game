@@ -13,7 +13,7 @@ body {
 	padding: 0;
 	margin: 0;
 	background-color: #111;
-	color: #505BFF;
+	color: #3ADCE5;
 }
 nav {
 	width: 100%;
@@ -24,8 +24,8 @@ nav {
 .listHead {
 	font-size: 22px;
 	font-family: sans-serif;
-	color: #505BFF;
-	text-shadow: 0 0 20px rgb(73, 125, 232);
+	color: #3ADCE5;
+	text-shadow: 0 0 20px rgb(64, 244, 255);
 }
 
 .error {
@@ -62,10 +62,10 @@ div.button {
 	height: 50px;
 	margin: 15px 15px 0px 15px;
 	border-radius: 5px;
-	background-color: #505BFF;
-	-moz-box-shadow: 0px 0px 20px rgb(73, 125, 232);
-	-webkit-box-shadow: 0px 0px 20px rgb(73, 125, 232);
-	box-shadow: 0px 0px 20px rgb(73, 125, 232);
+	background-color: #3ADCE5;
+	-moz-box-shadow: 0px 0px 20px rgb(64, 244, 255);
+	-webkit-box-shadow: 0px 0px 20px rgb(64, 244, 255);
+	box-shadow: 0px 0px 20px rgb(64, 244, 255);
 	cursor: pointer;
 }
 
@@ -75,11 +75,11 @@ button.button {
 	margin: 15px 15px 0px 15px;
 	border-radius: 5px;
 	border: 0;
-	background-color: #505BFF;
+	background-color: #3ADCE5;
 	color: black;
-	-moz-box-shadow: 0px 0px 20px rgb(73, 125, 232);
-	-webkit-box-shadow: 0px 0px 20px rgb(73, 125, 232);
-	box-shadow: 0px 0px 20px rgb(73, 125, 232);
+	-moz-box-shadow: 0px 0px 20px rgb(64, 244, 255);
+	-webkit-box-shadow: 0px 0px 20px rgb(64, 244, 255);
+	box-shadow: 0px 0px 20px rgb(64, 244, 255);
 }
 
 button.bottom {
@@ -94,9 +94,9 @@ input {
 	height: 50px;
 	margin: 15px 15px 0px 15px;
 	border-radius: 5px;
-	background-color: #505BFF;
+	background-color: #3ADCE5;
 	border: 0;
-	-moz-box-shadow: 0px 0px 20px rgb(73, 125, 232);
-	-webkit-box-shadow: 0px 0px 20px rgb(73, 125, 232);
-	box-shadow: 0px 0px 20px rgb(73, 125, 232);
+	-moz-box-shadow: 0px 0px 20px rgb(64, 244, 255);
+	-webkit-box-shadow: 0px 0px 20px rgb(64, 244, 255);
+	box-shadow: 0px 0px 20px rgb(64, 244, 255);
 }
