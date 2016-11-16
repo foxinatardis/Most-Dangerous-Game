@@ -36,6 +36,10 @@ var WaitingRoomComponent = (function () {
             else {
                 _this.error = true;
                 _this.errorMessage = res.message;
+                setTimeout(function () {
+                    this.error = false;
+                    this.errorMessage = "";
+                }.bind(_this), 5000);
             }
         });
     };
@@ -73,7 +77,7 @@ var WaitingRoomComponent = (function () {
     };
     WaitingRoomComponent = __decorate([
         core_1.Component({
-            template: "\n\t\t<div *ngIf=\"gameAdmin\">\n\t\t\tNew players can not join once game has been launched.\n\t\t\t<div class=\"button\" (click)=\"launchGame()\">\n\t\t\t\t<p class=\"inside-button\">Launch Game</p>\n\t\t\t</div>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2>Players: </h2>\n\t\t\t<ul>\n\t\t\t\t<li *ngFor=\"let player of players\">{{player}}</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div *ngIf=\"error\">\n\t\t\t<h3 class=\"error\">{{errorMessage}}</h3>\n\t\t</div>\n\t",
+            template: "\n\t\t<div *ngIf=\"gameAdmin && !error\">\n\t\t\tNew players can not join once game has been launched.\n\t\t\t<div class=\"button\" (click)=\"launchGame()\">\n\t\t\t\t<p class=\"inside-button\">Launch Game</p>\n\t\t\t</div>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2>Players: </h2>\n\t\t\t<ul>\n\t\t\t\t<li *ngFor=\"let player of players\">{{player}}</li>\n\t\t\t</ul>\n\t\t</div>\n\t\t<div *ngIf=\"error\">\n\t\t\t<h3 class=\"error\">{{errorMessage}}</h3>\n\t\t</div>\n\t",
         }), 
         __metadata('design:paramtypes', [api_service_1.ApiService, router_1.Router, auth_service_1.AuthService, geo_service_1.GeoService])
     ], WaitingRoomComponent);

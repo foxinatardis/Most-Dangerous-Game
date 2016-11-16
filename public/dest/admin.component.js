@@ -25,12 +25,17 @@ var AdminComponent = (function () {
         this.displayEndGame = false;
     }
     AdminComponent.prototype.unselect = function () {
-        this.selectionMade = false;
-        this.result = false;
-        this.resultMessage = "";
-        this.error = false;
-        this.errorMessage = "";
-        this.displayEndGame = false;
+        if (!this.authService.user.gameAdmin) {
+            this.router.navigate(["/options"]);
+        }
+        else {
+            this.selectionMade = false;
+            this.result = false;
+            this.resultMessage = "";
+            this.error = false;
+            this.errorMessage = "";
+            this.displayEndGame = false;
+        }
     };
     AdminComponent.prototype.selectEndGame = function () {
         this.selectionMade = true;
@@ -46,6 +51,10 @@ var AdminComponent = (function () {
             else {
                 _this.result = true;
                 _this.resultMessage = res.message;
+                _this.authService.user.currentGame = "";
+                _this.authService.user.inGame = false;
+                _this.authService.user.currentTarget = "";
+                _this.authService.user.gameAdmin = false;
             }
         });
     };
