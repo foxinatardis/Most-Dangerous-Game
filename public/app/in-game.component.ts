@@ -36,7 +36,9 @@ declare let Compass: any;
 						<div class="compassThird four"></div>
 					</div>
 					<p class="north">N</p>
-					<div id="toDraw"></div>
+					<div id="toDraw">
+						<div id="ping"></div>
+					</div>
 				</div>
 			</div>
 			<div *ngIf="targetOnline">
@@ -62,6 +64,14 @@ declare let Compass: any;
 			font-size: 7em;
 			font-family: sans-serif;
 			margin-top: 20px;
+		}
+		#ping {
+			position: absolute;
+			height: 6px;
+			width: 6px;
+			border-radius: 3px;
+			border: 1px solid yellow;
+			box-sizing: border-box;
 		}
 		.compassWrapper {
 			width: 80%;
@@ -338,6 +348,34 @@ export class InGameComponent {
 		} else {
 			return "green";
 		}
+	}
+	function displayPing() {
+		let ping = document.getElementById("ping");
+		let width = parseInt(window.getComputedStyle(ping).getPropertyValue("width"));
+		let height = parseInt(window.getComputedStyle(ping).getPropertyValue("height"));
+		let radius = parseInt(window.getComputedStyle(ping).getPropertyValue("border-radius"));
+		let top = parseInt(window.getComputedStyle(ping).getPropertyValue("top"));
+		let left = parseInt(window.getComputedStyle(ping).getPropertyValue("left"));
+		let interval = setInterval(function() {
+			width += 1;
+			height += 1;
+			radius += .5;
+			top -= .5;
+			left -= .5;
+			ping.style.height = height + "px";
+			ping.style.width = width + "px";
+			ping.style.borderRadius = radius + "px";
+			ping.style.top = top + "px";
+			ping.style.left = left + "px";
+		}, 1000 / 60);
+		setTimeout(function () {
+			clearInterval(interval);
+			ping.style.height = "6px";
+			ping.style.width = "6px";
+			ping.style.borderRadius = "3px";
+			ping.style.top = "0px";
+			ping.style.left = "0px";
+		}, 1000);
 	}
 
 // functions for practical uses
