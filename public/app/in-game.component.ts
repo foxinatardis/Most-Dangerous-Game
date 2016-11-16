@@ -391,6 +391,7 @@ export class InGameComponent {
 
 // functions for practical uses
 	takeAim() {
+		console.log("taking aim, ping interval is: ", this.pingInterval);
 		let data = {
 			targetName: this.targetName,
 			trackerName: this.authService.user.name

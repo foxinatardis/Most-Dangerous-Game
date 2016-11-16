@@ -176,6 +176,7 @@ var InGameComponent = (function () {
     };
     // functions for practical uses
     InGameComponent.prototype.takeAim = function () {
+        console.log("taking aim, ping interval is: ", this.pingInterval);
         var data = {
             targetName: this.targetName,
             trackerName: this.authService.user.name
