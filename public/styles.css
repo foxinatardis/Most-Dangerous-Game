@@ -100,3 +100,18 @@ input {
 	-webkit-box-shadow: 0px 0px 20px rgb(64, 244, 255);
 	box-shadow: 0px 0px 20px rgb(64, 244, 255);
 }
+
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    #404;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    #404;
+   opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    #404;
+   opacity:  1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color:    #404;
+}
