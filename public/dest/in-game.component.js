@@ -160,7 +160,7 @@ var InGameComponent = (function () {
             this.ping.style.left = left + "px";
             this.ping.style.opacity = opacity + "";
         }.bind(this), 1000 / 30);
-        setTimeout(this.clearPing, 2000);
+        setTimeout(this.clearPing.bind(this), 2000);
     };
     InGameComponent.prototype.clearPing = function () {
         if (this.pingInterval && this.pingInterval.runCount > 0) {

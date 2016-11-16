@@ -378,7 +378,7 @@ export class InGameComponent {
 			this.ping.style.left = left + "px";
 			this.ping.style.opacity = opacity + "";
 		}.bind(this), 1000 / 30);
-		setTimeout(this.clearPing, 2000);
+		setTimeout(this.clearPing.bind(this), 2000);
 	}
 	clearPing() {
 		if (this.pingInterval && this.pingInterval.runCount > 0) {
