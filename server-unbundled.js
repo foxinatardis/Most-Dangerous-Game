@@ -67,14 +67,18 @@ app.post("/api/signup", (req, res) => {
 	console.log("hit signup api", req.body);
 	if(!req.body.email || !req.body.password) {
 		res.send({error: true, message: "error, invalid email or password"});
+		return;
 	} else if (req.body.password.length < 8 || !req.body.email.includes("@")) {
 		res.send({error: true, message: "error, invalid email or password"});
+		return;
 	}
-	User.find({$or:[{email: req.body.email}, {name: req.body.username}]}, (err, user) => {
+	var email = req.body.email.toLowerCase();
+	var username = req.body.username.toLowerCase();
+	User.find({$or:[{email: email}, {name: username}]}, (err, user) => {
 		if (user.length === 0) {
 			var newUser = new User({
-				email: req.body.email,
-				name: req.body.username,
+				email: email,
+				name: username,
 				password: req.body.password,
 				score: 0
 			});
@@ -85,7 +89,9 @@ app.post("/api/signup", (req, res) => {
 					res.send({error: true, message: "error registering new user"});
 					return;
 				}
-				res.send({user: {email: req.body.email, name: req.body.username, score: 0}});
+				req.session.user = {email: email, name: username, score: 0};
+				res.send({user: {email: email, name: username, score: 0}});
+				return;
 			});
 		} else if (err) {
 			console.log(err);
@@ -103,7 +109,8 @@ app.post("/api/login", (req, res) => {
 		res.send({error: true, message: "error, please provide valid login"});
 		return;
 	}
-	User.find({email: req.body.email}, (err, user) => {
+	var email = req.body.email.toLowerCase();
+	User.find({email: email}, (err, user) => {
 		if(user.length === 0) {
 			res.send({error: true, message: "error, user not found", loggedIn: false});
 			return;
@@ -251,6 +258,7 @@ app.post("/api/newGame", (req, res) => {
 });
 
 app.post("/api/joinGame", (req, res) => {
+	console.log("I hit the join game thingy");
 	if (!req.session.user) {
 		res.redirect("/");
 		return;
@@ -412,6 +420,58 @@ app.post("/api/launch", (req, res) => {
 
 });
 
+app.post("/api/end-game", (req, res) => {
+	if (!req.session.user) {
+		res.redirect("/");
+		return;
+	}
+	if (!req.body.gameId) {
+		res.send({error: true, message: "Unable to locate active game."});
+		return;
+	}
+	Game.findOneAndUpdate(
+		{
+			_id: req.body.gameId,
+			creator: req.session.user.name
+		},
+		{
+			inProgress: false,
+			$push: {kills: "Game ended by admin."}
+		},
+		{new: true},
+		(err, data) => {
+			if (err) {
+				res.send({error: true, message: "Failed to end game."});
+				return;
+			} else if (!data) {
+				res.send({error: true, message: "Failed to end game."});
+				return;
+			}
+			User.update(
+				{name: {$in: data.activePlayers}},
+				{
+					inGame: false,
+					currentGame: "",
+					$push: {gameHistory: data._id},
+					gameAdmin: false,
+					currentTarget: ""
+				},
+				{multi: true},
+				(err, userdata) => {
+					if (err) {
+						console.log("error with multiUser update /api/end-game: ", err);
+						// res.status(500);
+						res.send({error: true, message: "Trouble with ending game, users may need to leave manually."});
+						return;
+					}
+					console.log("game ended: ", data._id);
+					res.send({message: "Game successfully ended."});
+				}
+			);
+		}
+	);
+});
+
 app.get("/api/target", (req, res) => {
 	if (!req.session.user) {
 		res.redirect("/");
@@ -470,9 +530,13 @@ app.get("/api/target", (req, res) => {
 									// res.status(500);
 									res.send({error: true, message: "failed to find target"});
 									return;
+								} else if (!data) {
+									res.send({error: true, message: "failed to find target"});
+									return;
 								}
-								console.log(data.currentTarget);
+								// console.log(data.currentTarget);
 								var targetName = data.currentTarget;
+								var userScore = data.score;
 								User.findOne(
 									{name: targetName},
 									"lastLatitude lastLongitude lastAccuracy lastTimestamp",
@@ -492,7 +556,8 @@ app.get("/api/target", (req, res) => {
 											longitude: data.lastLongitude,
 											accuracy: data.lastAccuracy,
 											timestamp: data.lastTimestamp,
-											targetName: targetName
+											targetName: targetName,
+											userScore: userScore
 										});
 									}
 								);
@@ -577,6 +642,8 @@ io.on("connection", (socket) => {
 
 	console.log("socket connected");
 
+	socket.emit("connected");
+
 	socket.on("disconnect", () => {
 		delete connectedUsers[socket._name];
 		if (socket._score) {
@@ -593,7 +660,7 @@ io.on("connection", (socket) => {
 					if (err) {
 						console.log("Err at disconnect with User.findOneAndUpdate: ", err);
 					} else {
-						console.log("socekt saved: " + socket._name);
+						console.log("socket saved: " + socket._name);
 					}
 				}
 			);
@@ -700,7 +767,7 @@ io.on("connection", (socket) => {
 			socket.emit("attack result", false);
 		} else {
 			let result = Math.random() * attempt;
-			if (result > 20) {
+			if (result > 25) {
 				socket.emit("attack result", false);
 			} else {
 				User.findOneAndUpdate(
@@ -810,7 +877,5 @@ app.use((err, req, res, next) => {
 	res.status(500);
 	res.send("500 Error: Killed by ninjas");
 });
-
-
 
 secureServer.listen(httpsPort);
