@@ -8,7 +8,7 @@ import * as io from "socket.io-client";
 @Component({
 
 	template: `
-		<div *ngIf="gameAdmin">
+		<div *ngIf="gameAdmin && !error">
 			New players can not join once game has been launched.
 			<div class="button" (click)="launchGame()">
 				<p class="inside-button">Launch Game</p>
@@ -51,6 +51,10 @@ export class WaitingRoomComponent implements OnInit {
 			} else {
 				this.error = true;
 				this.errorMessage = res.message;
+				setTimeout(function () {
+					this.error = false;
+					this.errorMessage = "";
+				}.bind(this), 5000);
 			}
 		});
 	};
