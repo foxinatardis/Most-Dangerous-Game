@@ -160,7 +160,7 @@ declare let Compass: any;
 			box-shadow: 0px 0px 7px rgb(64, 244, 255);
 		}
 		#toDraw {
-			background-color: rgb(72, 233, 244);
+			background-color: rgb(255, 248, 54);
 			position: absolute;
 			height: 6px;
 			width: 6px;
