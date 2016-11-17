@@ -420,6 +420,11 @@ export class InGameComponent {
 		clearInterval(this.aimInterval);
 		this.attacking = true;
 		this.takingAim = false;
+		Compass.unwatch(this.compassWatch);
+		clearInterval(this.locationInterval);
+		navigator.geolocation.clearWatch(this.locationWatch);
+		clearInterval(this.pingInterval);
+		clearTimeout(this.pingTimeout);
 		this.attackMessage = "Confirming kill...";
 		let data = {
 			distance: this.distanceToTarget,
@@ -462,11 +467,6 @@ export class InGameComponent {
 	}
 
 	reInit() {
-		Compass.unwatch(this.compassWatch);
-		clearInterval(this.locationInterval);
-		navigator.geolocation.clearWatch(this.locationWatch);
-		clearInterval(this.pingInterval);
-		clearTimeout(this.pingTimeout);
 		this.compass = document.getElementById("compassWrapper");
 		this.ping = document.getElementById("ping");
 		this.compassWatch = Compass.watch(function (heading) {
