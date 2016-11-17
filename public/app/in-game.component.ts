@@ -15,7 +15,11 @@ declare let Compass: any;
 			<h2 [style.color]="online()">Target: {{targetName}}</h2>
 			<p *ngIf="targetOnline">Target Aquired: {{distanceToTarget}} meters from you location.</p>
 			<p *ngIf="!targetOnline">Target Last seen {{distanceToTarget}} meters from your location.</p>
-			<div class="compassWrapper" id="compassWrapper" *ngIf="!reloading">
+			<div *ngIf="reloading">
+				<h3>Reloading...</h3>
+				<p class="reload">{{reloadCounter}}</p>
+			</div>
+			<div class="compassWrapper" id="compassWrapper">
 				<div class="compassQuarter one">
 					<div class="compassSixty one">
 						<div class="compassThird one"></div>
@@ -47,10 +51,7 @@ declare let Compass: any;
 				<div *ngIf="attacking">
 					<h2>{{attackMessage}}</h2>
 				</div>
-				<div *ngIf="reloading">
-					<h3>Reloading...</h3>
-					<p class="reload">{{reloadCounter}}</p>
-				</div>
+
 			</div>
 			<div *ngIf="!attacking">
 				<h3 [style.color]="resolution()">Accuracy: {{accuracy}} meters</h3>
@@ -298,7 +299,7 @@ export class InGameComponent {
 					this.reloading = false;
 					this.attacking = false;
 					this.attackMessage = "";
-					this.reInit();
+					// this.reInit();
 				}.bind(this), 15000);
 			}
 		});
