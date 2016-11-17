@@ -359,30 +359,32 @@ export class InGameComponent {
 		}
 	}
 	displayPing() {
-		clearTimeout(this.pingTimeout);
-		this.clearPing();
-		let width = parseInt(window.getComputedStyle(this.ping).getPropertyValue("width"), 10);
-		let height = parseInt(window.getComputedStyle(this.ping).getPropertyValue("height"), 10);
-		let radius = parseInt(window.getComputedStyle(this.ping).getPropertyValue("border-radius"), 10);
-		let top = parseInt(window.getComputedStyle(this.ping).getPropertyValue("top"), 10);
-		let left = parseInt(window.getComputedStyle(this.ping).getPropertyValue("left"), 10);
-		let opacity = parseInt(window.getComputedStyle(this.ping).getPropertyValue("opacity"), 10);
-		this.pingInterval = setInterval(function() {
-			console.log("pingInterval");
-			width += 2;
-			height += 2;
-			radius += 1;
-			top -= 1;
-			left -= 1;
-			opacity -= .02;
-			this.ping.style.height = height + "px";
-			this.ping.style.width = width + "px";
-			this.ping.style.borderRadius = radius + "px";
-			this.ping.style.top = top + "px";
-			this.ping.style.left = left + "px";
-			this.ping.style.opacity = opacity + "";
-		}.bind(this), 1000 / 30);
-		this.pingTimeout = setTimeout(this.clearPing.bind(this), 2000);
+		if (!this.attacking) {
+			clearTimeout(this.pingTimeout);
+			this.clearPing();
+			let width = parseInt(window.getComputedStyle(this.ping).getPropertyValue("width"), 10);
+			let height = parseInt(window.getComputedStyle(this.ping).getPropertyValue("height"), 10);
+			let radius = parseInt(window.getComputedStyle(this.ping).getPropertyValue("border-radius"), 10);
+			let top = parseInt(window.getComputedStyle(this.ping).getPropertyValue("top"), 10);
+			let left = parseInt(window.getComputedStyle(this.ping).getPropertyValue("left"), 10);
+			let opacity = parseInt(window.getComputedStyle(this.ping).getPropertyValue("opacity"), 10);
+			this.pingInterval = setInterval(function() {
+				console.log("pingInterval");
+				width += 2;
+				height += 2;
+				radius += 1;
+				top -= 1;
+				left -= 1;
+				opacity -= .02;
+				this.ping.style.height = height + "px";
+				this.ping.style.width = width + "px";
+				this.ping.style.borderRadius = radius + "px";
+				this.ping.style.top = top + "px";
+				this.ping.style.left = left + "px";
+				this.ping.style.opacity = opacity + "";
+			}.bind(this), 1000 / 30);
+			this.pingTimeout = setTimeout(this.clearPing.bind(this), 2000);
+		}
 	}
 	clearPing() {
 		// if (this.pingInterval && this.pingInterval.runCount > 0) {
