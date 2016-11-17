@@ -435,7 +435,7 @@ export class InGameComponent {
 		this.attackMessage = "Confirming kill...";
 		let data = {
 			distance: this.distanceToTarget,
-			accuracy: this.accuracy,
+			accuracy: this.myAcc,
 			targetName: this.targetName,
 			gameId: this.authService.user.currentGame
 		};

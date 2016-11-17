@@ -211,7 +211,7 @@ var InGameComponent = (function () {
         this.attackMessage = "Confirming kill...";
         var data = {
             distance: this.distanceToTarget,
-            accuracy: this.accuracy,
+            accuracy: this.myAcc,
             targetName: this.targetName,
             gameId: this.authService.user.currentGame
         };
