@@ -82,7 +82,7 @@ var InGameComponent = (function () {
                     this.reloading = false;
                     this.attacking = false;
                     this.attackMessage = "";
-                    this.reInit();
+                    this.reInit().bind(this);
                 }.bind(_this), 15000);
             }
         });

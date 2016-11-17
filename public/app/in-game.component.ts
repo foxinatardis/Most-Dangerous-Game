@@ -296,7 +296,7 @@ export class InGameComponent {
 					this.reloading = false;
 					this.attacking = false;
 					this.attackMessage = "";
-					this.reInit();
+					this.reInit().bind(this);
 				}.bind(this), 15000);
 			}
 		});
