@@ -359,8 +359,8 @@ export class InGameComponent {
 		}
 	}
 	displayPing() {
-		if (!this.attacking) {
 			clearTimeout(this.pingTimeout);
+		if (!this.attacking) {
 			this.clearPing();
 			let width = parseInt(window.getComputedStyle(this.ping).getPropertyValue("width"), 10);
 			let height = parseInt(window.getComputedStyle(this.ping).getPropertyValue("height"), 10);
@@ -476,6 +476,7 @@ export class InGameComponent {
 		}.bind(this));
 		this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
 		this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
+		console.log("reInit()");
 	}
 
 	rapidEmit(hunterName: string) {
