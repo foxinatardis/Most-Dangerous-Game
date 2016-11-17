@@ -341,7 +341,7 @@ var InGameComponent = (function () {
         this.myLong = coor.longitude;
         this.myLat = coor.latitude;
         this.myTime = pos.timestamp;
-        this.myAcc = coor.accuracy;
+        this.myAcc = Math.floor(coor.accuracy);
         // console.log("locationWatch: ", pos);
         this.update();
     };
