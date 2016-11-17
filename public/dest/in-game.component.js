@@ -82,6 +82,7 @@ var InGameComponent = (function () {
                     this.reloading = false;
                     this.attacking = false;
                     this.attackMessage = "";
+                    this.reInit();
                 }.bind(_this), 15000);
             }
         });
@@ -238,6 +239,20 @@ var InGameComponent = (function () {
                 _this.socket.emit("join", joinData);
             }
         });
+    };
+    InGameComponent.prototype.reInit = function () {
+        Compass.unwatch(this.compassWatch);
+        clearInterval(this.locationInterval);
+        navigator.geolocation.clearWatch(this.locationWatch);
+        clearInterval(this.pingInterval);
+        clearTimeout(this.pingTimeout);
+        this.compass = document.getElementById("compassWrapper");
+        this.ping = document.getElementById("ping");
+        this.compassWatch = Compass.watch(function (heading) {
+            this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
+        }.bind(this));
+        this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
+        this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
     };
     InGameComponent.prototype.rapidEmit = function (hunterName) {
         console.log("rapidEmit()");

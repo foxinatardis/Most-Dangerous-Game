@@ -296,8 +296,7 @@ export class InGameComponent {
 					this.reloading = false;
 					this.attacking = false;
 					this.attackMessage = "";
-					this.compass = document.getElementById("compassWrapper");
-					this.ping = document.getElementById("ping");
+					this.reInit();
 				}.bind(this), 15000);
 			}
 		});
@@ -458,10 +457,23 @@ export class InGameComponent {
 					score: this.authService.user.score
 				};
 				this.socket.emit("join", joinData);
-				this.compass = document.getElementById("compassWrapper");
-				this.ping = document.getElementById("ping");
 			}
 		});
+	}
+
+	reInit() {
+		Compass.unwatch(this.compassWatch);
+		clearInterval(this.locationInterval);
+		navigator.geolocation.clearWatch(this.locationWatch);
+		clearInterval(this.pingInterval);
+		clearTimeout(this.pingTimeout);
+		this.compass = document.getElementById("compassWrapper");
+		this.ping = document.getElementById("ping");
+		this.compassWatch = Compass.watch(function (heading) {
+			this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
+		}.bind(this));
+		this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
+		this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
 	}
 
 	rapidEmit(hunterName: string) {
