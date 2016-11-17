@@ -784,12 +784,12 @@ io.on("connection", (socket) => {
 
 	socket.on("attack", (data) => {
 		console.log("attack attempted");
-		let attempt = data.distance + data.accuracy;
-		if (attempt > 100 || !connectedUsers[socket._targetName]) { // if distance+accuracy is too great or target is offline attempt fails
+		// let attempt = data.distance + data.accuracy;
+		if (data.accuracy > 50 || !connectedUsers[socket._targetName]) { // if distance+accuracy is too great or target is offline attempt fails
 			socket.emit("attack result", false);
 		} else {
-			let result = Math.random() * attempt;
-			if (result > 25) {
+			let result = Math.random() * data.distance;
+			if (result > 15) {
 				socket.emit("attack result", false);
 			} else {
 				User.findOneAndUpdate(
