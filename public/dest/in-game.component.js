@@ -139,8 +139,8 @@ var InGameComponent = (function () {
         }
     };
     InGameComponent.prototype.displayPing = function () {
-        this.clearPing();
         clearTimeout(this.pingTimeout);
+        this.clearPing();
         var width = parseInt(window.getComputedStyle(this.ping).getPropertyValue("width"), 10);
         var height = parseInt(window.getComputedStyle(this.ping).getPropertyValue("height"), 10);
         var radius = parseInt(window.getComputedStyle(this.ping).getPropertyValue("border-radius"), 10);
@@ -154,7 +154,7 @@ var InGameComponent = (function () {
             radius += 1;
             top -= 1;
             left -= 1;
-            opacity -= .03;
+            opacity -= .02;
             this.ping.style.height = height + "px";
             this.ping.style.width = width + "px";
             this.ping.style.borderRadius = radius + "px";

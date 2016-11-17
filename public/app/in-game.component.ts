@@ -358,8 +358,8 @@ export class InGameComponent {
 		}
 	}
 	displayPing() {
-		this.clearPing();
 		clearTimeout(this.pingTimeout);
+		this.clearPing();
 		let width = parseInt(window.getComputedStyle(this.ping).getPropertyValue("width"), 10);
 		let height = parseInt(window.getComputedStyle(this.ping).getPropertyValue("height"), 10);
 		let radius = parseInt(window.getComputedStyle(this.ping).getPropertyValue("border-radius"), 10);
@@ -373,7 +373,7 @@ export class InGameComponent {
 			radius += 1;
 			top -= 1;
 			left -= 1;
-			opacity -= .03;
+			opacity -= .02;
 			this.ping.style.height = height + "px";
 			this.ping.style.width = width + "px";
 			this.ping.style.borderRadius = radius + "px";
