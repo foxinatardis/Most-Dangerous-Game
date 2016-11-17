@@ -707,6 +707,27 @@ io.on("connection", (socket) => {
 		socket._score = data.score;
 		connectedUsers[data.name] = socket;
 		console.log("joined");
+		User.findOne(
+			{currentTarget: data.name},
+			(err, data) => {
+				if (err) {
+					console.log("error at socket.join, User.findOne: ", err);
+				} else if (!data) {
+					console.log("couldn't find tracker at socket.join User.findOne");
+				} else {
+					if (connectedUsers[data.name]) {
+						var trackerSocket = connectedUsers[data.name];
+						var toSend = {
+							targetLat: trackerSocket._lat,
+							targetLong: trackerSocket._long,
+							targetAcc: trackerSocket._acc,
+							targetTime: trackerSocket._time
+						};
+						connectedUsers[data.name].emit("target online", toSend);
+					}
+				}
+			}
+		);
 		if (connectedUsers[socket._targetName]) {
 			let targetSocket = connectedUsers[socket._targetName];
 			let targetData = {
