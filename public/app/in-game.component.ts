@@ -36,7 +36,9 @@ declare let Compass: any;
 						<div class="compassThird four"></div>
 					</div>
 					<p class="north">N</p>
-					<div id="toDraw"></div>
+					<div id="toDraw">
+						<div id="ping"></div>
+					</div>
 				</div>
 			</div>
 			<div *ngIf="targetOnline">
@@ -62,6 +64,15 @@ declare let Compass: any;
 			font-size: 7em;
 			font-family: sans-serif;
 			margin-top: 20px;
+		}
+		#ping {
+			position: absolute;
+			height: 6px;
+			width: 6px;
+			border-radius: 3px;
+			border: 1px solid rgb(64, 244, 255);
+			box-sizing: border-box;
+			opacity: 1;
 		}
 		.compassWrapper {
 			width: 80%;
@@ -200,7 +211,7 @@ export class InGameComponent {
 	myTime: number;
 	myAcc: number;
 	compass: any;
-	compassWatch: any;
+	ping: any;
 	// target variables
 	targetName: string;
 	targetLong: number;
@@ -215,11 +226,14 @@ export class InGameComponent {
 	accuracy: number;
 	bearing: number;
 	// funcitonal variables
+	compassWatch: any;
 	locationWatch: any;
 	locationInterval: any;
 	aimInterval: any;
 	reloadCounter: number;
 	reloadInterval: any;
+	pingInterval: any;
+	pingTimeout: any;
 	rapid: any;
 	gameId: string = this.authService.user.currentGame;
 	socket: any;
@@ -233,7 +247,7 @@ export class InGameComponent {
 		this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
 		this.socket = io();
 		this.socket.on("connected", () => {
-			console.log("connected, authService.user is: ", this.authService.user);
+			// console.log("connected, authService.user is: ", this.authService.user);
 			this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
 			// this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
 			// this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
@@ -247,6 +261,7 @@ export class InGameComponent {
 					this.targetAcc = data.targetAcc;
 					this.targetTime = data.targetTime;
 					this.update();
+					this.displayPing();
 				}
 			} else {
 				this.targetOnline = false;
@@ -303,17 +318,19 @@ export class InGameComponent {
 
 	};
 
-	ngAfterContentInit() {
+	ngAfterViewInit() {
 		if (!this.initialized) {
 			this.initialized = true;
-			console.log("after content init");
+			console.log("after view init");
 			this.compass = document.getElementById("compassWrapper");
+			this.ping = document.getElementById("ping");
+			console.log("ngAfterViewInit this.compass: ", this.compass);
 			this.compassWatch = Compass.watch(function (heading) {
 				this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
 			}.bind(this));
-			Compass.noSupport(function () {
-				this.compass.style.transform = "rotate(-90deg)";
-			}.bind(this));
+			// Compass.noSupport(function () {
+			// 	this.compass.style.transform = "rotate(-90deg)";
+			// }.bind(this));
 		}
 	}
 
@@ -322,6 +339,7 @@ export class InGameComponent {
 		this.socket.disconnect();
 		clearInterval(this.locationInterval);
 		navigator.geolocation.clearWatch(this.locationWatch);
+		clearInterval(this.pingInterval);
 	}
 
 // functions for styling text colors based on variables
@@ -339,9 +357,48 @@ export class InGameComponent {
 			return "green";
 		}
 	}
+	displayPing() {
+		clearTimeout(this.pingTimeout);
+		this.clearPing();
+		let width = parseInt(window.getComputedStyle(this.ping).getPropertyValue("width"), 10);
+		let height = parseInt(window.getComputedStyle(this.ping).getPropertyValue("height"), 10);
+		let radius = parseInt(window.getComputedStyle(this.ping).getPropertyValue("border-radius"), 10);
+		let top = parseInt(window.getComputedStyle(this.ping).getPropertyValue("top"), 10);
+		let left = parseInt(window.getComputedStyle(this.ping).getPropertyValue("left"), 10);
+		let opacity = parseInt(window.getComputedStyle(this.ping).getPropertyValue("opacity"), 10);
+		this.pingInterval = setInterval(function() {
+			console.log("pingInterval");
+			width += 2;
+			height += 2;
+			radius += 1;
+			top -= 1;
+			left -= 1;
+			opacity -= .02;
+			this.ping.style.height = height + "px";
+			this.ping.style.width = width + "px";
+			this.ping.style.borderRadius = radius + "px";
+			this.ping.style.top = top + "px";
+			this.ping.style.left = left + "px";
+			this.ping.style.opacity = opacity + "";
+		}.bind(this), 1000 / 30);
+		this.pingTimeout = setTimeout(this.clearPing.bind(this), 2000);
+	}
+	clearPing() {
+		// if (this.pingInterval && this.pingInterval.runCount > 0) {
+			clearInterval(this.pingInterval);
+			this.ping.style.height = "6px";
+			this.ping.style.width = "6px";
+			this.ping.style.borderRadius = "3px";
+			this.ping.style.top = "0px";
+			this.ping.style.left = "0px";
+			this.ping.style.opacity = 1;
+		// }
+		console.log("post clear: ", this.pingInterval);
+	}
 
 // functions for practical uses
 	takeAim() {
+		console.log("taking aim, ping interval is: ", this.pingInterval);
 		let data = {
 			targetName: this.targetName,
 			trackerName: this.authService.user.name
@@ -473,14 +530,14 @@ export class InGameComponent {
 					score: res.userScore
 				};
 				this.socket.emit("join", joinData);
-				this.compass = document.getElementById("compassWrapper");
+				// this.compass = document.getElementById("compassWrapper");
 			}
 		});
 
 	}
 
 	positionErr(err) {
-		console.log(err);
+		// console.log(err);
 		this.error = true;
 		this.errorMessage = "Unable to obtain your location, please make sure you have 'Location Services' turned on and try again.";
 	}
@@ -491,7 +548,7 @@ export class InGameComponent {
 		this.myLat = coor.latitude;
 		this.myTime = pos.timestamp;
 		this.myAcc = coor.accuracy;
-		console.log("locationWatch: ", pos);
+		// console.log("locationWatch: ", pos);
 		this.update();
 	}
 
