@@ -331,6 +331,7 @@ export class InGameComponent {
 			this.ping = document.getElementById("ping");
 			console.log("ngAfterViewInit this.compass: ", this.compass);
 			this.compassWatch = Compass.watch(function (heading) {
+				heading = Math.floor(heading);
 				this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
 			}.bind(this));
 			// Compass.noSupport(function () {
