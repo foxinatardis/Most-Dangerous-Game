@@ -15,6 +15,9 @@ declare let Compass: any;
 			<h2 [style.color]="online()">Target: {{targetName}}</h2>
 			<p *ngIf="targetOnline">Target Aquired: {{distanceToTarget}} meters from you location.</p>
 			<p *ngIf="!targetOnline">Target Last seen {{distanceToTarget}} meters from your location.</p>
+			<div *ngIf="attacking">
+				<h2>{{attackMessage}}</h2>
+			</div>
 			<div *ngIf="reloading">
 				<h3>Reloading...</h3>
 				<p class="reload">{{reloadCounter}}</p>
@@ -48,9 +51,7 @@ declare let Compass: any;
 			<div *ngIf="targetOnline">
 				<button *ngIf="!takingAim && !attacking" class="button bottom" (click)="takeAim()">Take Aim</button>
 				<button *ngIf="takingAim && !attacking" class="button bottom" (click)="attack()">Attack</button>
-				<div *ngIf="attacking">
-					<h2>{{attackMessage}}</h2>
-				</div>
+
 
 			</div>
 			<div *ngIf="!attacking">
