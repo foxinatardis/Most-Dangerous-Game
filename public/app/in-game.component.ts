@@ -285,11 +285,11 @@ export class InGameComponent {
 		});
 
 		this.socket.on("attack result", (data) => {
-			if (data) {
+			if (data.killshot) {
 				this.attackMessage = "Target taken out. Awaiting info on next target...";
 				this.nextTarget();
 			} else {
-				this.attackMessage = "Target missed... ";
+				this.attackMessage = data.message;
 				this.reloadCounter = 15;
 				this.reloading = true;
 				this.reloadInterval = setInterval(function() {

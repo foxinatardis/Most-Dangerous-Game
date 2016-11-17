@@ -66,12 +66,12 @@ var InGameComponent = (function () {
             console.log("you are being watched: ", data);
         });
         this.socket.on("attack result", function (data) {
-            if (data) {
+            if (data.killshot) {
                 _this.attackMessage = "Target taken out. Awaiting info on next target...";
                 _this.nextTarget();
             }
             else {
-                _this.attackMessage = "Target missed... ";
+                _this.attackMessage = data.message;
                 _this.reloadCounter = 15;
                 _this.reloading = true;
                 _this.reloadInterval = setInterval(function () {

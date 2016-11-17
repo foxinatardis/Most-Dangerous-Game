@@ -786,11 +786,11 @@ io.on("connection", (socket) => {
 		console.log("attack attempted");
 		// let attempt = data.distance + data.accuracy;
 		if (data.accuracy > 50 || !connectedUsers[socket._targetName]) { // if distance+accuracy is too great or target is offline attempt fails
-			socket.emit("attack result", false);
+			socket.emit("attack result", {killshot: false, message: "Attack failed, GPS signal too weak."});
 		} else {
 			let result = Math.random() * data.distance;
 			if (result > 15) {
-				socket.emit("attack result", false);
+				socket.emit("attack result", {killshot: false, message: "You missed."});
 			} else {
 				User.findOneAndUpdate(
 					{
@@ -806,10 +806,10 @@ io.on("connection", (socket) => {
 					(err, oldData) => {
 						if (err) {
 							console.log("error at socket attack first User.findOneAndUpdate");
-							socket.emit("attack result", false);
+							socket.emit("attack result", {killshot: false, message: "You missed."});
 						} else if (!oldData) {
 							console.log("failed to find target user at socket attack");
-							socket.emit("attack result", false);
+							socket.emit("attack result", {killshot: false, message: "You missed."});
 						} else {
 							if (connectedUsers[socket._targetName]) {
 								connectedUsers[socket._targetName].emit("killed", socket._name);
@@ -830,7 +830,7 @@ io.on("connection", (socket) => {
 										console.log("attack success, new game data: ", newData);
 										socket._score += 100;
 										socket.emit("score", socket._score);
-										socket.emit("attack result", true);
+										socket.emit("attack result", {killshot: true, message: "Attack succeeded."});
 									} else {
 										User.findOneAndUpdate(
 											{name: socket._name},
