@@ -253,7 +253,7 @@ export class InGameComponent {
 			// this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
 		});
 		this.socket.on("target online", (data) => {
-			if (data) {
+			if (data && !this.attacking) {
 				this.targetOnline = true;
 				if (data.targetLat) {
 					this.targetLat = data.targetLat;
@@ -296,7 +296,7 @@ export class InGameComponent {
 					this.reloading = false;
 					this.attacking = false;
 					this.attackMessage = "";
-					this.reInit().bind(this);
+					this.reInit();
 				}.bind(this), 15000);
 			}
 		});
