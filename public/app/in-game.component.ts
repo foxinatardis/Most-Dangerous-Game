@@ -15,7 +15,11 @@ declare let Compass: any;
 			<h2 [style.color]="online()">Target: {{targetName}}</h2>
 			<p *ngIf="targetOnline">Target Aquired: {{distanceToTarget}} meters from you location.</p>
 			<p *ngIf="!targetOnline">Target Last seen {{distanceToTarget}} meters from your location.</p>
-			<div class="compassWrapper" id="compassWrapper" *ngIf="!reloading">
+			<div *ngIf="reloading">
+				<h3>Reloading...</h3>
+				<p class="reload">{{reloadCounter}}</p>
+			</div>
+			<div class="compassWrapper" id="compassWrapper">
 				<div class="compassQuarter one">
 					<div class="compassSixty one">
 						<div class="compassThird one"></div>
@@ -47,10 +51,7 @@ declare let Compass: any;
 				<div *ngIf="attacking">
 					<h2>{{attackMessage}}</h2>
 				</div>
-				<div *ngIf="reloading">
-					<h3>Reloading...</h3>
-					<p class="reload">{{reloadCounter}}</p>
-				</div>
+
 			</div>
 			<div *ngIf="!attacking">
 				<h3 [style.color]="resolution()">Accuracy: {{accuracy}} meters</h3>
@@ -253,18 +254,20 @@ export class InGameComponent {
 			// this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
 		});
 		this.socket.on("target online", (data) => {
-			if (data) {
-				this.targetOnline = true;
-				if (data.targetLat) {
-					this.targetLat = data.targetLat;
-					this.targetLong = data.targetLong;
-					this.targetAcc = data.targetAcc;
-					this.targetTime = data.targetTime;
-					this.update();
-					this.displayPing();
+			if (!this.attacking) {
+				if (data) {
+					this.targetOnline = true;
+					if (data.targetLat) {
+						this.targetLat = data.targetLat;
+						this.targetLong = data.targetLong;
+						this.targetAcc = data.targetAcc;
+						this.targetTime = data.targetTime;
+						this.update();
+						this.displayPing();
+					}
+				} else {
+					this.targetOnline = false;
 				}
-			} else {
-				this.targetOnline = false;
 			}
 			console.log("data from socket 'target online' is: ", data);
 		});
@@ -296,8 +299,7 @@ export class InGameComponent {
 					this.reloading = false;
 					this.attacking = false;
 					this.attackMessage = "";
-					this.compass = document.getElementById("compassWrapper");
-					this.ping = document.getElementById("ping");
+					// this.reInit();
 				}.bind(this), 15000);
 			}
 		});
@@ -360,30 +362,32 @@ export class InGameComponent {
 		}
 	}
 	displayPing() {
-		clearTimeout(this.pingTimeout);
-		this.clearPing();
-		let width = parseInt(window.getComputedStyle(this.ping).getPropertyValue("width"), 10);
-		let height = parseInt(window.getComputedStyle(this.ping).getPropertyValue("height"), 10);
-		let radius = parseInt(window.getComputedStyle(this.ping).getPropertyValue("border-radius"), 10);
-		let top = parseInt(window.getComputedStyle(this.ping).getPropertyValue("top"), 10);
-		let left = parseInt(window.getComputedStyle(this.ping).getPropertyValue("left"), 10);
-		let opacity = parseInt(window.getComputedStyle(this.ping).getPropertyValue("opacity"), 10);
-		this.pingInterval = setInterval(function() {
-			console.log("pingInterval");
-			width += 2;
-			height += 2;
-			radius += 1;
-			top -= 1;
-			left -= 1;
-			opacity -= .02;
-			this.ping.style.height = height + "px";
-			this.ping.style.width = width + "px";
-			this.ping.style.borderRadius = radius + "px";
-			this.ping.style.top = top + "px";
-			this.ping.style.left = left + "px";
-			this.ping.style.opacity = opacity + "";
-		}.bind(this), 1000 / 30);
-		this.pingTimeout = setTimeout(this.clearPing.bind(this), 2000);
+			clearTimeout(this.pingTimeout);
+		if (!this.attacking) {
+			this.clearPing();
+			let width = parseInt(window.getComputedStyle(this.ping).getPropertyValue("width"), 10);
+			let height = parseInt(window.getComputedStyle(this.ping).getPropertyValue("height"), 10);
+			let radius = parseInt(window.getComputedStyle(this.ping).getPropertyValue("border-radius"), 10);
+			let top = parseInt(window.getComputedStyle(this.ping).getPropertyValue("top"), 10);
+			let left = parseInt(window.getComputedStyle(this.ping).getPropertyValue("left"), 10);
+			let opacity = parseInt(window.getComputedStyle(this.ping).getPropertyValue("opacity"), 10);
+			this.pingInterval = setInterval(function() {
+				console.log("pingInterval");
+				width += 2;
+				height += 2;
+				radius += 1;
+				top -= 1;
+				left -= 1;
+				opacity -= .02;
+				this.ping.style.height = height + "px";
+				this.ping.style.width = width + "px";
+				this.ping.style.borderRadius = radius + "px";
+				this.ping.style.top = top + "px";
+				this.ping.style.left = left + "px";
+				this.ping.style.opacity = opacity + "";
+			}.bind(this), 1000 / 30);
+			this.pingTimeout = setTimeout(this.clearPing.bind(this), 2000);
+		}
 	}
 	clearPing() {
 		// if (this.pingInterval && this.pingInterval.runCount > 0) {
@@ -418,6 +422,12 @@ export class InGameComponent {
 	}
 
 	attack() {
+		// Compass.unwatch(this.compassWatch);
+		// clearInterval(this.locationInterval);
+		// navigator.geolocation.clearWatch(this.locationWatch);
+		// clearInterval(this.pingInterval);
+		// clearTimeout(this.pingTimeout);
+
 		clearInterval(this.aimInterval);
 		this.attacking = true;
 		this.takingAim = false;
@@ -458,10 +468,19 @@ export class InGameComponent {
 					score: this.authService.user.score
 				};
 				this.socket.emit("join", joinData);
-				this.compass = document.getElementById("compassWrapper");
-				this.ping = document.getElementById("ping");
 			}
 		});
+	}
+
+	reInit() {
+		this.compass = document.getElementById("compassWrapper");
+		this.ping = document.getElementById("ping");
+		this.compassWatch = Compass.watch(function (heading) {
+			this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
+		}.bind(this));
+		this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
+		this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
+		console.log("reInit()");
 	}
 
 	rapidEmit(hunterName: string) {
@@ -557,7 +576,7 @@ export class InGameComponent {
 	}
 
 	update() {
-		if (this.myLat && this.targetLat) {
+		if (!this.attacking && this.myLat && this.targetLat) {
 			this.distanceToTarget = Math.floor(this.getDistance(this.myLong, this.myLat, this.targetLong, this.targetLat));
 			this.accuracy = Math.floor(this.myAcc + this.targetAcc);
 			this.bearing = Math.floor(this.getBearing(this.myLong, this.myLat, this.targetLong, this.targetLat));
