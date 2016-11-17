@@ -11,7 +11,7 @@ var http = express();
 
 // set up a route to redirect http to https
 http.get('*', (req,res) => {
-	res.redirect('https://adamb.me'+req.url);
+	res.redirect('https://themdg.win'+req.url);
 });
 
 http.listen(8000);
@@ -19,9 +19,9 @@ http.listen(8000);
 var fs = require("fs");
 var https = require("https");
 var options = {
-	key:fs.readFileSync("./adamb.key"),
-	cert: fs.readFileSync("./adamb.crt"),
-	ca: fs.readFileSync("./adamb.ca-bundle")
+	key:fs.readFileSync("./themdg.key"),
+	cert: fs.readFileSync("./themdg.crt"),
+	ca: fs.readFileSync("./themdg.ca-bundle")
 };
 httpsPort = 8443;
 
