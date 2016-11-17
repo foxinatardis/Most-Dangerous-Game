@@ -200,11 +200,11 @@ var InGameComponent = (function () {
         }.bind(this), 20000);
     };
     InGameComponent.prototype.attack = function () {
-        Compass.unwatch(this.compassWatch);
-        clearInterval(this.locationInterval);
-        navigator.geolocation.clearWatch(this.locationWatch);
-        clearInterval(this.pingInterval);
-        clearTimeout(this.pingTimeout);
+        // Compass.unwatch(this.compassWatch);
+        // clearInterval(this.locationInterval);
+        // navigator.geolocation.clearWatch(this.locationWatch);
+        // clearInterval(this.pingInterval);
+        // clearTimeout(this.pingTimeout);
         clearInterval(this.aimInterval);
         this.attacking = true;
         this.takingAim = false;

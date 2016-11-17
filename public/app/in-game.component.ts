@@ -422,11 +422,11 @@ export class InGameComponent {
 	}
 
 	attack() {
-		Compass.unwatch(this.compassWatch);
-		clearInterval(this.locationInterval);
-		navigator.geolocation.clearWatch(this.locationWatch);
-		clearInterval(this.pingInterval);
-		clearTimeout(this.pingTimeout);
+		// Compass.unwatch(this.compassWatch);
+		// clearInterval(this.locationInterval);
+		// navigator.geolocation.clearWatch(this.locationWatch);
+		// clearInterval(this.pingInterval);
+		// clearTimeout(this.pingTimeout);
 
 		clearInterval(this.aimInterval);
 		this.attacking = true;
