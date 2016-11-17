@@ -296,6 +296,8 @@ export class InGameComponent {
 					this.reloading = false;
 					this.attacking = false;
 					this.attackMessage = "";
+					this.compass = document.getElementById("compassWrapper");
+					this.ping = document.getElementById("ping");
 				}.bind(this), 15000);
 			}
 		});
@@ -456,6 +458,8 @@ export class InGameComponent {
 					score: this.authService.user.score
 				};
 				this.socket.emit("join", joinData);
+				this.compass = document.getElementById("compassWrapper");
+				this.ping = document.getElementById("ping");
 			}
 		});
 	}
