@@ -38,19 +38,21 @@ var InGameComponent = (function () {
             // this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
         });
         this.socket.on("target online", function (data) {
-            if (data && !_this.attacking) {
-                _this.targetOnline = true;
-                if (data.targetLat) {
-                    _this.targetLat = data.targetLat;
-                    _this.targetLong = data.targetLong;
-                    _this.targetAcc = data.targetAcc;
-                    _this.targetTime = data.targetTime;
-                    _this.update();
-                    _this.displayPing();
+            if (!_this.attacking) {
+                if (data) {
+                    _this.targetOnline = true;
+                    if (data.targetLat) {
+                        _this.targetLat = data.targetLat;
+                        _this.targetLong = data.targetLong;
+                        _this.targetAcc = data.targetAcc;
+                        _this.targetTime = data.targetTime;
+                        _this.update();
+                        _this.displayPing();
+                    }
                 }
-            }
-            else {
-                _this.targetOnline = false;
+                else {
+                    _this.targetOnline = false;
+                }
             }
             console.log("data from socket 'target online' is: ", data);
         });
@@ -198,14 +200,14 @@ var InGameComponent = (function () {
         }.bind(this), 20000);
     };
     InGameComponent.prototype.attack = function () {
-        clearInterval(this.aimInterval);
-        this.attacking = true;
-        this.takingAim = false;
         Compass.unwatch(this.compassWatch);
         clearInterval(this.locationInterval);
         navigator.geolocation.clearWatch(this.locationWatch);
         clearInterval(this.pingInterval);
         clearTimeout(this.pingTimeout);
+        clearInterval(this.aimInterval);
+        this.attacking = true;
+        this.takingAim = false;
         this.attackMessage = "Confirming kill...";
         var data = {
             distance: this.distanceToTarget,

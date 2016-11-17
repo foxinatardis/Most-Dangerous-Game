@@ -253,18 +253,20 @@ export class InGameComponent {
 			// this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
 		});
 		this.socket.on("target online", (data) => {
-			if (data && !this.attacking) {
-				this.targetOnline = true;
-				if (data.targetLat) {
-					this.targetLat = data.targetLat;
-					this.targetLong = data.targetLong;
-					this.targetAcc = data.targetAcc;
-					this.targetTime = data.targetTime;
-					this.update();
-					this.displayPing();
+			if (!this.attacking) {
+				if (data) {
+					this.targetOnline = true;
+					if (data.targetLat) {
+						this.targetLat = data.targetLat;
+						this.targetLong = data.targetLong;
+						this.targetAcc = data.targetAcc;
+						this.targetTime = data.targetTime;
+						this.update();
+						this.displayPing();
+					}
+				} else {
+					this.targetOnline = false;
 				}
-			} else {
-				this.targetOnline = false;
 			}
 			console.log("data from socket 'target online' is: ", data);
 		});
@@ -419,14 +421,15 @@ export class InGameComponent {
 	}
 
 	attack() {
-		clearInterval(this.aimInterval);
-		this.attacking = true;
-		this.takingAim = false;
 		Compass.unwatch(this.compassWatch);
 		clearInterval(this.locationInterval);
 		navigator.geolocation.clearWatch(this.locationWatch);
 		clearInterval(this.pingInterval);
 		clearTimeout(this.pingTimeout);
+
+		clearInterval(this.aimInterval);
+		this.attacking = true;
+		this.takingAim = false;
 		this.attackMessage = "Confirming kill...";
 		let data = {
 			distance: this.distanceToTarget,
