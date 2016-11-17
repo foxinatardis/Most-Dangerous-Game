@@ -572,7 +572,7 @@ export class InGameComponent {
 	}
 
 	update() {
-		if (this.myLat && this.targetLat) {
+		if (!this.attacking && this.myLat && this.targetLat) {
 			this.distanceToTarget = Math.floor(this.getDistance(this.myLong, this.myLat, this.targetLong, this.targetLat));
 			this.accuracy = Math.floor(this.myAcc + this.targetAcc);
 			this.bearing = Math.floor(this.getBearing(this.myLong, this.myLat, this.targetLong, this.targetLat));

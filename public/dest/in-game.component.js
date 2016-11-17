@@ -141,29 +141,31 @@ var InGameComponent = (function () {
     };
     InGameComponent.prototype.displayPing = function () {
         clearTimeout(this.pingTimeout);
-        this.clearPing();
-        var width = parseInt(window.getComputedStyle(this.ping).getPropertyValue("width"), 10);
-        var height = parseInt(window.getComputedStyle(this.ping).getPropertyValue("height"), 10);
-        var radius = parseInt(window.getComputedStyle(this.ping).getPropertyValue("border-radius"), 10);
-        var top = parseInt(window.getComputedStyle(this.ping).getPropertyValue("top"), 10);
-        var left = parseInt(window.getComputedStyle(this.ping).getPropertyValue("left"), 10);
-        var opacity = parseInt(window.getComputedStyle(this.ping).getPropertyValue("opacity"), 10);
-        this.pingInterval = setInterval(function () {
-            console.log("pingInterval");
-            width += 2;
-            height += 2;
-            radius += 1;
-            top -= 1;
-            left -= 1;
-            opacity -= .02;
-            this.ping.style.height = height + "px";
-            this.ping.style.width = width + "px";
-            this.ping.style.borderRadius = radius + "px";
-            this.ping.style.top = top + "px";
-            this.ping.style.left = left + "px";
-            this.ping.style.opacity = opacity + "";
-        }.bind(this), 1000 / 30);
-        this.pingTimeout = setTimeout(this.clearPing.bind(this), 2000);
+        if (!this.attacking) {
+            this.clearPing();
+            var width_1 = parseInt(window.getComputedStyle(this.ping).getPropertyValue("width"), 10);
+            var height_1 = parseInt(window.getComputedStyle(this.ping).getPropertyValue("height"), 10);
+            var radius_1 = parseInt(window.getComputedStyle(this.ping).getPropertyValue("border-radius"), 10);
+            var top_1 = parseInt(window.getComputedStyle(this.ping).getPropertyValue("top"), 10);
+            var left_1 = parseInt(window.getComputedStyle(this.ping).getPropertyValue("left"), 10);
+            var opacity_1 = parseInt(window.getComputedStyle(this.ping).getPropertyValue("opacity"), 10);
+            this.pingInterval = setInterval(function () {
+                console.log("pingInterval");
+                width_1 += 2;
+                height_1 += 2;
+                radius_1 += 1;
+                top_1 -= 1;
+                left_1 -= 1;
+                opacity_1 -= .02;
+                this.ping.style.height = height_1 + "px";
+                this.ping.style.width = width_1 + "px";
+                this.ping.style.borderRadius = radius_1 + "px";
+                this.ping.style.top = top_1 + "px";
+                this.ping.style.left = left_1 + "px";
+                this.ping.style.opacity = opacity_1 + "";
+            }.bind(this), 1000 / 30);
+            this.pingTimeout = setTimeout(this.clearPing.bind(this), 2000);
+        }
     };
     InGameComponent.prototype.clearPing = function () {
         // if (this.pingInterval && this.pingInterval.runCount > 0) {
@@ -199,6 +201,11 @@ var InGameComponent = (function () {
         clearInterval(this.aimInterval);
         this.attacking = true;
         this.takingAim = false;
+        Compass.unwatch(this.compassWatch);
+        clearInterval(this.locationInterval);
+        navigator.geolocation.clearWatch(this.locationWatch);
+        clearInterval(this.pingInterval);
+        clearTimeout(this.pingTimeout);
         this.attackMessage = "Confirming kill...";
         var data = {
             distance: this.distanceToTarget,
@@ -241,11 +248,6 @@ var InGameComponent = (function () {
         });
     };
     InGameComponent.prototype.reInit = function () {
-        Compass.unwatch(this.compassWatch);
-        clearInterval(this.locationInterval);
-        navigator.geolocation.clearWatch(this.locationWatch);
-        clearInterval(this.pingInterval);
-        clearTimeout(this.pingTimeout);
         this.compass = document.getElementById("compassWrapper");
         this.ping = document.getElementById("ping");
         this.compassWatch = Compass.watch(function (heading) {
@@ -253,6 +255,7 @@ var InGameComponent = (function () {
         }.bind(this));
         this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
         this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
+        console.log("reInit()");
     };
     InGameComponent.prototype.rapidEmit = function (hunterName) {
         console.log("rapidEmit()");
@@ -341,7 +344,7 @@ var InGameComponent = (function () {
         this.update();
     };
     InGameComponent.prototype.update = function () {
-        if (this.myLat && this.targetLat) {
+        if (!this.attacking && this.myLat && this.targetLat) {
             this.distanceToTarget = Math.floor(this.getDistance(this.myLong, this.myLat, this.targetLong, this.targetLat));
             this.accuracy = Math.floor(this.myAcc + this.targetAcc);
             this.bearing = Math.floor(this.getBearing(this.myLong, this.myLat, this.targetLong, this.targetLat));
