@@ -10,8 +10,30 @@ var app = express();
 var http = express();
 
 // set up a route to redirect http to https
-http.get('*', (req,res) => {
-	res.redirect('https://themdg.win'+req.url);
+http.use((req, res, next) => {
+	if (!req.hostname.includes("adamb")) {
+		res.redirect('https://themdg.win'+req.url);
+		return;
+	}
+	next();
+});
+
+http.get("/", (req, res) => {
+	res.sendFile(__dirname + "/portfolio/portfolio.html");
+});
+
+http.use(express.static(__dirname + '/portfolio'));
+
+http.use((req, res, next) => {
+	console.log("file not found");
+	res.status(404);
+	res.send("File not found.");
+});
+
+http.use((err, req, res, next) => {
+	console.log(err);
+	res.status(500);
+	res.send("500 Error: Killed by ninjas.");
 });
 
 http.listen(8000);
