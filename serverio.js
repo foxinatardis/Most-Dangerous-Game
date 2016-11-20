@@ -71,6 +71,14 @@ app.use(session({
 	resave: false
 }));
 
+app.use((req, res, next) => {
+	if (req.hostname.includes("adamb.me")) {
+		res.redirect('http://adamb.me'+req.url);
+		return;
+	}
+	next();
+});
+
 app.get("/", (req, res) => {
 	// todo this will change once app is completed and ready to serve
 	res.sendFile(__dirname + "/public/dist/index.html");
