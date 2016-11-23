@@ -15,30 +15,30 @@ declare let Compass: any;
 			<h2 [style.color]="online()">Target: {{targetName}}</h2>
 			<p *ngIf="targetOnline">Target Aquired: {{distanceToTarget}} meters from your location.</p>
 			<p *ngIf="!targetOnline">Target Last seen {{distanceToTarget}} meters from your location.</p>
-			<div *ngIf="attacking">
+			<div *ngIf="attacking" [hidden]="reloading">
 				<h2>{{attackMessage}}</h2>
 			</div>
 			<div *ngIf="reloading">
-				<h3>Reloading...</h3>
-				<p class="reload">{{reloadCounter}}</p>
+				<h3>Reloading...{{reloadCounter}}</h3>
+				<p class="reload"></p>
 			</div>
-			<div class="compassWrapper" id="compassWrapper">
-				<div class="compassQuarter one">
+			<div class="compassWrapper" id="compassWrapper" [hidden]="attacking">
+				<div class="compassQuarter one" [style.background-color]="facingColor">
 					<div class="compassSixty one">
 						<div class="compassThird one"></div>
 					</div>
 				</div>
-				<div class="compassQuarter two">
+				<div class="compassQuarter two" [style.background-color]="facingColor">
 					<div class="compassSixty two">
 						<div class="compassThird two"></div>
 					</div>
 				</div>
-				<div class="compassQuarter three">
+				<div class="compassQuarter three" [style.background-color]="facingColor">
 					<div class="compassSixty three">
 						<div class="compassThird three"></div>
 					</div>
 				</div>
-				<div class="compassQuarter four">
+				<div class="compassQuarter four" [style.background-color]="facingColor">
 					<div class="compassSixty four">
 						<div class="compassThird four"></div>
 					</div>
@@ -50,10 +50,12 @@ declare let Compass: any;
 			</div>
 			<div *ngIf="targetOnline">
 				<button *ngIf="!takingAim && !attacking" class="button bottom" (click)="takeAim()">Take Aim</button>
-				<button *ngIf="takingAim && !attacking" class="button bottom" (click)="attack()">Attack</button>
-
-
+				<button *ngIf="takingAim && !attacking"
+					[class]="buttonClass" (click)="attack()">
+					{{attackMessage}}Attack
+				</button>
 			</div>
+
 			<div *ngIf="!attacking">
 				<h3 [style.color]="resolution()">Accuracy: {{myAcc}} meters</h3>
 			</div>
@@ -94,20 +96,16 @@ declare let Compass: any;
 			border: 1px solid rgb(64, 244, 255);
 		}
 		.compassThird {
-
 			width: 50%;
 			height: 0;
 			padding-bottom: 50%;
 			position: absolute;
-
 		}
 		.compassSixty {
-
 			width: 66%;
 			height: 0;
 			padding-bottom: 66%;
 			position: absolute;
-
 		}
 		.north {
 			transform: rotate(90deg);
@@ -121,7 +119,6 @@ declare let Compass: any;
 			-moz-box-shadow: 0px 0px 7px rgb(64, 244, 255);
 			-webkit-box-shadow: 0px 0px 7px rgb(64, 244, 255);
 			box-shadow: 0px 0px 7px rgb(64, 244, 255);
-
 		}
 		.one .compassSixty {
 			top: 33.4%;
@@ -137,12 +134,10 @@ declare let Compass: any;
 		}
 
 		.two {
-
 			border-radius: 0 100% 0 0;
 			-moz-box-shadow: 0px 0px 7px rgb(64, 244, 255);
 			-webkit-box-shadow: 0px 0px 7px rgb(64, 244, 255);
 			box-shadow: 0px 0px 7px rgb(64, 244, 255);
-
 		}
 		.two .compassSixty {
 			top: 33.4%;
@@ -155,12 +150,10 @@ declare let Compass: any;
 			border-right: 1px solid rgb(64, 244, 255);
 		}
 		.three {
-
 			border-radius: 0 0 0 100%;
 			-moz-box-shadow: 0px 0px 7px rgb(64, 244, 255);
 			-webkit-box-shadow: 0px 0px 7px rgb(64, 244, 255);
 			box-shadow: 0px 0px 7px rgb(64, 244, 255);
-
 		}
 		.three .compassSixty {
 			left: 33.2%;
@@ -173,7 +166,6 @@ declare let Compass: any;
 			border-left: 1px solid rgb(64, 244, 255);
 		}
 		.four {
-
 			border-radius: 0 0 100% 0;
 			border-bottom: 1px solid rgb(64, 244, 255);
 			border-right: 1px solid rgb(64, 244, 255);
@@ -207,6 +199,8 @@ export class InGameComponent {
 	error: boolean = false;
 	errorMessage: string;
 	reloading: boolean = false;
+	facingColor: string = "rgb(0, 0, 0)";
+	buttonClass: string = "aim";
 	// my location variables
 	myLong: number;
 	myLat: number;
@@ -227,6 +221,7 @@ export class InGameComponent {
 	directionToTarget: number;
 	accuracy: number;
 	bearing: number;
+	facingTarget: boolean;
 	// funcitonal variables
 	compassWatch: any;
 	locationWatch: any;
@@ -243,16 +238,11 @@ export class InGameComponent {
 
 
 	ngOnInit() {
-
-		// this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
 		this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
 		this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
 		this.socket = io();
 		this.socket.on("connected", () => {
-			// console.log("connected, authService.user is: ", this.authService.user);
 			this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
-			// this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
-			// this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
 		});
 		this.socket.on("target online", (data) => {
 			if (!this.attacking) {
@@ -270,7 +260,6 @@ export class InGameComponent {
 					this.targetOnline = false;
 				}
 			}
-			console.log("data from socket 'target online' is: ", data);
 		});
 
 		this.socket.on("score", (data) => {
@@ -281,7 +270,6 @@ export class InGameComponent {
 
 		this.socket.on("being watched", (data) => {
 			this.rapidEmit(data);
-			console.log("you are being watched: ", data);
 		});
 
 		this.socket.on("attack result", (data) => {
@@ -300,7 +288,6 @@ export class InGameComponent {
 					this.reloading = false;
 					this.attacking = false;
 					this.attackMessage = "";
-					// this.reInit();
 				}.bind(this), 15000);
 			}
 		});
@@ -326,17 +313,23 @@ export class InGameComponent {
 	ngAfterViewInit() {
 		if (!this.initialized) {
 			this.initialized = true;
-			console.log("after view init");
 			this.compass = document.getElementById("compassWrapper");
 			this.ping = document.getElementById("ping");
-			console.log("ngAfterViewInit this.compass: ", this.compass);
 			this.compassWatch = Compass.watch(function (heading) {
 				heading = Math.floor(heading);
 				this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
+				if (Math.abs(heading - this.bearing) < 15) {
+					this.facingColor = "rgb(17, 66, 69)";
+					this.facingTarget = true;
+					this.attackMessage = "";
+					this.buttonClass = "attack";
+				} else {
+					this.facingColor = "rgb(0, 0, 0)";
+					this.facingTarget = false;
+					this.attackMessage = "Must be facing your target to ";
+					this.buttonClass = "aim";
+				}
 			}.bind(this));
-			// Compass.noSupport(function () {
-			// 	this.compass.style.transform = "rotate(-90deg)";
-			// }.bind(this));
 		}
 	}
 
@@ -364,7 +357,7 @@ export class InGameComponent {
 		}
 	}
 	displayPing() {
-			clearTimeout(this.pingTimeout);
+		clearTimeout(this.pingTimeout);
 		if (!this.attacking) {
 			this.clearPing();
 			let width = parseInt(window.getComputedStyle(this.ping).getPropertyValue("width"), 10);
@@ -374,7 +367,6 @@ export class InGameComponent {
 			let left = parseInt(window.getComputedStyle(this.ping).getPropertyValue("left"), 10);
 			let opacity = parseInt(window.getComputedStyle(this.ping).getPropertyValue("opacity"), 10);
 			this.pingInterval = setInterval(function() {
-				console.log("pingInterval");
 				width += 2;
 				height += 2;
 				radius += 1;
@@ -392,28 +384,23 @@ export class InGameComponent {
 		}
 	}
 	clearPing() {
-		// if (this.pingInterval && this.pingInterval.runCount > 0) {
-			clearInterval(this.pingInterval);
-			this.ping.style.height = "6px";
-			this.ping.style.width = "6px";
-			this.ping.style.borderRadius = "3px";
-			this.ping.style.top = "0px";
-			this.ping.style.left = "0px";
-			this.ping.style.opacity = 1;
-		// }
-		console.log("post clear: ", this.pingInterval);
+		clearInterval(this.pingInterval);
+		this.ping.style.height = "6px";
+		this.ping.style.width = "6px";
+		this.ping.style.borderRadius = "3px";
+		this.ping.style.top = "0px";
+		this.ping.style.left = "0px";
+		this.ping.style.opacity = 1;
 	}
 
 // functions for practical uses
 	takeAim() {
-		console.log("taking aim, ping interval is: ", this.pingInterval);
 		let data = {
 			targetName: this.targetName,
 			trackerName: this.authService.user.name
 		};
 		this.takingAim = true;
 		this.socket.emit("take aim", data);
-		console.log("take aim data: ", data);
 		this.aimInterval = setInterval(function() {
 			if (this.takingAim) {
 				this.takingAim = false;
@@ -424,23 +411,19 @@ export class InGameComponent {
 	}
 
 	attack() {
-		// Compass.unwatch(this.compassWatch);
-		// clearInterval(this.locationInterval);
-		// navigator.geolocation.clearWatch(this.locationWatch);
-		// clearInterval(this.pingInterval);
-		// clearTimeout(this.pingTimeout);
-
-		clearInterval(this.aimInterval);
-		this.attacking = true;
-		this.takingAim = false;
-		this.attackMessage = "Confirming kill...";
-		let data = {
-			distance: this.distanceToTarget,
-			accuracy: this.myAcc,
-			targetName: this.targetName,
-			gameId: this.authService.user.currentGame
-		};
-		this.socket.emit("attack", data);
+		if (this.facingTarget) {
+			clearInterval(this.aimInterval);
+			this.attacking = true;
+			this.takingAim = false;
+			this.attackMessage = "Confirming kill...";
+			let data = {
+				distance: this.distanceToTarget,
+				accuracy: this.myAcc,
+				targetName: this.targetName,
+				gameId: this.authService.user.currentGame
+			};
+			this.socket.emit("attack", data);
+		}
 	}
 
 	nextTarget() {
@@ -474,24 +457,11 @@ export class InGameComponent {
 		});
 	}
 
-	reInit() {
-		this.compass = document.getElementById("compassWrapper");
-		this.ping = document.getElementById("ping");
-		this.compassWatch = Compass.watch(function (heading) {
-			this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
-		}.bind(this));
-		this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
-		this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
-		console.log("reInit()");
-	}
-
 	rapidEmit(hunterName: string) {
-		console.log("rapidEmit()");
 		if (this.rapid) {
 			clearInterval(this.rapid);
 		}
 		this.rapid = setInterval(function() {
-			console.log("inside rapidEmit interval function");
 			let data = {
 				trackerName: hunterName,
 				latitude: this.myLat,
@@ -499,18 +469,15 @@ export class InGameComponent {
 				accuracy: this.myAcc,
 				time: this.myTime
 			};
-			console.log("data inside rapidEmit interval funciton: ", data);
 			this.socket.emit("give aim", data);
 		}.bind(this), 1000);
 		setTimeout(function() {
 			clearInterval(this.rapid);
 			this.takingAim = false;
-			console.log("inside setTimeout function.");
 		}.bind(this), 15000);
 	}
 
 	sendLocation() {
-		console.log("sendLocation()");
 		let toSend = {
 			gameId: this.gameId,
 			latitude: this.myLat,
@@ -562,7 +529,6 @@ export class InGameComponent {
 	}
 
 	positionErr(err) {
-		// console.log(err);
 		this.error = true;
 		this.errorMessage = "Unable to obtain your location, please make sure you have 'Location Services' turned on and try again.";
 	}
@@ -573,7 +539,6 @@ export class InGameComponent {
 		this.myLat = coor.latitude;
 		this.myTime = pos.timestamp;
 		this.myAcc = Math.floor(coor.accuracy);
-		// console.log("locationWatch: ", pos);
 		this.update();
 	}
 
