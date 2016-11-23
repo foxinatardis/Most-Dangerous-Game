@@ -21,21 +21,19 @@ var InGameComponent = (function () {
         this.attacking = false;
         this.error = false;
         this.reloading = false;
+        this.facingColor = "rgb(0, 0, 0)";
+        this.buttonClass = "aim";
         this.targetOnline = false;
         this.gameId = this.authService.user.currentGame;
         this.initialized = false;
     }
     InGameComponent.prototype.ngOnInit = function () {
         var _this = this;
-        // this.geoService.getLocation(this.positionSuccess.bind(this), this.positionErr.bind(this));
         this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
         this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
         this.socket = io();
         this.socket.on("connected", function () {
-            // console.log("connected, authService.user is: ", this.authService.user);
             _this.geoService.getLocation(_this.positionSuccess.bind(_this), _this.positionErr.bind(_this));
-            // this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
-            // this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
         });
         this.socket.on("target online", function (data) {
             if (!_this.attacking) {
@@ -84,7 +82,6 @@ var InGameComponent = (function () {
                     this.reloading = false;
                     this.attacking = false;
                     this.attackMessage = "";
-                    // this.reInit();
                 }.bind(_this), 15000);
             }
         });
@@ -114,6 +111,18 @@ var InGameComponent = (function () {
             this.compassWatch = Compass.watch(function (heading) {
                 heading = Math.floor(heading);
                 this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
+                if (Math.abs(heading - this.bearing) < 15) {
+                    this.facingColor = "rgb(17, 66, 69)";
+                    this.facingTarget = true;
+                    this.attackMessage = "";
+                    this.buttonClass = "attack";
+                }
+                else {
+                    this.facingColor = "rgb(0, 0, 0)";
+                    this.facingTarget = false;
+                    this.attackMessage = "Must be facing your target to ";
+                    this.buttonClass = "aim";
+                }
             }.bind(this));
         }
     };
@@ -171,7 +180,6 @@ var InGameComponent = (function () {
         }
     };
     InGameComponent.prototype.clearPing = function () {
-        // if (this.pingInterval && this.pingInterval.runCount > 0) {
         clearInterval(this.pingInterval);
         this.ping.style.height = "6px";
         this.ping.style.width = "6px";
@@ -179,12 +187,9 @@ var InGameComponent = (function () {
         this.ping.style.top = "0px";
         this.ping.style.left = "0px";
         this.ping.style.opacity = 1;
-        // }
-        console.log("post clear: ", this.pingInterval);
     };
     // functions for practical uses
     InGameComponent.prototype.takeAim = function () {
-        console.log("taking aim, ping interval is: ", this.pingInterval);
         var data = {
             targetName: this.targetName,
             trackerName: this.authService.user.name
@@ -201,22 +206,19 @@ var InGameComponent = (function () {
         }.bind(this), 20000);
     };
     InGameComponent.prototype.attack = function () {
-        // Compass.unwatch(this.compassWatch);
-        // clearInterval(this.locationInterval);
-        // navigator.geolocation.clearWatch(this.locationWatch);
-        // clearInterval(this.pingInterval);
-        // clearTimeout(this.pingTimeout);
-        clearInterval(this.aimInterval);
-        this.attacking = true;
-        this.takingAim = false;
-        this.attackMessage = "Confirming kill...";
-        var data = {
-            distance: this.distanceToTarget,
-            accuracy: this.myAcc,
-            targetName: this.targetName,
-            gameId: this.authService.user.currentGame
-        };
-        this.socket.emit("attack", data);
+        if (this.facingTarget) {
+            clearInterval(this.aimInterval);
+            this.attacking = true;
+            this.takingAim = false;
+            this.attackMessage = "Confirming kill...";
+            var data = {
+                distance: this.distanceToTarget,
+                accuracy: this.myAcc,
+                targetName: this.targetName,
+                gameId: this.authService.user.currentGame
+            };
+            this.socket.emit("attack", data);
+        }
     };
     InGameComponent.prototype.nextTarget = function () {
         var _this = this;
@@ -249,16 +251,6 @@ var InGameComponent = (function () {
                 _this.socket.emit("join", joinData);
             }
         });
-    };
-    InGameComponent.prototype.reInit = function () {
-        this.compass = document.getElementById("compassWrapper");
-        this.ping = document.getElementById("ping");
-        this.compassWatch = Compass.watch(function (heading) {
-            this.compass.style.transform = "rotate(" + ((90 + heading) * -1) + "deg)";
-        }.bind(this));
-        this.locationWatch = navigator.geolocation.watchPosition(this.iMovedSuccess.bind(this));
-        this.locationInterval = setInterval(this.sendLocation.bind(this), 15000);
-        console.log("reInit()");
     };
     InGameComponent.prototype.rapidEmit = function (hunterName) {
         console.log("rapidEmit()");
@@ -397,8 +389,8 @@ var InGameComponent = (function () {
     };
     InGameComponent = __decorate([
         core_1.Component({
-            template: "\n\t\t<div *ngIf=\"error\">\n\t\t\t<h2 class=\"error\">{{errorMessage}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t\t<h2 [style.color]=\"online()\">Target: {{targetName}}</h2>\n\t\t\t<p *ngIf=\"targetOnline\">Target Aquired: {{distanceToTarget}} meters from your location.</p>\n\t\t\t<p *ngIf=\"!targetOnline\">Target Last seen {{distanceToTarget}} meters from your location.</p>\n\t\t\t<div *ngIf=\"attacking\">\n\t\t\t\t<h2>{{attackMessage}}</h2>\n\t\t\t</div>\n\t\t\t<div *ngIf=\"reloading\">\n\t\t\t\t<h3>Reloading...</h3>\n\t\t\t\t<p class=\"reload\">{{reloadCounter}}</p>\n\t\t\t</div>\n\t\t\t<div class=\"compassWrapper\" id=\"compassWrapper\">\n\t\t\t\t<div class=\"compassQuarter one\">\n\t\t\t\t\t<div class=\"compassSixty one\">\n\t\t\t\t\t\t<div class=\"compassThird one\"></div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"compassQuarter two\">\n\t\t\t\t\t<div class=\"compassSixty two\">\n\t\t\t\t\t\t<div class=\"compassThird two\"></div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"compassQuarter three\">\n\t\t\t\t\t<div class=\"compassSixty three\">\n\t\t\t\t\t\t<div class=\"compassThird three\"></div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"compassQuarter four\">\n\t\t\t\t\t<div class=\"compassSixty four\">\n\t\t\t\t\t\t<div class=\"compassThird four\"></div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<p class=\"north\">N</p>\n\t\t\t\t\t<div id=\"toDraw\">\n\t\t\t\t\t\t<div id=\"ping\"></div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<div *ngIf=\"targetOnline\">\n\t\t\t\t<button *ngIf=\"!takingAim && !attacking\" class=\"button bottom\" (click)=\"takeAim()\">Take Aim</button>\n\t\t\t\t<button *ngIf=\"takingAim && !attacking\" class=\"button bottom\" (click)=\"attack()\">Attack</button>\n\n\n\t\t\t</div>\n\t\t\t<div *ngIf=\"!attacking\">\n\t\t\t\t<h3 [style.color]=\"resolution()\">Accuracy: {{myAcc}} meters</h3>\n\t\t\t</div>\n\n\t\t</div>\n\t",
-            styles: ["\n\t\t.reload {\n\t\t\ttext-align: center;\n\t\t\tfont-size: 7em;\n\t\t\tfont-family: sans-serif;\n\t\t\tmargin-top: 20px;\n\t\t}\n\t\t#ping {\n\t\t\tposition: absolute;\n\t\t\theight: 6px;\n\t\t\twidth: 6px;\n\t\t\tborder-radius: 3px;\n\t\t\tborder: 1px solid rgb(64, 244, 255);\n\t\t\tbox-sizing: border-box;\n\t\t\topacity: 1;\n\t\t}\n\t\t.compassWrapper {\n\t\t\twidth: 80%;\n\t\t\tmargin: auto;\n\t\t\theight: 0;\n\t\t\tpadding-bottom: 80%;\n\t\t\tposition: relative;\n\t\t\ttransform: rotate(-90deg);\n\t\t}\n\t\t.compassQuarter {\n\t\t\tfloat: left;\n\t\t\tposition: relative;\n\t\t\twidth: 50%;\n\t\t\theight: 0;\n\t\t\tpadding-bottom: 50%;\n\t\t\tbox-sizing: border-box;\n\t\t\tborder: 1px solid rgb(64, 244, 255);\n\t\t}\n\t\t.compassThird {\n\n\t\t\twidth: 50%;\n\t\t\theight: 0;\n\t\t\tpadding-bottom: 50%;\n\t\t\tposition: absolute;\n\n\t\t}\n\t\t.compassSixty {\n\n\t\t\twidth: 66%;\n\t\t\theight: 0;\n\t\t\tpadding-bottom: 66%;\n\t\t\tposition: absolute;\n\n\t\t}\n\t\t.north {\n\t\t\ttransform: rotate(90deg);\n\t\t\ttop: -1.5em;\n\t\t\tleft: 101%;\n\t\t\tposition: absolute;\n\t\t}\n\t\t.one {\n\n\t\t\tborder-radius: 100% 0 0 0;\n\t\t\t-moz-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\t-webkit-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\tbox-shadow: 0px 0px 7px rgb(64, 244, 255);\n\n\t\t}\n\t\t.one .compassSixty {\n\t\t\ttop: 33.4%;\n\t\t\tleft: 33.2%;\n\t\t\tborder-top: 1px solid rgb(64, 244, 255);\n\t\t\tborder-left: 1px solid rgb(64, 244, 255);\n\t\t}\n\t\t.one .compassThird {\n\t\t\ttop: 50%;\n\t\t\tleft: 50%;\n\t\t\tborder-top: 1px solid rgb(64, 244, 255);\n\t\t\tborder-left: 1px solid rgb(64, 244, 255);\n\t\t}\n\n\t\t.two {\n\n\t\t\tborder-radius: 0 100% 0 0;\n\t\t\t-moz-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\t-webkit-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\tbox-shadow: 0px 0px 7px rgb(64, 244, 255);\n\n\t\t}\n\t\t.two .compassSixty {\n\t\t\ttop: 33.4%;\n\t\t\tborder-top: 1px solid rgb(64, 244, 255);\n\t\t\tborder-right: 1px solid rgb(64, 244, 255);\n\t\t}\n\t\t.two .compassThird {\n\t\t\ttop: 50%;\n\t\t\tborder-top: 1px solid rgb(64, 244, 255);\n\t\t\tborder-right: 1px solid rgb(64, 244, 255);\n\t\t}\n\t\t.three {\n\n\t\t\tborder-radius: 0 0 0 100%;\n\t\t\t-moz-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\t-webkit-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\tbox-shadow: 0px 0px 7px rgb(64, 244, 255);\n\n\t\t}\n\t\t.three .compassSixty {\n\t\t\tleft: 33.2%;\n\t\t\tborder-bottom: 1px solid rgb(64, 244, 255);\n\t\t\tborder-left: 1px solid rgb(64, 244, 255);\n\t\t}\n\t\t.three .compassThird {\n\t\t\tleft: 50%;\n\t\t\tborder-bottom: 1px solid rgb(64, 244, 255);\n\t\t\tborder-left: 1px solid rgb(64, 244, 255);\n\t\t}\n\t\t.four {\n\n\t\t\tborder-radius: 0 0 100% 0;\n\t\t\tborder-bottom: 1px solid rgb(64, 244, 255);\n\t\t\tborder-right: 1px solid rgb(64, 244, 255);\n\t\t\t-moz-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\t-webkit-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\tbox-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t}\n\t\t#toDraw {\n\t\t\tbackground-color: rgb(255, 248, 54);\n\t\t\tposition: absolute;\n\t\t\theight: 6px;\n\t\t\twidth: 6px;\n\t\t\tborder-radius: 3px;\n\t\t\t-moz-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\t-webkit-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\tbox-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t}\n\n\t"]
+            template: "\n\t\t<div *ngIf=\"error\">\n\t\t\t<h2 class=\"error\">{{errorMessage}}</h2>\n\t\t</div>\n\t\t<div *ngIf=\"!error\">\n\t\t\t<h2>Score: {{this.authService.user.score}}</h2>\n\t\t\t<h2 [style.color]=\"online()\">Target: {{targetName}}</h2>\n\t\t\t<p *ngIf=\"targetOnline\">Target Aquired: {{distanceToTarget}} meters from your location.</p>\n\t\t\t<p *ngIf=\"!targetOnline\">Target Last seen {{distanceToTarget}} meters from your location.</p>\n\t\t\t<div *ngIf=\"attacking\" [hidden]=\"reloading\">\n\t\t\t\t<h2>{{attackMessage}}</h2>\n\t\t\t</div>\n\t\t\t<div *ngIf=\"reloading\">\n\t\t\t\t<h3>Reloading...{{reloadCounter}}</h3>\n\t\t\t\t<p class=\"reload\"></p>\n\t\t\t</div>\n\t\t\t<div class=\"compassWrapper\" id=\"compassWrapper\" [hidden]=\"attacking\">\n\t\t\t\t<div class=\"compassQuarter one\" [style.background-color]=\"facingColor\">\n\t\t\t\t\t<div class=\"compassSixty one\">\n\t\t\t\t\t\t<div class=\"compassThird one\"></div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"compassQuarter two\" [style.background-color]=\"facingColor\">\n\t\t\t\t\t<div class=\"compassSixty two\">\n\t\t\t\t\t\t<div class=\"compassThird two\"></div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"compassQuarter three\" [style.background-color]=\"facingColor\">\n\t\t\t\t\t<div class=\"compassSixty three\">\n\t\t\t\t\t\t<div class=\"compassThird three\"></div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"compassQuarter four\" [style.background-color]=\"facingColor\">\n\t\t\t\t\t<div class=\"compassSixty four\">\n\t\t\t\t\t\t<div class=\"compassThird four\"></div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<p class=\"north\">N</p>\n\t\t\t\t\t<div id=\"toDraw\">\n\t\t\t\t\t\t<div id=\"ping\"></div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<div *ngIf=\"targetOnline\">\n\t\t\t\t<button *ngIf=\"!takingAim && !attacking\" class=\"button bottom\" (click)=\"takeAim()\">Take Aim</button>\n\t\t\t\t<button *ngIf=\"takingAim && !attacking\"\n\t\t\t\t\t[class]=\"buttonClass\" (click)=\"attack()\">\n\t\t\t\t\t{{attackMessage}}Attack\n\t\t\t\t</button>\n\t\t\t</div>\n\n\t\t\t<div *ngIf=\"!attacking\">\n\t\t\t\t<h3 [style.color]=\"resolution()\">Accuracy: {{myAcc}} meters</h3>\n\t\t\t</div>\n\n\t\t</div>\n\t",
+            styles: ["\n\t\t.reload {\n\t\t\ttext-align: center;\n\t\t\tfont-size: 7em;\n\t\t\tfont-family: sans-serif;\n\t\t\tmargin-top: 20px;\n\t\t}\n\t\t#ping {\n\t\t\tposition: absolute;\n\t\t\theight: 6px;\n\t\t\twidth: 6px;\n\t\t\tborder-radius: 3px;\n\t\t\tborder: 1px solid rgb(64, 244, 255);\n\t\t\tbox-sizing: border-box;\n\t\t\topacity: 1;\n\t\t}\n\t\t.compassWrapper {\n\t\t\twidth: 80%;\n\t\t\tmargin: auto;\n\t\t\theight: 0;\n\t\t\tpadding-bottom: 80%;\n\t\t\tposition: relative;\n\t\t\ttransform: rotate(-90deg);\n\t\t}\n\t\t.compassQuarter {\n\t\t\tfloat: left;\n\t\t\tposition: relative;\n\t\t\twidth: 50%;\n\t\t\theight: 0;\n\t\t\tpadding-bottom: 50%;\n\t\t\tbox-sizing: border-box;\n\t\t\tborder: 1px solid rgb(64, 244, 255);\n\t\t}\n\t\t.compassThird {\n\t\t\twidth: 50%;\n\t\t\theight: 0;\n\t\t\tpadding-bottom: 50%;\n\t\t\tposition: absolute;\n\t\t}\n\t\t.compassSixty {\n\t\t\twidth: 66%;\n\t\t\theight: 0;\n\t\t\tpadding-bottom: 66%;\n\t\t\tposition: absolute;\n\t\t}\n\t\t.north {\n\t\t\ttransform: rotate(90deg);\n\t\t\ttop: -1.5em;\n\t\t\tleft: 101%;\n\t\t\tposition: absolute;\n\t\t}\n\t\t.one {\n\n\t\t\tborder-radius: 100% 0 0 0;\n\t\t\t-moz-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\t-webkit-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\tbox-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t}\n\t\t.one .compassSixty {\n\t\t\ttop: 33.4%;\n\t\t\tleft: 33.2%;\n\t\t\tborder-top: 1px solid rgb(64, 244, 255);\n\t\t\tborder-left: 1px solid rgb(64, 244, 255);\n\t\t}\n\t\t.one .compassThird {\n\t\t\ttop: 50%;\n\t\t\tleft: 50%;\n\t\t\tborder-top: 1px solid rgb(64, 244, 255);\n\t\t\tborder-left: 1px solid rgb(64, 244, 255);\n\t\t}\n\n\t\t.two {\n\t\t\tborder-radius: 0 100% 0 0;\n\t\t\t-moz-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\t-webkit-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\tbox-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t}\n\t\t.two .compassSixty {\n\t\t\ttop: 33.4%;\n\t\t\tborder-top: 1px solid rgb(64, 244, 255);\n\t\t\tborder-right: 1px solid rgb(64, 244, 255);\n\t\t}\n\t\t.two .compassThird {\n\t\t\ttop: 50%;\n\t\t\tborder-top: 1px solid rgb(64, 244, 255);\n\t\t\tborder-right: 1px solid rgb(64, 244, 255);\n\t\t}\n\t\t.three {\n\t\t\tborder-radius: 0 0 0 100%;\n\t\t\t-moz-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\t-webkit-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\tbox-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t}\n\t\t.three .compassSixty {\n\t\t\tleft: 33.2%;\n\t\t\tborder-bottom: 1px solid rgb(64, 244, 255);\n\t\t\tborder-left: 1px solid rgb(64, 244, 255);\n\t\t}\n\t\t.three .compassThird {\n\t\t\tleft: 50%;\n\t\t\tborder-bottom: 1px solid rgb(64, 244, 255);\n\t\t\tborder-left: 1px solid rgb(64, 244, 255);\n\t\t}\n\t\t.four {\n\t\t\tborder-radius: 0 0 100% 0;\n\t\t\tborder-bottom: 1px solid rgb(64, 244, 255);\n\t\t\tborder-right: 1px solid rgb(64, 244, 255);\n\t\t\t-moz-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\t-webkit-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\tbox-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t}\n\t\t#toDraw {\n\t\t\tbackground-color: rgb(255, 248, 54);\n\t\t\tposition: absolute;\n\t\t\theight: 6px;\n\t\t\twidth: 6px;\n\t\t\tborder-radius: 3px;\n\t\t\t-moz-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\t-webkit-box-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t\tbox-shadow: 0px 0px 7px rgb(64, 244, 255);\n\t\t}\n\n\t"]
         }), 
         __metadata('design:paramtypes', [auth_service_1.AuthService, api_service_1.ApiService, geo_service_1.GeoService])
     ], InGameComponent);
