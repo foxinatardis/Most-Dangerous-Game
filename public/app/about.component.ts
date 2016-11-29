@@ -4,6 +4,9 @@ import { AuthService } from "./auth.service";
 
 @Component({
 	template: `
+		<div class="button" id="aboutButton" *ngIf="!this.authService.user">
+			<p class="inside-button" (click)="toLogin()">Login/Register</p>
+		</div>
 		<div>
 			<h2>Welcome to Most Dangerous Game</h2>
 			<h3>How it works:</h3>
@@ -19,10 +22,13 @@ import { AuthService } from "./auth.service";
 			<p>If you have any feedback on how to improve the game please feel free to email the creator at foxinatardis@gmail.com</p>
 
 		<div>
-		<div class="button" *ngIf="!this.authService.user">
-			<p class="inside-button" (click)="toLogin()">Login/Register</p>
-		</div>
 	`,
+	styles: [`
+		#aboutButton {
+			height: 30px;
+		}
+
+	`]
 })
 export class AboutComponent {
 	constructor(

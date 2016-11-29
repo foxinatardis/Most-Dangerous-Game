@@ -17,7 +17,7 @@ var AuthService = (function () {
     }
     AuthService.prototype.canActivate = function (route, state) {
         if (this.user === undefined) {
-            this.router.navigate(["login"]);
+            this.router.navigate(["about"]);
             return false;
         }
         return true;
