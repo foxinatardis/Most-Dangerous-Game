@@ -5,7 +5,7 @@ import { AuthService } from "./auth.service";
 @Component({
 	template: `
 		<div class="button" id="aboutButton" *ngIf="!this.authService.user">
-			<p class="inside-button" (click)="toLogin()">Login/Register</p>
+			<p class="about-button" (click)="toLogin()">Login/Register</p>
 		</div>
 		<div>
 			<h2>Welcome to Most Dangerous Game</h2>
@@ -27,7 +27,14 @@ import { AuthService } from "./auth.service";
 		#aboutButton {
 			height: 30px;
 		}
-
+		p.about-button {
+			color: black;
+			text-align: center;
+			vertical-align: middle;
+			line-height: 30px;
+			font-size: 20px;
+			font-family: sans-serif;
+		}
 	`]
 })
 export class AboutComponent {
