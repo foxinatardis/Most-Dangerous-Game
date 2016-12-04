@@ -22,7 +22,7 @@ var LandingComponent = (function () {
     };
     LandingComponent = __decorate([
         core_1.Component({
-            template: "\n\t\t<h2>Welcome to The Most Dangerous Game</h2>\n\t\t<p>A multiplayer mobile game of tag. Hunt down your friends in real life and kill the in the game.</p>\n\t\t<div class=\"button\">\n\t\t\t<p class=\"inside-button\" (click)=\"toLogin()\">Login/Register</p>\n\t\t</div>\n\t\t<div class=\"button\">\n\t\t\t<p class=\"inside-button\" (click)=\"toAbout()\">About the Game</p>\n\t\t</div>\n\t",
+            template: "\n\t\t<h2>Welcome to The Most Dangerous Game</h2>\n\t\t<p>A multiplayer mobile game of tag. Hunt down your friends in real life and kill them in the game.</p>\n\t\t<div class=\"button\">\n\t\t\t<p class=\"inside-button\" (click)=\"toLogin()\">Login/Register</p>\n\t\t</div>\n\t\t<div class=\"button\">\n\t\t\t<p class=\"inside-button\" (click)=\"toAbout()\">About the Game</p>\n\t\t</div>\n\t",
         }), 
         __metadata('design:paramtypes', [router_1.Router])
     ], LandingComponent);
