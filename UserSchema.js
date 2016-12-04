@@ -10,6 +10,7 @@ module.exports = (mongoose) => {
 		inGame: Boolean, // if true, current game has been launched
 		gameAdmin: Boolean, //true if admin of current game
 		gameHistory: [String],
+		gameScore: Number,
 		currentTarget: String, // username of current target
 		lastLongitude: Number,
 		lastLatitude: Number,

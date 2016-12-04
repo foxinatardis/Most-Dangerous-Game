@@ -21,6 +21,7 @@ var profile_component_1 = require("./profile.component");
 var options_component_1 = require("./options.component");
 var about_component_1 = require("./about.component");
 var admin_component_1 = require("./admin.component");
+var landing_component_1 = require("./landing.component");
 var routes = [
     { path: "", component: profile_component_1.ProfileComponent, canActivate: [auth_service_1.AuthService] },
     { path: "login", component: login_component_1.LoginComponent },
@@ -31,6 +32,7 @@ var routes = [
     { path: "profile", component: profile_component_1.ProfileComponent, canActivate: [auth_service_1.AuthService] },
     { path: "options", component: options_component_1.OptionsComponent, canActivate: [auth_service_1.AuthService] },
     { path: "about", component: about_component_1.AboutComponent },
+    { path: "landing", component: landing_component_1.LandingComponent },
     { path: "admin", component: admin_component_1.AdminComponent, canActivate: [auth_service_1.AuthService] }
 ];
 var AppRoutingModule = (function () {

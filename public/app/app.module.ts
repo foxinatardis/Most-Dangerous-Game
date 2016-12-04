@@ -10,6 +10,7 @@ import { AuthService } from "./auth.service";
 import { GeoService } from "./geo.service";
 
 import { AppComponent } from './app.component';
+import { LandingComponent } from "./landing.component";
 import { LoginComponent } from "./login.component";
 import { GameSelectionComponent } from "./game-selection.component";
 import { WaitingRoomComponent } from "./waiting-room.component";
@@ -42,7 +43,8 @@ import { AdminComponent } from "./admin.component";
 		ProfileComponent,
 		OptionsComponent,
 		AboutComponent,
-		AdminComponent
+		AdminComponent,
+		LandingComponent
 	],
 	bootstrap: [ AppComponent ]
 })

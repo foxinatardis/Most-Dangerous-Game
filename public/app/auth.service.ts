@@ -12,7 +12,7 @@ export class AuthService implements CanActivate {
 		state: RouterStateSnapshot
 	): boolean {
 		if (this.user === undefined) {
-			this.router.navigate(["about"]);
+			this.router.navigate(["landing"]);
 			return false;
 		}
 		return true;

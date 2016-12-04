@@ -10,23 +10,23 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
-var AuthService = (function () {
-    function AuthService(router) {
+var LandingComponent = (function () {
+    function LandingComponent(router) {
         this.router = router;
-        this.user = undefined;
     }
-    AuthService.prototype.canActivate = function (route, state) {
-        if (this.user === undefined) {
-            this.router.navigate(["landing"]);
-            return false;
-        }
-        return true;
+    LandingComponent.prototype.toLogin = function () {
+        this.router.navigate(["/login"]);
     };
-    AuthService = __decorate([
-        core_1.Injectable(), 
+    LandingComponent.prototype.toAbout = function () {
+        this.router.navigate(["/about"]);
+    };
+    LandingComponent = __decorate([
+        core_1.Component({
+            template: "\n\t\t<h2>Welcome to The Most Dangerous Game</h2>\n\t\t<p>A multiplayer mobile game of tag. Hunt down your friends in real life and kill the in the game.</p>\n\t\t<div class=\"button\">\n\t\t\t<p class=\"inside-button\" (click)=\"toLogin()\">Login/Register</p>\n\t\t</div>\n\t\t<div class=\"button\">\n\t\t\t<p class=\"inside-button\" (click)=\"toAbout()\">About the Game</p>\n\t\t</div>\n\t",
+        }), 
         __metadata('design:paramtypes', [router_1.Router])
-    ], AuthService);
-    return AuthService;
+    ], LandingComponent);
+    return LandingComponent;
 }());
-exports.AuthService = AuthService;
-//# sourceMappingURL=auth.service.js.map
+exports.LandingComponent = LandingComponent;
+//# sourceMappingURL=landing.component.js.map
