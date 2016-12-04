@@ -6,11 +6,11 @@ import { Router } from "@angular/router";
 @Component({
 	selector: 'assassin',
 	template: `
-		<nav>
-			<div class="for-nav" *ngIf="this.authService.user" (click)="this.router.navigate(['/profile'])">
+		<nav *ngIf="this.authService.user">
+			<div class="for-nav" (click)="this.router.navigate(['/profile'])">
 				<p class="p-nav">Profile</p>
 			</div>
-			<div class="for-nav" (click)="logout()" *ngIf="this.authService.user">
+			<div class="for-nav" (click)="logout()">
 				<p class="p-nav">Logout</p>
 			</div>
 		</nav>

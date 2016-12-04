@@ -13,6 +13,7 @@ import { ProfileComponent } from "./profile.component";
 import { OptionsComponent } from "./options.component";
 import { AboutComponent } from "./about.component";
 import { AdminComponent } from "./admin.component";
+import { LandingComponent } from "./landing.component";
 
 const routes: Routes = [
 	{path: "", component: ProfileComponent, canActivate: [AuthService] },
@@ -24,6 +25,7 @@ const routes: Routes = [
 	{path: "profile", component: ProfileComponent, canActivate: [AuthService] },
 	{path: "options", component: OptionsComponent, canActivate: [AuthService] },
 	{path: "about", component: AboutComponent},
+	{path: "landing", component: LandingComponent},
 	{path: "admin", component: AdminComponent, canActivate: [AuthService]}
 ];
 

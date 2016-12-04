@@ -30,7 +30,7 @@ var AppComponent = (function () {
     AppComponent = __decorate([
         core_1.Component({
             selector: 'assassin',
-            template: "\n\t\t<nav>\n\t\t\t<div class=\"for-nav\" *ngIf=\"this.authService.user\" (click)=\"this.router.navigate(['/profile'])\">\n\t\t\t\t<p class=\"p-nav\">Profile</p>\n\t\t\t</div>\n\t\t\t<div class=\"for-nav\" (click)=\"logout()\" *ngIf=\"this.authService.user\">\n\t\t\t\t<p class=\"p-nav\">Logout</p>\n\t\t\t</div>\n\t\t</nav>\n\t\t<router-outlet></router-outlet>\n\t",
+            template: "\n\t\t<nav *ngIf=\"this.authService.user\">\n\t\t\t<div class=\"for-nav\" (click)=\"this.router.navigate(['/profile'])\">\n\t\t\t\t<p class=\"p-nav\">Profile</p>\n\t\t\t</div>\n\t\t\t<div class=\"for-nav\" (click)=\"logout()\">\n\t\t\t\t<p class=\"p-nav\">Logout</p>\n\t\t\t</div>\n\t\t</nav>\n\t\t<router-outlet></router-outlet>\n\t",
         }), 
         __metadata('design:paramtypes', [auth_service_1.AuthService, api_service_1.ApiService, router_1.Router])
     ], AppComponent);
