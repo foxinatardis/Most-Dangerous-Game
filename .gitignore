@@ -5,3 +5,7 @@ data
 *.crt
 secret.js
 localServer.js
+npm-debug.log
+server.key
+server.crt
+server.csr
