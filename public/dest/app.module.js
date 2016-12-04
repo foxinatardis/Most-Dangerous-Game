@@ -17,6 +17,7 @@ var api_service_1 = require("./api.service");
 var auth_service_1 = require("./auth.service");
 var geo_service_1 = require("./geo.service");
 var app_component_1 = require('./app.component');
+var landing_component_1 = require("./landing.component");
 var login_component_1 = require("./login.component");
 var game_selection_component_1 = require("./game-selection.component");
 var waiting_room_component_1 = require("./waiting-room.component");
@@ -52,7 +53,8 @@ var AppModule = (function () {
                 profile_component_1.ProfileComponent,
                 options_component_1.OptionsComponent,
                 about_component_1.AboutComponent,
-                admin_component_1.AdminComponent
+                admin_component_1.AdminComponent,
+                landing_component_1.LandingComponent
             ],
             bootstrap: [app_component_1.AppComponent]
         }), 
