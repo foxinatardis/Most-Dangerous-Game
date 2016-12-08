@@ -19,7 +19,7 @@ http.use((req, res, next) => {
 });
 
 http.get("/", (req, res) => {
-	res.sendFile(__dirname + "/portfolio/portfolio.html");
+	res.sendFile(__dirname + "/portfolio/index.html");
 });
 
 http.use(express.static(__dirname + '/portfolio'));
