@@ -11,12 +11,16 @@
     "letsencrypt-express": "^2.0.5",
     "mongoose": "^4.6.5",
     "session": "^0.1.0",
-    "socket.io": "^1.5.1"
+    "socket.io": "^1.5.1",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "snyk": true
 }
