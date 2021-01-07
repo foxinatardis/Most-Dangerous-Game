@@ -11,7 +11,7 @@
     "letsencrypt-express": "^2.0.5",
     "mongoose": "^4.6.5",
     "session": "^0.1.0",
-    "socket.io": "^1.5.1"
+    "socket.io": "^2.4.0"
   },
   "devDependencies": {},
   "scripts": {
